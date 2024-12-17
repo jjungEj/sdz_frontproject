@@ -13,6 +13,7 @@ function App() {
       <Header />
       <Main>
         <Home />
+        {/* <CategoryManager /> */}
       </Main>
       <Footer />
     </Provider>
