@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { createCategoty, getCategories, updateCategory, deleteCategoty } from "../services/CategoryAPI";
+import { createCategory, getCategories, updateCategory, deleteCategory } from "../services/CategoryAPI";
 import { Box, Heading, Button, Input, VStack, HStack, Table } from '@chakra-ui/react';
+import { Toaster, toaster } from "@/components/ui/toaster"
 
 function CategoryManager() {
     const [categories, setCategories] = useState([]);
     const [editingCategory, setEditingCategory] = useState(null);
-    const [newCategoryName, setNewCategoryName] = useState('');
+    const [newCategoryName, setNewCategoryName] = useState("");
 
     useEffect(() => {
         loadCategories();
@@ -20,10 +21,18 @@ function CategoryManager() {
 
     function handleCreateCategory() {
         if (newCategoryName.trim()) {
-            createCategoty(newCategoryName.trim())
+            createCategory(newCategoryName.trim())
                 .then(data => {
                     setCategories([...categories, data]);
-                    setNewCategoryName('');
+                    setNewCategoryName("");
+                })
+                .catch(error => {
+                    toaster.create({
+                        title: error.message,
+                        type: "error",
+                        isClosable: true,
+                        duration: 3000,
+                    });
                 });
         }
     }
@@ -39,44 +48,65 @@ function CategoryManager() {
                             : category
                     ));
                     setEditingCategory(null);
+                })
+                .catch(error => {
+                    toaster.create({
+                        title: error.message,
+                        type: "error",
+                        isClosable: true,
+                        duration: 3000,
+                    });
                 });
         }
     }
 
     function handleDeleteCategory(categoryId) {
-        deleteCategoty(categoryId)
+        deleteCategory(categoryId)
             .then(() => {
                 setCategories(categories.filter(category =>
                     category.categoryId !== categoryId)
                 );
+            })
+            .catch(error => {
+                toaster.create({
+                    title: error.message,
+                    type: "error",
+                    isClosable: true,
+                    duration: 3000,
+                });
             });
     }
 
     return (
-        <Box p={5}>
-            <Heading as="h1" size="lg" mb={5}>카테고리 관리</Heading>
-            <Box borderBottom="2px solid teal" mb={5} />
-            <Box w="auto" >
-                <VStack align="flex-start" spacing={3} maxWidth="300px" w="100%" mb={5}>
-                    <HStack spacing={3} w="100%">
-                        <Input
-                            type="text"
-                            value={newCategoryName}
-                            onChange={e => setNewCategoryName(e.target.value)}
-                            placeholder="카테고리 이름"
-                            size="sm"
-                        />
-                        <Button colorScheme="teal" onClick={handleCreateCategory} size="sm">
-                            추가
-                        </Button>
-                    </HStack>
-                </VStack>
-                <Table.Root size="sm" w="100%">
+        <Box>
+            <Toaster />
+            <Heading as="h1" size="xl" mb={3}>카테고리 관리</Heading>
+            <Box borderBottom={{ base: "2px solid black", _dark: "2px solid white" }} mb={3} />
+            <Box display="flex" justifyContent="center">
+                <Table.Root width="90%" maxWidth="1000px">
                     <Table.Header>
                         <Table.Row>
-                            <Table.ColumnHeader pl={5}>카테고리명</Table.ColumnHeader>
-                            <Table.ColumnHeader textAlign="end">수정</Table.ColumnHeader>
-                            <Table.ColumnHeader >삭제</Table.ColumnHeader>
+                            <Table.ColumnHeader fontSize="lg" fontWeight="bold" pl={5}>카테고리명</Table.ColumnHeader>
+                            <Table.ColumnHeader textAlign="end">
+                                <HStack spacing={3} justify="flex-end">
+                                    <Input
+                                        type="text"
+                                        value={newCategoryName}
+                                        onChange={e => setNewCategoryName(e.target.value)}
+                                        placeholder="카테고리명 입력"
+                                        size="sm"
+                                        maxWidth="300px"
+                                        w="100%"
+                                    />
+                                    <Button
+                                        colorScheme="teal"
+                                        onClick={() => { handleCreateCategory(); }}
+                                        size="sm" pl={5} pr={5}
+                                    >
+                                        카테고리 생성
+                                    </Button>
+                                </HStack>
+                            </Table.ColumnHeader>
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -88,10 +118,7 @@ function CategoryManager() {
                                             <Input
                                                 type="text"
                                                 value={editingCategory.categoryName}
-                                                onChange={e => setEditingCategory({
-                                                    ...editingCategory,
-                                                    categoryName: e.target.value
-                                                })}
+                                                onChange={e => setEditingCategory({ ...editingCategory, categoryName: e.target.value })}
                                                 placeholder="카테고리 이름"
                                                 size="sm"
                                                 maxWidth="300px"
@@ -99,41 +126,44 @@ function CategoryManager() {
                                             />
                                         </Table.Cell>
                                         <Table.Cell textAlign="end" >
-                                            <Button onClick={handleUpdateCategory} colorScheme="blue" size="sm">
-                                                수정 완료
-                                            </Button>
-                                        </Table.Cell>
-                                        <Table.Cell>
-                                            <Button onClick={() => setEditingCategory(null)} colorScheme="gray" size="sm">
-                                                취소
-                                            </Button>
+                                            <HStack spacing={3} justify="flex-end">
+                                                <Button
+                                                    onClick={handleUpdateCategory}
+                                                    colorScheme="blue"
+                                                    size="sm"
+                                                >
+                                                    수정 완료
+                                                </Button>
+                                                <Button
+                                                    onClick={() => setEditingCategory(null)}
+                                                    colorScheme="gray"
+                                                    size="sm"
+                                                >
+                                                    취소
+                                                </Button>
+                                            </HStack>
                                         </Table.Cell>
                                     </>
                                 ) : (
                                     <>
-                                        <Table.Cell>{category.categoryName}</Table.Cell>
+                                        <Table.Cell pl={5}>{category.categoryName}</Table.Cell>
                                         <Table.Cell textAlign="end">
-                                            <HStack spacing={3} justify="flex-end">
+                                            <HStack justify="flex-end">
                                                 <Button
-                                                    onClick={() => setEditingCategory({
-                                                        categoryId: category.categoryId,
-                                                        categoryName: category.categoryName
-                                                    })}
+                                                    onClick={() => setEditingCategory({ categoryId: category.categoryId, categoryName: category.categoryName })}
                                                     colorScheme="blue"
                                                     size="sm"
                                                 >
                                                     수정
                                                 </Button>
+                                                <Button
+                                                    onClick={() => handleDeleteCategory(category.categoryId)}
+                                                    colorScheme="red"
+                                                    size="sm"
+                                                >
+                                                    삭제
+                                                </Button>
                                             </HStack>
-                                        </Table.Cell>
-                                        <Table.Cell>
-                                            <Button
-                                                onClick={() => handleDeleteCategory(category.categoryId)}
-                                                colorScheme="red"
-                                                size="sm"
-                                            >
-                                                삭제
-                                            </Button>
                                         </Table.Cell>
                                     </>
                                 )}
@@ -143,6 +173,7 @@ function CategoryManager() {
                 </Table.Root>
             </Box>
         </Box>
+
     );
 }
 

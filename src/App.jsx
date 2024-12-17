@@ -4,6 +4,7 @@ import Footer from './components/Footer';
 import Main from './components/Main';
 import Home from './pages/Home';
 import { Provider } from "@/components/ui/provider";
+import CategoryManager from './pages/CategoryManager';
 
 
 function App() {
@@ -12,8 +13,8 @@ function App() {
     <Provider>
       <Header />
       <Main>
-        <Home />
-        {/* <CategoryManager /> */}
+        {/* <Home /> */}
+        <CategoryManager />
       </Main>
       <Footer />
     </Provider>
