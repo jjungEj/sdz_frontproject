@@ -1,14 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { Box, HStack, VStack, Text, Input, Link } from '@chakra-ui/react';
+import OrderItem from '../pages/OrderItem';
+import { Box, HStack, VStack, Text, Input, Link, Button } from '@chakra-ui/react';
 import { ColorModeButton } from "@/components/ui/color-mode"
 import { InputGroup } from "@/components/ui/input-group"
 import { LuSearch } from "react-icons/lu"
 import { getCategories } from "../services/CategoryAPI";
+import {
+  DrawerBackdrop,
+  DrawerBody,
+  DrawerCloseTrigger,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerRoot,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
 
 
 function Header() {
   const [search, setSearch] = useState("");
   const [categories, setCategories] = useState([]);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     loadCategories();
@@ -54,13 +67,23 @@ function Header() {
           >
             관리자페이지
           </Link>
-          <Link
-            href="http://localhost:5173/order-item"
-            _focus={{ outline: "none" }}
-            margin="3"
-          >
-            장바구니
-          </Link>
+          <DrawerRoot size="md" open={open} onOpenChange={(e) => setOpen(e.open)}>
+            <DrawerBackdrop />
+            <DrawerTrigger asChild>
+              <Button variant="plain">
+                장바구니
+              </Button>
+            </DrawerTrigger>
+            <DrawerContent>
+              <DrawerHeader>
+                <DrawerTitle>장바구니</DrawerTitle>
+              </DrawerHeader>
+              <DrawerBody>
+                <OrderItem />
+              </DrawerBody>
+              <DrawerCloseTrigger />
+            </DrawerContent>
+          </DrawerRoot>
         </HStack>
       </HStack>
       <HStack justify="flex-end" mb={3}>
