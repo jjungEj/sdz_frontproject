@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { createCategory, getCategories, updateCategory, deleteCategory } from "../services/CategoryAPI";
+import { createCategory, getCategories, updateCategory, deleteCategory } from "../../services/CategoryAPI";
 import { Box, Heading, Button, Input, VStack, HStack, Table } from '@chakra-ui/react';
 import { Toaster, toaster } from "@/components/ui/toaster"
 
-function CategoryManager() {
+function CategoryManagement() {
     const [categories, setCategories] = useState([]);
     const [editingCategory, setEditingCategory] = useState(null);
     const [newCategoryName, setNewCategoryName] = useState("");
@@ -177,4 +177,4 @@ function CategoryManager() {
     );
 }
 
-export default CategoryManager;
+export default CategoryManagement;
