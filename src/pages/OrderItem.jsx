@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { fetchOrderItemData, modifyOrderItem, clearOrderItem } from "../services/OrderItemAPI";
+import { Box, Stack, HStack, VStack, Link, Heading, Table } from '@chakra-ui/react';
+import { Toaster, toaster } from "@/components/ui/toaster"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@/components/ui/button"
 
 function OrderItem() {
     const [OrderItemData, setOrderItemData] = useState(null); // 장바구니 데이터 상태
@@ -19,6 +23,12 @@ function OrderItem() {
             setSelectedItems([]); // 선택 초기화
         } catch (err) {
             setError("장바구니 정보를 불러오는 데 실패했습니다.");
+            toaster.create({
+                title: error,
+                type: "error",
+                isClosable: true,
+                duration: 3000,
+            });
         }
     };
 
@@ -49,6 +59,12 @@ function OrderItem() {
             fetchData();
         } catch (err) {
             setError("선택된 상품 삭제에 실패했습니다.");
+            toaster.create({
+                title: error,
+                type: "error",
+                isClosable: true,
+                duration: 3000,
+            });
         }
     };
 
@@ -58,6 +74,12 @@ function OrderItem() {
             fetchData();
         } catch (err) {
             setError("상품 추가에 실패했습니다.");
+            toaster.create({
+                title: error,
+                type: "error",
+                isClosable: true,
+                duration: 3000,
+            });
         }
     };
 
@@ -67,6 +89,12 @@ function OrderItem() {
             fetchData();
         } catch (err) {
             setError("상품 제거에 실패했습니다.");
+            toaster.create({
+                title: error,
+                type: "error",
+                isClosable: true,
+                duration: 3000,
+            });
         }
     };
 
@@ -76,82 +104,97 @@ function OrderItem() {
             fetchData();
         } catch (err) {
             setError("장바구니 비우기에 실패했습니다.");
+            toaster.create({
+                title: error,
+                type: "error",
+                isClosable: true,
+                duration: 3000,
+            });
         }
     };
 
     return (
-        <div style={{ fontFamily: "Arial, sans-serif", maxWidth: "1200px", margin: "0 auto" }}>
-            <h1 style={{ textAlign: "left", margin: "20px 0" }}>장바구니</h1>
-            {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
-
+        <Box style={{ fontFamily: "Arial, sans-serif", maxWidth: "1200px", margin: "0 auto" }}>
             {OrderItemData && OrderItemData.orderItemDetails.length > 0 ? (
                 <>
-                    <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: "20px" }}>
-                        <thead>
-                        <tr style={{ backgroundColor: "#f2f2f2", textAlign: "center" }}>
-                            <th style={{ padding: "10px" }}>
-                                <input
-                                    type="checkbox"
-                                    checked={
-                                        selectedItems.length === OrderItemData.orderItemDetails.length &&
-                                        selectedItems.length > 0
-                                    }
-                                    onChange={handleSelectAll}
-                                />
-                            </th>
-                            <th style={{ padding: "10px" }}>제품정보</th>
-                            <th style={{ padding: "10px" }}>판매가격</th>
-                            <th style={{ padding: "10px" }}>수량</th>
-                            <th style={{ padding: "10px" }}>주문금액</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {OrderItemData.orderItemDetails.map((item) => (
-                            <tr key={item.productId} style={{ textAlign: "center" }}>
-                                <td>
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedItems.includes(item.productId)}
-                                        onChange={() => handleSelectItem(item.productId)}
+                    <Table.Root style={{ width: "100%", borderCollapse: "collapse", marginBottom: "20px" }}>
+                        <Table.Header>
+                            <Table.Row>
+                                <Table.ColumnHeader>
+                                    <Checkbox
+                                        top="1"
+                                        aria-label="Select all rows"
+                                        checked={
+                                            selectedItems.length === OrderItemData.orderItemDetails.length &&
+                                            selectedItems.length > 0
+                                        }
+                                        onChange={handleSelectAll}
                                     />
-                                </td>
-                                <td>상품명 ({item.productId})</td>
-                                <td>{item.productAmount.toLocaleString()} 원</td>
-                                <td>
-                                    <button onClick={() => handleRemoveItem(item.productId)}>-</button>
-                                    <span style={{ margin: "0 10px" }}>{item.quantity}</span>
-                                    <button onClick={() => handleAddItem(item.productId)}>+</button>
-                                </td>
-                                <td style={{ fontWeight: "bold", color: "#007BFF" }}>
-                                    {(item.productAmount * item.quantity).toLocaleString()} 원
-                                </td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-
-                    <div style={{ textAlign: "right", marginBottom: "20px" }}>
-                        <strong>총 결제금액: {OrderItemData.orderItemDetails
-                            .reduce((total, item) => total + item.productAmount * item.quantity, 0)
-                            .toLocaleString()} 원</strong>
-                    </div>
-
-                    <div style={{ textAlign: "right" }}>
-                        <button onClick={handleDeleteSelectedItems} style={{ marginRight: "10px", padding: "10px" }}>
-                            선택상품 삭제하기
-                        </button>
-                        <button style={{ marginRight: "10px", padding: "10px" }}>선택상품 주문하기</button>
-                        <button onClick={handleClearOrderItem} style={{ padding: "10px", backgroundColor: "#007BFF", color: "white" }}>
-                            장바구니 비우기
-                        </button>
-                    </div>
+                                </Table.ColumnHeader>
+                                <Table.ColumnHeader>제품정보</Table.ColumnHeader>
+                                <Table.ColumnHeader>판매가격</Table.ColumnHeader>
+                                <Table.ColumnHeader>수량</Table.ColumnHeader>
+                                <Table.ColumnHeader>주문금액</Table.ColumnHeader>
+                            </Table.Row>
+                        </Table.Header>
+                        <Table.Body>
+                            {OrderItemData.orderItemDetails.map((item) => (
+                                <Table.Row key={item.productId} style={{ textAlign: "center" }}>
+                                    <Table.Cell>
+                                        <Checkbox
+                                            top="1"
+                                            aria-label="Select all rows"
+                                            checked={selectedItems.includes(item.productId)}
+                                            onChange={() => handleSelectItem(item.productId)}
+                                        />
+                                    </Table.Cell>
+                                    <Table.Cell>
+                                        {item.productName} ({item.productId})
+                                    </Table.Cell>
+                                    <Table.Cell>
+                                        {item.productAmount.toLocaleString()} 원
+                                    </Table.Cell>
+                                    <Table.Cell>
+                                        <button onClick={() => handleRemoveItem(item.productId)}>-</button>
+                                        <span style={{ margin: "0 10px" }}>{item.quantity}</span>
+                                        <button onClick={() => handleAddItem(item.productId)}>+</button>
+                                    </Table.Cell>
+                                    <Table.Cell>
+                                        {(item.productAmount * item.quantity).toLocaleString()} 원
+                                    </Table.Cell>
+                                </Table.Row>
+                            ))}
+                        </Table.Body>
+                    </Table.Root>
+                    <HStack justify="space-between" mb={5}>
+                        <HStack mt={-10}>
+                            <Button onClick={handleDeleteSelectedItems} variant="plain" size="xs">
+                                선택삭제
+                            </Button>
+                            <Button onClick={handleClearOrderItem} variant="plain" size="xs" ml={-3}>
+                                전체삭제
+                            </Button>
+                        </HStack>
+                        <Heading mr={1}>
+                            총 결제금액 : {OrderItemData.orderItemDetails
+                                .reduce((total, item) => total + item.productAmount * item.quantity, 0)
+                                .toLocaleString()} 원
+                        </Heading>
+                    </HStack>
+                    <Button w="100%">
+                        {selectedItems.length}개 상품 구매하기
+                    </Button>
                 </>
             ) : (
-                <p style={{ textAlign: "center" }}>장바구니에 담긴 상품이 없습니다.</p>
-            )}
-
-        </div>
-    );
+                <>
+                    <VStack h="100%" justify="center" align="center">
+                        <Heading>장바구니에 담긴 상품이 없습니다.</Heading>
+                    </VStack>
+                </>
+            )
+            }
+        </Box >
+    )
 }
 
 export default OrderItem;
