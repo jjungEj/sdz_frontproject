@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, HStack, VStack, Text, Input } from '@chakra-ui/react';
+import { Box, HStack, VStack, Text, Input, Link } from '@chakra-ui/react';
 import { ColorModeButton } from "@/components/ui/color-mode"
 import { InputGroup } from "@/components/ui/input-group"
 import { LuSearch } from "react-icons/lu"
@@ -26,9 +26,41 @@ function Header() {
       <HStack justify="space-between" align="center" mb={3}>
         <ColorModeButton />
         <HStack justify="flex-end">
-          <Text margin="3">로그인</Text>
-          <Text margin="3">회원가입</Text>
-          <Text margin="3">장바구니</Text>
+          <Link
+            href="http://localhost:5173/login"
+            _focus={{ outline: "none" }}
+            margin="3"
+          >
+            로그인
+          </Link>
+          <Link
+            href="http://localhost:5173/signUp"
+            _focus={{ outline: "none" }}
+            margin="3"
+          >
+            회원가입
+          </Link>
+          <Link
+            href="http://localhost:5173/mypage"
+            _focus={{ outline: "none" }}
+            margin="3"
+          >
+            마이페이지
+          </Link>
+          <Link
+            href="http://localhost:5173/admin"
+            _focus={{ outline: "none" }}
+            margin="3"
+          >
+            관리자페이지
+          </Link>
+          <Link
+            href="http://localhost:5173/order-item"
+            _focus={{ outline: "none" }}
+            margin="3"
+          >
+            장바구니
+          </Link>
         </HStack>
       </HStack>
       <HStack justify="flex-end" mb={3}>
@@ -42,7 +74,13 @@ function Header() {
         </InputGroup>
       </HStack>
       <VStack justify="center" mb={3}>
-        <Text fontSize="4xl">LOGO</Text>
+        <Link
+          href="http://localhost:5173/"
+          _focus={{ outline: "none" }}
+          fontSize="4xl"
+        >
+          LOGO
+        </Link>
       </VStack>
       <HStack justify="center" mb={3}>
         {categories.map((category, index) => (
