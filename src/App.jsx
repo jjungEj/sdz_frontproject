@@ -7,7 +7,7 @@ import Main from './components/Main';
 import Home from './pages/Home';
 import ProductList from './pages/ProductList';
 import ProductDetail from './pages/ProductDetail';
-import Cart from './pages/Cart';
+import OrderItem from './pages/OrderItem';
 import Checkout from './pages/Checkout';
 import OrderConfirmation from './pages/OrderConfirmation';
 import Login from './pages/Login';
@@ -22,7 +22,6 @@ import OrderManagement from './pages/admin/OrderManagement';
 import CategoryManagement from './pages/admin/CategoryManagement';
 import ProductManagement from './pages/admin/ProductManagement';
 import ProductForm from './pages/admin/ProductForm';
-import OrderItem from './pages/OrderItem';
 
 function App() {
 
@@ -34,7 +33,7 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/products" element={<ProductList />} />
                     <Route path="/product/:id" element={<ProductDetail />} />
-                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/order-item" element={<OrderItem />} />
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/order/:id" element={<OrderConfirmation />} />
                     <Route path="/login" element={<Login />} />
@@ -53,8 +52,6 @@ function App() {
                         <Route path="products" element={<ProductManagement />} />
                         <Route path="products/create" element={<ProductForm />} />
                     </Route>
-
-                    <Route path="/order-item" element={<OrderItem />} /> {/* 장바구니 페이지 */}
                 </Routes>
             </Main>
             <Footer />
