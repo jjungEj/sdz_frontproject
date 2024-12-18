@@ -1,6 +1,6 @@
 const url = "http://localhost:8080/api/categories";
 
-function createCategoty(categoryName) {
+function createCategory(categoryName) {
     return fetch(url, {
         method: "POST",
         headers: {
@@ -9,7 +9,15 @@ function createCategoty(categoryName) {
         body: JSON.stringify({categoryName: categoryName}),
     })
     .then(response => {
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                throw new Error(errorData.message);
+            });
+        }
         return response.json();
+    })
+    .catch(error => {
+        throw error;
     });
 }
 
@@ -20,12 +28,12 @@ function getCategories() {
     });
 }
 
-// function getCategory(categoryId) {
-//     return fetch(`${url}/${categoryId}`)
-//     .then(response => {
-//         return response.json();
-//     });
-// }
+function getCategory(categoryId) {
+    return fetch(`${url}/${categoryId}`)
+    .then(response => {
+        return response.json();
+    });
+}
 
 function updateCategory(categoryId, categoryName) {
     return fetch(`${url}/${categoryId}`, {
@@ -36,14 +44,32 @@ function updateCategory(categoryId, categoryName) {
         body: JSON.stringify({categoryName: categoryName}),
     })
     .then(response => {
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                throw new Error(errorData.message);
+            });
+        }
         return response.json();
+    })
+    .catch(error => {
+        throw error;
     });
 }
 
-function deleteCategoty(categoryId) {
+function deleteCategory(categoryId) {
     return fetch(`${url}/${categoryId}`, {
         method: "DELETE",
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                throw new Error(errorData.message);
+            });
+        }
+    })
+    .catch(error => {
+        throw error;
     });
 }
 
-export { createCategoty, getCategories, updateCategory, deleteCategoty };
+export { createCategory, getCategories, getCategory, updateCategory, deleteCategory };
