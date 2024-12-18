@@ -18,7 +18,7 @@ function Footer() {
 
   return (
     <Box maxWidth="1200px" width="100%" margin="0 auto" p={5}>
-      <Box borderBottom={{ base: "2px solid black", _dark: "2px solid white" }} mb={5} />
+      {/* <Box borderBottom={{ base: "2px solid black", _dark: "2px solid white" }} mb={5} /> */}
       <HStack align="flex-start" spacing={4}>
         <VStack align="flex-start" width="400px">
           <Text fontWeight="bold" fontSize="sm">Copyright (c) 2024 SDZ</Text>
