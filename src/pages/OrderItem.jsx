@@ -177,8 +177,9 @@ function OrderItem() {
                         </HStack>
                         <Heading mr={1}>
                             총 결제금액 : {OrderItemData.orderItemDetails
-                                .reduce((total, item) => total + item.productAmount * item.quantity, 0)
-                                .toLocaleString()} 원
+                            .filter((item) => selectedItems.includes(item.productId)) // 체크된 상품만 필터링
+                            .reduce((total, item) => total + item.productAmount * item.quantity, 0)
+                            .toLocaleString()} 원
                         </Heading>
                     </HStack>
                     <Button w="100%">
