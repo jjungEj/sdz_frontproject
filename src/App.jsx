@@ -10,8 +10,8 @@ import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import OrderConfirmation from './pages/OrderConfirmation';
-import Login from './pages/Login'; 
-import SignUp from './pages/SignUp'; 
+import Login from './pages/Login';
+import SignUp from './pages/SignUp';
 import UserDashboard from './pages/mypage/UserDashboard';
 import OrderHistory from './pages/mypage/OrderHistory';
 import UserInfoEdit from './pages/mypage/UserInfoEdit';
@@ -22,41 +22,44 @@ import OrderManagement from './pages/admin/OrderManagement';
 import CategoryManagement from './pages/admin/CategoryManagement';
 import ProductManagement from './pages/admin/ProductManagement';
 import ProductForm from './pages/admin/ProductForm';
+import OrderItem from './pages/OrderItem';
 
 function App() {
 
-  return (
-    <Provider>
-      <Header />
-      <Main>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/products" element={<ProductList />} />
-          <Route path="/product/:id" element={<ProductDetail />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/order/:id" element={<OrderConfirmation />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signUp" element={<SignUp />} />
+    return (
+        <Provider>
+            <Header />
+            <Main>
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/products" element={<ProductList />} />
+                    <Route path="/product/:id" element={<ProductDetail />} />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/order/:id" element={<OrderConfirmation />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/signUp" element={<SignUp />} />
 
-          <Route path="/mypage" element={<UserDashboard />} >
-            <Route path="orders" element={<OrderHistory />} />
-            <Route path="edit" element={<UserInfoEdit />} />
-            <Route path="delete" element={<DeleteAccount />} />
-          </Route>
+                    <Route path="/mypage" element={<UserDashboard />} >
+                        <Route path="orders" element={<OrderHistory />} />
+                        <Route path="edit" element={<UserInfoEdit />} />
+                        <Route path="delete" element={<DeleteAccount />} />
+                    </Route>
 
-          <Route path="/admin" element={<AdminDashboard />} >
-            <Route path="users" element={<UserManagement />} />
-            <Route path="orders" element={<OrderManagement />} />
-            <Route path="categories" element={<CategoryManagement />} />
-            <Route path="products" element={<ProductManagement />} />
-            <Route path="products/create" element={<ProductForm />} />
-          </Route>
-        </Routes>
-      </Main>
-      <Footer />
-    </Provider>
-  );
+                    <Route path="/admin" element={<AdminDashboard />} >
+                        <Route path="users" element={<UserManagement />} />
+                        <Route path="orders" element={<OrderManagement />} />
+                        <Route path="categories" element={<CategoryManagement />} />
+                        <Route path="products" element={<ProductManagement />} />
+                        <Route path="products/create" element={<ProductForm />} />
+                    </Route>
+
+                    <Route path="/order-item" element={<OrderItem />} /> {/* 장바구니 페이지 */}
+                </Routes>
+            </Main>
+            <Footer />
+        </Provider>
+    );
 }
 
 export default App
