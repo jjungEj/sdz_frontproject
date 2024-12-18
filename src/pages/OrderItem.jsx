@@ -1,26 +1,23 @@
 import React, { useEffect, useState } from "react";
+import { fetchOrderItemData, modifyOrderItem, clearOrderItem } from "../services/OrderItemAPI";
 
-function Cart() {
-    const [cartData, setCartData] = useState(null); // 장바구니 데이터 상태
+function OrderItem() {
+    const [OrderItemData, setOrderItemData] = useState(null); // 장바구니 데이터 상태
     const [error, setError] = useState(null); // 에러 상태
     const [selectedItems, setSelectedItems] = useState([]); // 선택된 상품 ID 상태
-    const userId = "testuser@example.com"; // 사용자 ID (고정값)
+    const userId = "testuser@example.com"; // 사용자 ID (임시 고정값)
 
-    // 장바구니 조회
     useEffect(() => {
-        fetchCartData();
+        fetchData();
     }, []);
 
-    const fetchCartData = async () => {
+    const fetchData = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/order-item/${userId}`);
-            if (!response.ok) throw new Error("Failed to fetch cart data");
-            const data = await response.json();
-            setCartData(data);
+            const data = await fetchOrderItemData(userId);
+            setOrderItemData(data);
             setError(null);
             setSelectedItems([]); // 선택 초기화
         } catch (err) {
-            console.error("Error fetching cart data:", err);
             setError("장바구니 정보를 불러오는 데 실패했습니다.");
         }
     };
@@ -31,80 +28,77 @@ function Cart() {
         );
     };
 
+    const handleSelectAll = () => {
+        if (selectedItems.length === OrderItemData.orderItemDetails.length) {
+            // 이미 전체 선택 상태인 경우 선택 해제
+            setSelectedItems([]);
+        } else {
+            // 전체 선택
+            setSelectedItems(OrderItemData.orderItemDetails.map((item) => item.productId));
+        }
+    };
+
     const handleDeleteSelectedItems = async () => {
         try {
             for (const productId of selectedItems) {
-                const item = cartData.orderItemDetails.find((item) => item.productId === productId);
+                const item = OrderItemData.orderItemDetails.find((item) => item.productId === productId);
                 if (item) {
-                    await fetch(`http://localhost:8080/api/order-item/modify/${userId}`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ productId: productId, quantity: -item.quantity }),
-                    });
+                    await modifyOrderItem(userId, productId, -item.quantity);
                 }
             }
-            fetchCartData();
+            fetchData();
         } catch (err) {
-            console.error("Error deleting selected items:", err);
             setError("선택된 상품 삭제에 실패했습니다.");
         }
     };
 
     const handleAddItem = async (productId) => {
         try {
-            await fetch(`http://localhost:8080/api/order-item/modify/${userId}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ productId: productId, quantity: 1 }),
-            });
-            fetchCartData();
+            await modifyOrderItem(userId, productId, 1);
+            fetchData();
         } catch (err) {
-            console.error("Error adding item:", err);
             setError("상품 추가에 실패했습니다.");
         }
     };
 
     const handleRemoveItem = async (productId) => {
         try {
-            await fetch(`http://localhost:8080/api/order-item/modify/${userId}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ productId: productId, quantity: -1 }),
-            });
-            fetchCartData();
+            await modifyOrderItem(userId, productId, -1);
+            fetchData();
         } catch (err) {
-            console.error("Error removing item:", err);
             setError("상품 제거에 실패했습니다.");
         }
     };
 
-    // 장바구니 전체 삭제
-    const handleClearCart = async () => {
+    const handleClearOrderItem = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/order-item/clear/${userId}`, {
-                method: "DELETE",
-            });
-            if (!response.ok) throw new Error("Failed to clear cart");
-            fetchCartData();
+            await clearOrderItem(userId);
+            fetchData();
         } catch (err) {
-            console.error("Error clearing cart:", err);
             setError("장바구니 비우기에 실패했습니다.");
         }
     };
 
     return (
         <div style={{ fontFamily: "Arial, sans-serif", maxWidth: "1200px", margin: "0 auto" }}>
-            <header style={{ textAlign: "center", fontSize: "1.5em", padding: "20px 0" }}>header</header>
-
             <h1 style={{ textAlign: "left", margin: "20px 0" }}>장바구니</h1>
             {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
 
-            {cartData && cartData.orderItemDetails.length > 0 ? (
+            {OrderItemData && OrderItemData.orderItemDetails.length > 0 ? (
                 <>
                     <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: "20px" }}>
                         <thead>
                         <tr style={{ backgroundColor: "#f2f2f2", textAlign: "center" }}>
-                            <th style={{ padding: "10px" }}>선택</th>
+                            <th style={{ padding: "10px" }}>
+                                <input
+                                    type="checkbox"
+                                    checked={
+                                        selectedItems.length === OrderItemData.orderItemDetails.length &&
+                                        selectedItems.length > 0
+                                    }
+                                    onChange={handleSelectAll}
+                                />
+                            </th>
                             <th style={{ padding: "10px" }}>제품정보</th>
                             <th style={{ padding: "10px" }}>판매가격</th>
                             <th style={{ padding: "10px" }}>수량</th>
@@ -112,7 +106,7 @@ function Cart() {
                         </tr>
                         </thead>
                         <tbody>
-                        {cartData.orderItemDetails.map((item) => (
+                        {OrderItemData.orderItemDetails.map((item) => (
                             <tr key={item.productId} style={{ textAlign: "center" }}>
                                 <td>
                                     <input
@@ -137,7 +131,7 @@ function Cart() {
                     </table>
 
                     <div style={{ textAlign: "right", marginBottom: "20px" }}>
-                        <strong>총 결제금액: {cartData.orderItemDetails
+                        <strong>총 결제금액: {OrderItemData.orderItemDetails
                             .reduce((total, item) => total + item.productAmount * item.quantity, 0)
                             .toLocaleString()} 원</strong>
                     </div>
@@ -147,7 +141,7 @@ function Cart() {
                             선택상품 삭제하기
                         </button>
                         <button style={{ marginRight: "10px", padding: "10px" }}>선택상품 주문하기</button>
-                        <button onClick={handleClearCart} style={{ padding: "10px", backgroundColor: "blue", color: "white" }}>
+                        <button onClick={handleClearOrderItem} style={{ padding: "10px", backgroundColor: "#007BFF", color: "white" }}>
                             장바구니 비우기
                         </button>
                     </div>
@@ -156,11 +150,8 @@ function Cart() {
                 <p style={{ textAlign: "center" }}>장바구니에 담긴 상품이 없습니다.</p>
             )}
 
-            <footer style={{ textAlign: "center", fontSize: "1.2em", padding: "20px 0", marginTop: "20px" }}>
-                footer
-            </footer>
         </div>
     );
 }
 
-export default Cart;
+export default OrderItem;
