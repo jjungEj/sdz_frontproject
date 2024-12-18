@@ -81,7 +81,7 @@ function CategoryManagement() {
         <Box>
             <Toaster />
             <Heading as="h1" size="xl" mb={3}>카테고리 관리</Heading>
-            <Box borderBottom={{ base: "2px solid black", _dark: "2px solid white" }} mb={3} />
+            <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
             <Box display="flex" justifyContent="center">
                 <Table.Root width="90%" maxWidth="1000px">
                     <Table.Header>
@@ -172,6 +172,7 @@ function CategoryManagement() {
                     </Table.Body>
                 </Table.Root>
             </Box>
+            <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
         </Box>
 
     );
