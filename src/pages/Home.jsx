@@ -13,86 +13,36 @@ function Home() {
     getCategories()
       .then(data => {
         setCategories(data);
+      })
+      .catch(error => {
+        console.error("Failed to fetch categories:", error);
       });
   }
 
   return (
     <Box>
-      {categories.length > 0 && categories[0] ? (
-        <Box>
+      {categories.map((category) => (
+        <Box key={category.categoryId} mb={5}>
           <HStack justify="space-between" margin="5">
             <VStack>
-              <Heading>{categories[0].categoryName}</Heading>
+              <Heading>{category.categoryName}</Heading>
             </VStack>
             <VStack>
-              <Link color="blue" fontSize="sm">ALL PRODUCTS</Link>
+              <Link 
+                color="blue" 
+                fontSize="sm" 
+                href={`/products?categoryId=${category.categoryId}`}
+              >
+                ALL PRODUCTS
+              </Link>
             </VStack>
           </HStack>
-          <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
+          <Box 
+            borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} 
+            mb={3} 
+          />
         </Box>
-      ) : (
-        <></>
-      )}
-      {categories.length > 0 && categories[1] ? (
-        <Box>
-          <HStack justify="space-between" margin="5">
-            <VStack>
-              <Heading>{categories[1].categoryName}</Heading>
-            </VStack>
-            <VStack>
-              <Link color="blue" fontSize="sm">ALL PRODUCTS</Link>
-            </VStack>
-          </HStack>
-          <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
-        </Box>
-      ) : (
-        <></>
-      )}
-      {categories.length > 0 && categories[2] ? (
-        <Box>
-          <HStack justify="space-between" margin="5">
-            <VStack>
-              <Heading>{categories[2].categoryName}</Heading>
-            </VStack>
-            <VStack>
-              <Link color="blue" fontSize="sm">ALL PRODUCTS</Link>
-            </VStack>
-          </HStack>
-          <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
-        </Box>
-      ) : (
-        <></>
-      )}
-      {categories.length > 0 && categories[3] ? (
-        <Box>
-          <HStack justify="space-between" margin="5">
-            <VStack>
-              <Heading>{categories[3].categoryName}</Heading>
-            </VStack>
-            <VStack>
-              <Link color="blue" fontSize="sm">ALL PRODUCTS</Link>
-            </VStack>
-          </HStack>
-          <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
-        </Box>
-      ) : (
-        <></>
-      )}
-      {categories.length > 0 && categories[4] ? (
-        <Box>
-          <HStack justify="space-between" margin="5">
-            <VStack>
-              <Heading>{categories[4].categoryName}</Heading>
-            </VStack>
-            <VStack>
-              <Link color="blue" fontSize="sm">ALL PRODUCTS</Link>
-            </VStack>
-          </HStack>
-          <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
-        </Box>
-      ) : (
-        <></>
-      )}
+      ))}
     </Box>
   );
 }
