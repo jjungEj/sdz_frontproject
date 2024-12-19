@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { fetchOrderItemData, modifyOrderItem, clearOrderItem } from "../services/OrderItemAPI";
-import { Box, Stack, HStack, VStack, Link, Heading, Table } from '@chakra-ui/react';
+import { Box, Stack, HStack, VStack, Link, Heading, Table, Button, Text } from '@chakra-ui/react';
 import { Toaster, toaster } from "@/components/ui/toaster"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Button } from "@/components/ui/button"
+// import { Button } from "@/components/ui/button"
 
 function OrderItem() {
     const [OrderItemData, setOrderItemData] = useState(null); // 장바구니 데이터 상태
@@ -155,9 +155,11 @@ function OrderItem() {
                                         {item.productAmount.toLocaleString()} 원
                                     </Table.Cell>
                                     <Table.Cell>
-                                        <button onClick={() => handleRemoveItem(item.productId)}>-</button>
-                                        <span style={{ margin: "0 10px" }}>{item.quantity}</span>
-                                        <button onClick={() => handleAddItem(item.productId)}>+</button>
+                                        <HStack>
+                                            <Button onClick={() => handleRemoveItem(item.productId)} variant="plain" size="xs" mr={-5}>-</Button>
+                                            <Text style={{ margin: "0 10px" }}>{item.quantity}</Text>
+                                            <Button onClick={() => handleAddItem(item.productId)} variant="plain" size="xs" ml={-5}>+</Button>
+                                        </HStack>
                                     </Table.Cell>
                                     <Table.Cell>
                                         {(item.productAmount * item.quantity).toLocaleString()} 원
@@ -177,9 +179,9 @@ function OrderItem() {
                         </HStack>
                         <Heading mr={1}>
                             총 결제금액 : {OrderItemData.orderItemDetails
-                            .filter((item) => selectedItems.includes(item.productId)) // 체크된 상품만 필터링
-                            .reduce((total, item) => total + item.productAmount * item.quantity, 0)
-                            .toLocaleString()} 원
+                                .filter((item) => selectedItems.includes(item.productId)) // 체크된 상품만 필터링
+                                .reduce((total, item) => total + item.productAmount * item.quantity, 0)
+                                .toLocaleString()} 원
                         </Heading>
                     </HStack>
                     <Button w="100%">
