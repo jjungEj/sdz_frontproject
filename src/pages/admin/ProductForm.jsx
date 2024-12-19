@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { getCategories } from "../../services/CategoryAPI";
-// import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Box, Heading, Grid, GridItem, Input, Button , Textarea, Text} from '@chakra-ui/react';
 
@@ -43,7 +42,18 @@ const ProductForm = () => {
     };
 
     try {
-      await axios.post("http://localhost:8080/api/products", productData);
+      const response = await fetch("http://localhost:8080/api/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json", // JSON 형식의 데이터 전송
+        },
+        body: JSON.stringify(productData), // productData를 JSON 문자열로 변환
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       alert("Product successfully created.");
       navigate("/");
     } catch (error) {
