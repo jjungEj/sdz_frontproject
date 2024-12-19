@@ -36,7 +36,7 @@ function Header() {
 
   return (
     <Box maxWidth="1200px" width="100%" margin="0 auto" p={5}>
-      <HStack justify="space-between" align="center" mb={3}>
+      <HStack justify="space-between" align="center">
         <ColorModeButton />
         <HStack justify="flex-end">
           <Link

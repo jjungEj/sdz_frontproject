@@ -83,12 +83,12 @@ function CategoryManagement() {
             <Heading as="h1" size="xl" mb={3}>카테고리 관리</Heading>
             <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
             <Box display="flex" justifyContent="center">
-                <Table.Root width="90%" maxWidth="1000px">
+                <Table.Root width="100%" >
                     <Table.Header>
                         <Table.Row>
-                            <Table.ColumnHeader fontSize="lg" fontWeight="bold" pl={5}>카테고리명</Table.ColumnHeader>
+                            <Table.ColumnHeader fontSize="md">카테고리명</Table.ColumnHeader>
                             <Table.ColumnHeader textAlign="end">
-                                <HStack spacing={3} justify="flex-end">
+                                <HStack justify="flex-end">
                                     <Input
                                         type="text"
                                         value={newCategoryName}
@@ -126,7 +126,7 @@ function CategoryManagement() {
                                             />
                                         </Table.Cell>
                                         <Table.Cell textAlign="end" >
-                                            <HStack spacing={3} justify="flex-end">
+                                            <HStack justify="flex-end">
                                                 <Button
                                                     onClick={handleUpdateCategory}
                                                     colorScheme="blue"
