@@ -10,7 +10,7 @@ function AdminDashboard() {
     }
 
     return (
-        <Box>
+        <Box marginTop="-10">
             <HStack justify="center">
                 <ChakraLink
                     onClick={() => onClick("user")}
