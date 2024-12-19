@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchOrderItemData, modifyOrderItem, clearOrderItem } from "../services/OrderItemAPI";
-import { Box, Stack, HStack, VStack, Link, Heading, Table, Button, Text } from '@chakra-ui/react';
+import { Box, Stack, HStack, VStack, Link, Heading, Table, Button, Text, } from '@chakra-ui/react';
 import { Toaster, toaster } from "@/components/ui/toaster"
 import { Checkbox } from "@/components/ui/checkbox"
 // import { Button } from "@/components/ui/button"
@@ -10,6 +10,9 @@ function OrderItem() {
     const [error, setError] = useState(null); // 에러 상태
     const [selectedItems, setSelectedItems] = useState([]); // 선택된 상품 ID 상태
     const userId = "testuser@example.com"; // 사용자 ID (임시 고정값)
+
+    const hasSelection = selectedItems.length > 0;
+    const indeterminate = hasSelection && selectedItems.length < OrderItemData.orderItemDetails.length;
 
     useEffect(() => {
         fetchData();
@@ -113,22 +116,61 @@ function OrderItem() {
         }
     };
 
+    const rows = (OrderItemData?.orderItemDetails ?? []).map((item) =>
+        <Table.Row
+            key={item.productId}
+            data-selected={selectedItems.includes(item.productId) ? "" : undefined}
+        >
+            <Table.Cell>
+                <Checkbox
+                    top="1"
+                    aria-label="Select row"
+                    checked={selectedItems.includes(item.productId)}
+                    onCheckedChange={(changes) => {
+                        setSelectedItems((prev) =>
+                            changes.checked
+                                ? [...prev, item.productId]
+                                : selectedItems.filter((productId) => productId !== item.productId),
+                        )
+                    }}
+                />
+            </Table.Cell>
+            <Table.Cell>
+                {item.productName} ({item.productId})
+            </Table.Cell>
+            <Table.Cell>
+                {item.productAmount.toLocaleString()} 원
+            </Table.Cell>
+            <Table.Cell >
+                <HStack>
+                    <Button onClick={() => handleRemoveItem(item.productId)} variant="plain" size="xs">-</Button>
+                    <Text >{item.quantity}</Text>
+                    <Button onClick={() => handleAddItem(item.productId)} variant="plain" size="xs">+</Button>
+                </HStack>
+            </Table.Cell>
+            <Table.Cell>
+                {(item.productAmount * item.quantity).toLocaleString()} 원
+            </Table.Cell>
+        </Table.Row>
+    )
+
     return (
-        <Box style={{ fontFamily: "Arial, sans-serif", maxWidth: "1200px", margin: "0 auto" }}>
+        <Box>
             {OrderItemData && OrderItemData.orderItemDetails.length > 0 ? (
                 <>
-                    <Table.Root style={{ width: "100%", borderCollapse: "collapse", marginBottom: "20px" }}>
+                    <Table.Root style={{ width: "100%", marginBottom: "20px" }}>
                         <Table.Header>
                             <Table.Row>
                                 <Table.ColumnHeader>
                                     <Checkbox
                                         top="1"
                                         aria-label="Select all rows"
-                                        checked={
-                                            selectedItems.length === OrderItemData.orderItemDetails.length &&
-                                            selectedItems.length > 0
-                                        }
-                                        onChange={handleSelectAll}
+                                        checked={indeterminate ? "indeterminate" : selectedItems.length > 0}
+                                        onCheckedChange={(changes) => {
+                                            setSelectedItems(
+                                                changes.checked ? OrderItemData.orderItemDetails.map((item) => item.productId) : [],
+                                            )
+                                        }}
                                     />
                                 </Table.ColumnHeader>
                                 <Table.ColumnHeader>제품정보</Table.ColumnHeader>
@@ -138,7 +180,8 @@ function OrderItem() {
                             </Table.Row>
                         </Table.Header>
                         <Table.Body>
-                            {OrderItemData.orderItemDetails.map((item) => (
+                            {rows}
+                            {/* {OrderItemData.orderItemDetails.map((item) => (
                                 <Table.Row key={item.productId} style={{ textAlign: "center" }}>
                                     <Table.Cell>
                                         <Checkbox
@@ -165,7 +208,7 @@ function OrderItem() {
                                         {(item.productAmount * item.quantity).toLocaleString()} 원
                                     </Table.Cell>
                                 </Table.Row>
-                            ))}
+                            ))} */}
                         </Table.Body>
                     </Table.Root>
                     <HStack justify="space-between" mb={5}>
