@@ -23,31 +23,22 @@ function OrderItem() {
             const data = await fetchOrderItemData(userId);
             setOrderItemData(data);
             setError(null);
-            setSelectedItems([]); // 선택 초기화
+
+            // 기존 체크 상태와 데이터 비교
+            const newProductIds = data.orderItemDetails.map((item) => item.productId);
+
+            // 새 데이터에도 존재하는 기존 선택 항목 유지
+            const preservedSelection = selectedItems.filter((id) => newProductIds.includes(id));
+
+            // 첫 로딩 시에는 전체 선택, 이후에는 유지된 선택 항목만 유지
+            setSelectedItems(preservedSelection.length === 0 ? newProductIds : preservedSelection);
         } catch (err) {
-            setError("장바구니 정보를 불러오는 데 실패했습니다.");
             toaster.create({
-                title: error,
+                title: error.message,
                 type: "error",
                 isClosable: true,
                 duration: 3000,
             });
-        }
-    };
-
-    const handleSelectItem = (productId) => {
-        setSelectedItems((prev) =>
-            prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]
-        );
-    };
-
-    const handleSelectAll = () => {
-        if (selectedItems.length === OrderItemData.orderItemDetails.length) {
-            // 이미 전체 선택 상태인 경우 선택 해제
-            setSelectedItems([]);
-        } else {
-            // 전체 선택
-            setSelectedItems(OrderItemData.orderItemDetails.map((item) => item.productId));
         }
     };
 
@@ -61,9 +52,8 @@ function OrderItem() {
             }
             fetchData();
         } catch (err) {
-            setError("선택된 상품 삭제에 실패했습니다.");
             toaster.create({
-                title: error,
+                title: error.message,
                 type: "error",
                 isClosable: true,
                 duration: 3000,
@@ -75,10 +65,9 @@ function OrderItem() {
         try {
             await modifyOrderItem(userId, productId, 1);
             fetchData();
-        } catch (err) {
-            setError("상품 추가에 실패했습니다.");
+        } catch (error) {
             toaster.create({
-                title: error,
+                title: error.message,
                 type: "error",
                 isClosable: true,
                 duration: 3000,
@@ -91,9 +80,8 @@ function OrderItem() {
             await modifyOrderItem(userId, productId, -1);
             fetchData();
         } catch (err) {
-            setError("상품 제거에 실패했습니다.");
             toaster.create({
-                title: error,
+                title: error.message,
                 type: "error",
                 isClosable: true,
                 duration: 3000,
@@ -106,9 +94,8 @@ function OrderItem() {
             await clearOrderItem(userId);
             fetchData();
         } catch (err) {
-            setError("장바구니 비우기에 실패했습니다.");
             toaster.create({
-                title: error,
+                title: error.message,
                 type: "error",
                 isClosable: true,
                 duration: 3000,
@@ -156,6 +143,7 @@ function OrderItem() {
 
     return (
         <Box>
+            <Toaster />
             {OrderItemData && OrderItemData.orderItemDetails.length > 0 ? (
                 <>
                     <Table.Root style={{ width: "100%", marginBottom: "20px" }}>
@@ -181,34 +169,7 @@ function OrderItem() {
                         </Table.Header>
                         <Table.Body>
                             {rows}
-                            {/* {OrderItemData.orderItemDetails.map((item) => (
-                                <Table.Row key={item.productId} style={{ textAlign: "center" }}>
-                                    <Table.Cell>
-                                        <Checkbox
-                                            top="1"
-                                            aria-label="Select all rows"
-                                            checked={selectedItems.includes(item.productId)}
-                                            onChange={() => handleSelectItem(item.productId)}
-                                        />
-                                    </Table.Cell>
-                                    <Table.Cell>
-                                        {item.productName} ({item.productId})
-                                    </Table.Cell>
-                                    <Table.Cell>
-                                        {item.productAmount.toLocaleString()} 원
-                                    </Table.Cell>
-                                    <Table.Cell>
-                                        <HStack>
-                                            <Button onClick={() => handleRemoveItem(item.productId)} variant="plain" size="xs" mr={-5}>-</Button>
-                                            <Text style={{ margin: "0 10px" }}>{item.quantity}</Text>
-                                            <Button onClick={() => handleAddItem(item.productId)} variant="plain" size="xs" ml={-5}>+</Button>
-                                        </HStack>
-                                    </Table.Cell>
-                                    <Table.Cell>
-                                        {(item.productAmount * item.quantity).toLocaleString()} 원
-                                    </Table.Cell>
-                                </Table.Row>
-                            ))} */}
+                            {}
                         </Table.Body>
                     </Table.Root>
                     <HStack justify="space-between" mb={5}>
