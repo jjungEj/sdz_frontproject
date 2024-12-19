@@ -38,7 +38,7 @@ function UserDashboard() {
                     fontWeight={selectLink === "orderItem" ? "bold" : "none"}
                     margin="3"
                 >
-                    <Link to="/order-item">장바구니</Link>
+                    <Link to="/mypage/order-item">장바구니</Link>
                 </ChakraLink>
                 <ChakraLink
                     onClick={() => onClick("order")}

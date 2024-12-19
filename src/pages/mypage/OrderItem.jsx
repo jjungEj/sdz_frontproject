@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchOrderItemData, modifyOrderItem, clearOrderItem } from "../services/OrderItemAPI";
+import { fetchOrderItemData, modifyOrderItem, clearOrderItem } from "../../services/OrderItemAPI";
 import { Box, Stack, HStack, VStack, Link, Heading, Table, Button, Text, } from '@chakra-ui/react';
 import { Toaster, toaster } from "@/components/ui/toaster"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -144,6 +144,8 @@ function OrderItem() {
     return (
         <Box>
             <Toaster />
+            <Heading as="h1" size="xl" mb={3}>장바구니</Heading>
+                                <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
             {OrderItemData && OrderItemData.orderItemDetails.length > 0 ? (
                 <>
                     <Table.Root style={{ width: "100%", marginBottom: "20px" }}>

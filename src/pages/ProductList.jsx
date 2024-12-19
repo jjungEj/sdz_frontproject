@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"; 
 import { Box, Text, Heading, Spinner, Grid, GridItem } from "@chakra-ui/react"; 
-import axios from "axios";
+// import axios from "axios";
 import { useLocation } from "react-router-dom"; // useLocation 추가
 
 const ProductList = () => {
