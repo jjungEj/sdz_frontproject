@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { getCategories } from "../../services/CategoryAPI";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Box, Heading, Grid, GridItem, Input, Button , Textarea, Text} from '@chakra-ui/react';
@@ -17,8 +18,8 @@ const ProductForm = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/categories");
-        setCategories(response.data);
+        const response = await getCategories();
+        setCategories(response);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
         alert("Failed to load categories. Please try again.");
