@@ -10,7 +10,7 @@ function OrderHistory() {
 
     useEffect(() => {
         // 실제 구현시 로그인된 사용자의 ID를 사용
-        const userId = 1; 
+        const userId = "testuser@example.com"; 
         fetchOrders(userId);
     }, [currentPage]);
 
@@ -20,12 +20,15 @@ function OrderHistory() {
             setOrders(response);
             setTotalPages(Math.ceil(response.length / itemsPerPage));
         } catch (error) {
-            console.error('주문 내역을 불러오는데 실패했습니다:', error);
+            //console.error('주문 내역을 불러오는데 실패했습니다:', error);
         }
     };
 
     // 현재 페이지에 해당하는 주문만 표시
     const getCurrentPageOrders = () => {
+        //if (!orders || orders.length === 0) {
+            //return [];
+       // }
         const startIndex = (currentPage - 1) * itemsPerPage;
         return orders.slice(startIndex, startIndex + itemsPerPage);
     };
@@ -60,7 +63,7 @@ function OrderHistory() {
                 </Box>
             ))}
 
-            {/* 페이지네이션 */}
+            {/* 페이지네이션 
             <Flex justify="center" mt={5}>
                 <HStack spacing={2}>
                     <Button 
@@ -87,7 +90,9 @@ function OrderHistory() {
                         다음
                     </Button>
                 </HStack>
+                
             </Flex>
+            */}
         </Box>
     );
 }
