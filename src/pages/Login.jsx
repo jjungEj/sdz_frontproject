@@ -4,7 +4,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Field } from "@/components/ui/field";
 import { useNavigate } from 'react-router-dom';
 import { loginProcess } from "../services/LoginAPI";
-import { useAuth } from "../services/AuthUtil";
+import { useAuth } from "../services/AuthContext";
 
 function getCookie(name) {
     const cookies = document.cookie.split("; ");
