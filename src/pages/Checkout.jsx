@@ -13,6 +13,7 @@ import {
 import { useToast } from '@chakra-ui/toast';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Checkbox } from "@/components/ui/checkbox";
+import { Field } from "@/components/ui/field";
 import { createOrder } from '../services/OrderAPI';
 
 function Checkout() {
@@ -111,29 +112,12 @@ function Checkout() {
                         </Grid>
 
                         {orderData.map((item) => (
-                            <Grid
-                                key={item.productId}
-                                templateColumns="2fr 1fr 1fr 1fr"
-                                p={4}
-                                gap={4}
-                                borderBottomWidth="1px"
-                                alignItems="center"
-                            >
+                            <Grid key={item.productId} templateColumns="2fr 1fr 1fr 1fr" bg="gray.50" p={4} gap={4} borderBottomWidth="1px" alignItems="center">
+                                
                                 <HStack>
-                                    <Box 
-                                        w="60px" 
-                                        h="60px" 
-                                        bg="gray.100"
-                                        borderWidth="1px"
-                                    >
-                                        <Image 
-                                            src={item.productImage} 
-                                            alt="상품이미지"
-                                            fallbackSrc="placeholder.jpg"
-                                            objectFit="cover"
-                                            w="100%"
-                                            h="100%"
-                                        />
+                                    <Box w="60px" h="60px" bg="gray.100" borderWidth="1px">
+                                        <Image src={item.productImage} alt="상품이미지" fallbackSrc="placeholder.jpg"
+                                        objectFit="cover" w="100%" h="100%"/> 
                                     </Box>
                                     <Text>{item.productName || item.productId}</Text>
                                 </HStack>
@@ -149,63 +133,66 @@ function Checkout() {
                             </Grid>
                         ))}
 
-                        <Grid
-                            templateColumns="2fr 1fr 1fr 1fr"
-                            bg="gray.50"
-                            p={4}
-                            gap={4}
-                        >
+                        <Grid templateColumns="2fr 1fr 1fr 1fr" bg="gray.50" p={4} gap={4}>
                             <GridItem colSpan={3}>
                                 <Text textAlign="right" fontWeight="bold">총 결제금액</Text>
                             </GridItem>
                             <Text textAlign="center" fontWeight="bold">
-                                {orderData
-                                    .reduce((total, item) => total + (item.productAmount * item.quantity), 0)
-                                    .toLocaleString()}원
+                                {orderData.reduce((total, item) => total + (item.productAmount * item.quantity), 0).toLocaleString()}원
                             </Text>
                         </Grid>
                     </Box>
                 </Box>
 
-                <Box>
-                    <Text fontSize="xl" fontWeight="bold" mb={4}>배송 정보</Text>
-                    <VStack spacing={4}>
-                        <Input
-                            name="name"
-                            placeholder="수령인"
-                            value={userInfo.name}
-                            onChange={handleInputChange}
-                        />
-                        <Input
-                            name="address"
-                            placeholder="주소"
-                            value={userInfo.address}
-                            onChange={handleInputChange}
-                        />
-                        <Input
-                            name="detailAddress"
-                            placeholder="상세주소"
-                            value={userInfo.detailAddress}
-                            onChange={handleInputChange}
-                        />
-                        <Input
-                            name="phone"
-                            placeholder="연락처"
-                            value={userInfo.phone}
-                            onChange={handleInputChange}
-                        />
-                        <Input
-                            name="request"
-                            placeholder="배송 요청사항"
-                            value={userInfo.request}
-                            onChange={handleInputChange}
-                        />
-                    </VStack>
-                </Box>
+        
+        <HStack spacing={8} align="flex-start">
+            {/* 왼쪽 박스: 배송 정보 */}
+            <Box maxWidth="400px" borderWidth="1px"  p={4} ml="auto">
+                <Field label="이름" >
+                    <Input placeholder="입력해주세요"/>
+                </Field>
+                <Field label="이메일" mt={4}>
+                    <Input placeholder="입력해주세요"/>
+                </Field>
+                <Field label="휴대전화" mt={4}>
+                    <Input placeholder="입력해주세요"/>
+                </Field>
+            </Box>
+            <Box maxWidth="400px" borderWidth="1px"  p={4} ml="auto">
+                <Field label="받는 사람" >
+                    <Input placeholder="입력해주세요"/>
+                </Field>
+                <Field label="주소" mt={4}>
+                    <Input placeholder="입력해주세요"/>
+                </Field>
+                <Field label="휴대전화" mt={4}>
+                    <Input placeholder="입력해주세요"/>
+                </Field>
+                <Field label="배송 요청사항" mt={4}>
+                    <Input placeholder="입력해주세요"/>
+                </Field>
+                <Text fontSize="xl" fontWeight="bold" textAlign="center" mb={4}>
+                        결제금액: {orderData
+                            .reduce((total, item) => total + (item.productAmount * item.quantity), 0)
+                            .toLocaleString()}원
+                </Text>
+                
+            </Box>
+            
+            {/* 오른쪽 박스: 추가 정보 또는 글 입력 */}
+            <Box maxWidth="400px" borderWidth="1px"  p={4} ml="auto">
+                <Text fontSize="xl" fontWeight="bold" mb={4}>결제 동의사항</Text>
+                <Text fontSize="ㅣ" >동의 하십니까?</Text>
+                
+            </Box>
+            
+            
+        </HStack>
+            
 
-                <Box>
+                <Box maxW="600px" mx="auto" textAlign="center">
                     <Text fontSize="xl" fontWeight="bold" mb={4}>결제 방법</Text>
-                    <VStack align="start" spacing={4}>
+                    <HStack spacing={4}>
                         <Checkbox
                             checked={paymentMethod === 'credit'}
                             onCheckedChange={() => setPaymentMethod(prev => prev === 'credit' ? '' : 'credit')}
@@ -224,15 +211,10 @@ function Checkout() {
                         >
                             무통장입금
                         </Checkbox>
-                    </VStack>
+                    </HStack>
                 </Box>
 
                 <Box>
-                    <Text fontSize="xl" fontWeight="bold" mb={4}>
-                        총 결제금액: {orderData
-                            .reduce((total, item) => total + (item.productAmount * item.quantity), 0)
-                            .toLocaleString()}원
-                    </Text>
                     <Button
                         w="100%"
                         colorScheme="blue"

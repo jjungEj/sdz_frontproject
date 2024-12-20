@@ -7,7 +7,7 @@ import Main from './components/Main';
 import Home from './pages/Home';
 import ProductList from './pages/ProductList';
 import ProductDetail from './pages/ProductDetail';
-import OrderItem from './pages/OrderItem';
+import OrderItem from './pages/mypage/OrderItem';
 import Checkout from './pages/Checkout';
 import OrderConfirmation from './pages/OrderConfirmation';
 import Login from './pages/Login';
@@ -33,13 +33,14 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/products" element={<ProductList />} />
                     <Route path="/product/:id" element={<ProductDetail />} />
-                    <Route path="/order-item" element={<OrderItem />} />
+                    
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/order/:id" element={<OrderConfirmation />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/signUp" element={<SignUp />} />
 
                     <Route path="/mypage" element={<UserDashboard />} >
+                        <Route path="order-item" element={<OrderItem />} />    
                         <Route path="orders" element={<OrderHistory />} />
                         <Route path="edit" element={<UserInfoEdit />} />
                         <Route path="delete" element={<DeleteAccount />} />

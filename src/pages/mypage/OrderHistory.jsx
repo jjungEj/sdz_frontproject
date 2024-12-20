@@ -26,9 +26,9 @@ function OrderHistory() {
 
     // 현재 페이지에 해당하는 주문만 표시
     const getCurrentPageOrders = () => {
-        //if (!orders || orders.length === 0) {
+        if (!orders || orders.length === 0) {
             //return [];
-       // }
+        }
         const startIndex = (currentPage - 1) * itemsPerPage;
         return orders.slice(startIndex, startIndex + itemsPerPage);
     };

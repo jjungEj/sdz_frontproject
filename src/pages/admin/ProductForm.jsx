@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { getCategories } from "../../services/CategoryAPI";
 import { useNavigate } from "react-router-dom";
 import { Box, Heading, Grid, GridItem, Input, Button , Textarea, Text} from '@chakra-ui/react';
 
@@ -17,8 +17,8 @@ const ProductForm = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/categories");
-        setCategories(response.data);
+        const response = await getCategories();
+        setCategories(response);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
         alert("Failed to load categories. Please try again.");
@@ -42,7 +42,18 @@ const ProductForm = () => {
     };
 
     try {
-      await axios.post("http://localhost:8080/api/products", productData);
+      const response = await fetch("http://localhost:8080/api/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json", // JSON 형식의 데이터 전송
+        },
+        body: JSON.stringify(productData), // productData를 JSON 문자열로 변환
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       alert("Product successfully created.");
       navigate("/");
     } catch (error) {
