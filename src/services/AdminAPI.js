@@ -2,9 +2,9 @@ const BASE_URL = "http://localhost:8080/api/admin";
 
 const createUrl = (endpoint) => `${BASE_URL}${endpoint}`;
 
-export const getUserList = (page, size, type, keyword) => {
-  const params = new URLSearchParams({ page, size, type, keyword }).toString();
-  return fetch(createUrl(`/user-management?${params}`), {
+export const getUserList = (/*page, size, type, keyword*/) => {
+  // const params = new URLSearchParams({ page, size, type, keyword }).toString();
+  return fetch(createUrl(`/user-management`/*?${params}*/), {
     method: "GET",
     headers: { "Content-Type": "application/json", },
   })
