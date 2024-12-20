@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import OrderItem from '../pages/mypage/OrderItem';
-import { Box, HStack, VStack, Text, Input, Link, Button } from '@chakra-ui/react';
+import { Box, HStack, VStack, Text, Input, Link as ChakraLink, Button } from '@chakra-ui/react';
 import { ColorModeButton } from "@/components/ui/color-mode"
 import { InputGroup } from "@/components/ui/input-group"
 import { LuSearch } from "react-icons/lu"
@@ -39,44 +40,55 @@ function Header() {
       <HStack justify="space-between" align="center">
         <ColorModeButton />
         <HStack justify="flex-end">
-          <Link
-            href="http://localhost:5173/login"
+          <ChakraLink
+            asChild
             _focus={{ outline: "none" }}
+            fontSize="sm"
             margin="3"
           >
-            로그인
-          </Link>
-          <Link
-            href="http://localhost:5173/signUp"
+            <Link to="/login">
+              로그인
+            </Link>
+          </ChakraLink>
+          <ChakraLink
+            asChild
             _focus={{ outline: "none" }}
+            fontSize="sm"
             margin="3"
           >
-            회원가입
-          </Link>
-          <Link
-            href="http://localhost:5173/mypage"
+            <Link to="/signUp">
+              회원가입
+            </Link>
+          </ChakraLink>
+          <ChakraLink
+            asChild
             _focus={{ outline: "none" }}
+            fontSize="sm"
             margin="3"
           >
-            마이페이지
-          </Link>
-          <Link
-            href="http://localhost:5173/admin"
+            <Link to="/mypage">
+              마이페이지
+            </Link>
+          </ChakraLink>
+          <ChakraLink
+            asChild
             _focus={{ outline: "none" }}
+            fontSize="sm"
             margin="3"
           >
-            관리자페이지
-          </Link>
+            <Link to="/admin">
+              관리자페이지
+            </Link>
+          </ChakraLink>
           <DrawerRoot size="md" open={open} onOpenChange={(e) => setOpen(e.open)}>
             <DrawerBackdrop />
             <DrawerTrigger asChild>
-              <Button variant="plain">
+              <Button variant="plain" fontSize="sm">
                 장바구니
               </Button>
             </DrawerTrigger>
             <DrawerContent>
               <DrawerHeader>
-                {/* <DrawerTitle>장바구니</DrawerTitle> */}
               </DrawerHeader>
               <DrawerBody>
                 <OrderItem />
@@ -98,7 +110,7 @@ function Header() {
       </HStack>
       <VStack justify="center" mb={3}>
         <Link
-          href="http://localhost:5173/"
+          to="/"
           _focus={{ outline: "none" }}
           fontSize="4xl"
         >
@@ -106,8 +118,23 @@ function Header() {
         </Link>
       </VStack>
       <HStack justify="center" mb={3}>
+
         {categories.map((category, index) => (
-          <Text key={index} fontSize="xl" margin="5">{category.categoryName}</Text>
+          <ChakraLink
+            key={index}
+            asChild
+            _focus={{ outline: "none" }}
+            fontSize="2xl"
+            fontWeight="medium"
+            margin="5"
+          >
+            <Link
+              key={index}
+              to={`/products?categoryId=${category.categoryId}`}
+            >
+              {category.categoryName}
+            </Link>
+          </ChakraLink>
         ))}
       </HStack>
     </Box>

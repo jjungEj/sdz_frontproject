@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, Link } from 'react-router-dom';
-import { Box, Link as ChakraLink, HStack, VStack, Card, Button, Heading, Stack, Text, Table } from '@chakra-ui/react';
+import { Box, Link as ChakraLink, HStack, VStack, Card, Button, Heading, Stack, Text, Group } from '@chakra-ui/react';
 import { Avatar } from "@/components/ui/avatar"
 import {
     TimelineConnector,
@@ -10,6 +10,12 @@ import {
     TimelineRoot,
     TimelineTitle,
 } from "@/components/ui/timeline"
+import {
+    RadioCardItem,
+    RadioCardLabel,
+    RadioCardRoot,
+} from "@/components/ui/radio-card"
+
 import { LuCheck, LuPackage, LuShip } from "react-icons/lu"
 
 function UserDashboard() {
@@ -72,9 +78,9 @@ function UserDashboard() {
                 <Box>
                     <Heading as="h1" size="xl" mb={3}>마이 페이지</Heading>
                     <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
-                        <HStack justify="space-between" alignItems="flex-start">
-                        <VStack width="100%" maxWidth="500px" align="flex-start">
-                        <Heading as="h3" size="lg" mb={3}>내 프로필</Heading>
+                    <HStack justify="space-between" alignItems="flex-start">
+                        <VStack width="100%" maxWidth="550px" align="flex-start">
+                            <Heading as="h3" size="lg">내 프로필</Heading>
                             <Card.Root variant='subtle' width="100%">
                                 <Card.Body gap="2">
                                     <HStack>
@@ -91,50 +97,73 @@ function UserDashboard() {
                                     </HStack>
                                 </Card.Body>
                             </Card.Root>
-                            <Heading as="h3" size="lg" mt={10} mb={3}>최근 주문 내역</Heading>
-                            <TimelineRoot maxW="400px">
-                                <TimelineItem>
-                                    <TimelineConnector>
-                                        <LuShip />
-                                    </TimelineConnector>
-                                    <TimelineContent>
-                                        <TimelineTitle>상품 주문</TimelineTitle>
-                                        <TimelineDescription>13th May 2021</TimelineDescription>
-                                        <Text textStyle="sm">
-                                            (해당 주문에 있는 상품 리스트)
-                                        </Text>
-                                    </TimelineContent>
-                                </TimelineItem>
+                            <Heading as="h3" size="lg" mt={10}>최근 주문 내역</Heading>
+                            <Card.Root variant='subtle' width="100%">
+                                <Card.Body gap="2">
+                                    <TimelineRoot maxW="400px">
+                                        <TimelineItem>
+                                            <TimelineConnector>
+                                                <LuShip />
+                                            </TimelineConnector>
+                                            <TimelineContent>
+                                                <TimelineTitle>상품 주문</TimelineTitle>
+                                                <TimelineDescription>13th May 2021</TimelineDescription>
+                                                <Text textStyle="sm">
+                                                    (해당 주문에 있는 상품 리스트)
+                                                </Text>
+                                            </TimelineContent>
+                                        </TimelineItem>
 
-                                <TimelineItem>
-                                    <TimelineConnector>
-                                        <LuCheck />
-                                    </TimelineConnector>
-                                    <TimelineContent>
-                                        <TimelineTitle textStyle="sm">주문 확인</TimelineTitle>
-                                        <TimelineDescription>18th May 2021</TimelineDescription>
-                                        <Text textStyle="sm">
-                                            (해당 주문)의 상품이 발송되었습니다.
-                                        </Text>
-                                    </TimelineContent>
-                                </TimelineItem>
+                                        <TimelineItem>
+                                            <TimelineConnector>
+                                                <LuCheck />
+                                            </TimelineConnector>
+                                            <TimelineContent>
+                                                <TimelineTitle textStyle="sm">주문 확인</TimelineTitle>
+                                                <TimelineDescription>18th May 2021</TimelineDescription>
+                                                <Text textStyle="sm">
+                                                    (해당 주문)의 상품이 발송되었습니다.
+                                                </Text>
+                                            </TimelineContent>
+                                        </TimelineItem>
 
-                                <TimelineItem>
-                                    <TimelineConnector>
-                                        <LuPackage />
-                                    </TimelineConnector>
-                                    <TimelineContent>
-                                        <TimelineTitle textStyle="sm">배송 완료</TimelineTitle>
-                                        <TimelineDescription>20th May 2021, 10:30am</TimelineDescription>
-                                    </TimelineContent>
-                                </TimelineItem>
-                            </TimelineRoot>
+                                        <TimelineItem>
+                                            <TimelineConnector>
+                                                <LuPackage />
+                                            </TimelineConnector>
+                                            <TimelineContent>
+                                                <TimelineTitle textStyle="sm">배송 완료</TimelineTitle>
+                                                <TimelineDescription>20th May 2021, 10:30am</TimelineDescription>
+                                            </TimelineContent>
+                                        </TimelineItem>
+                                    </TimelineRoot>
+                                </Card.Body>
+                            </Card.Root>
                         </VStack>
-                        <VStack width="100%" maxWidth="500px" align="flex-start">
-                        <Heading as="h3" size="lg" mb={3}>배송지 관리</Heading>
+                        <VStack width="100%" maxWidth="550px" height="600px" align="flex-start">
+                            <Heading as="h3" size="lg">배송지 관리</Heading>
+                            {/* <Card.Root variant='subtle' width="100%" height="100%"> */}
+                                {/* <Card.Body gap="2"> */}
+                                    <RadioCardRoot defaultValue="next" gap="4" width="100%">
+                                        {/* <RadioCardLabel>How well do you know React?</RadioCardLabel> */}
+                                        <Group attached orientation="vertical">
+                                            {items.map((item) => (
+                                                <RadioCardItem
+                                                    width="full"
+                                                    indicatorPlacement="start"
+                                                    label={`${item.name} (${item.contact})`}
+                                                    description={`${item.addr1} ${item.addr2} ${item.addr3}`}
+                                                    key={item.id}
+                                                    value={item.id}
+                                                />
+                                            ))}
+                                        </Group>
+                                    </RadioCardRoot>
+                                {/* </Card.Body> */}
+                            {/* </Card.Root> */}
                         </VStack>
-                        </HStack>
-                    </Box>
+                    </HStack>
+                </Box>
             )}
 
             <Outlet />
@@ -142,5 +171,23 @@ function UserDashboard() {
         </Box>
     );
 }
+const items = [
+    {
+      id: "1",
+      name: "엘리스",
+      contact: "010-1234-1234",
+      addr1: "서울시",
+      addr2: "강남구",
+      addr3: "강남대로 123",
+    },
+    {
+        id: "2",
+        name: "스프링",
+        contact: "010-9876-9876",
+        addr1: "부산시",
+        addr2: "해운대구",
+        addr3: "해운대 해변로 45",
+      },
+  ]
 
 export default UserDashboard;
