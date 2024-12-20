@@ -10,7 +10,7 @@ function OrderHistory() {
 
     useEffect(() => {
         // 실제 구현시 로그인된 사용자의 ID를 사용
-        const userId = "testuser@example.com"; 
+        const userId = "qwer1234@gmail.com"; 
         fetchOrders(userId);
     }, [currentPage]);
 
