@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import { fetchOrderItemData, modifyOrderItem, clearOrderItem } from "../../services/OrderItemAPI";
 import { Box, Stack, HStack, VStack, Link, Heading, Table, Button, Text, } from '@chakra-ui/react';
 import { Toaster, toaster } from "@/components/ui/toaster"
@@ -10,7 +11,7 @@ function OrderItem() {
     const [error, setError] = useState(null); // 에러 상태
     const [selectedItems, setSelectedItems] = useState([]); // 선택된 상품 ID 상태
     const userId = "testuser@example.com"; // 사용자 ID (임시 고정값)
-
+    const navigate = useNavigate();
     const hasSelection = selectedItems.length > 0;
     const indeterminate = hasSelection && selectedItems.length < OrderItemData.orderItemDetails.length;
 
@@ -102,7 +103,15 @@ function OrderItem() {
             });
         }
     };
-
+    const handleCheckout = () => {
+        if (!OrderItemData || !OrderItemData.orderItemDetails) {
+            console.error("OrderItemData is not available");
+            return;
+        }
+        const selectedProducts = OrderItemData.orderItemDetails.filter(item => selectedItems.includes(item.productId));
+        navigate('/checkout', { state: { orderData: selectedProducts } });
+    };
+    
     const rows = (OrderItemData?.orderItemDetails ?? []).map((item) =>
         <Table.Row
             key={item.productId}
@@ -190,7 +199,7 @@ function OrderItem() {
                                 .toLocaleString()} 원
                         </Heading>
                     </HStack>
-                    <Button w="100%">
+                    <Button w="100%" onClick={handleCheckout}>
                         {selectedItems.length}개 상품 구매하기
                     </Button>
                 </>
