@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import OrderItem from '../pages/OrderItem';
+import OrderItem from '../pages/mypage/OrderItem';
 import { Box, HStack, VStack, Text, Input, Link, Button } from '@chakra-ui/react';
 import { ColorModeButton } from "@/components/ui/color-mode"
 import { InputGroup } from "@/components/ui/input-group"
@@ -36,7 +36,7 @@ function Header() {
 
   return (
     <Box maxWidth="1200px" width="100%" margin="0 auto" p={5}>
-      <HStack justify="space-between" align="center" mb={3}>
+      <HStack justify="space-between" align="center">
         <ColorModeButton />
         <HStack justify="flex-end">
           <Link
@@ -76,7 +76,7 @@ function Header() {
             </DrawerTrigger>
             <DrawerContent>
               <DrawerHeader>
-                <DrawerTitle>장바구니</DrawerTitle>
+                {/* <DrawerTitle>장바구니</DrawerTitle> */}
               </DrawerHeader>
               <DrawerBody>
                 <OrderItem />

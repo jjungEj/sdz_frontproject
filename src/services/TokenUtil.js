@@ -71,8 +71,6 @@ return fetch(url, {
 }
 
 export const checkAndReissueToken = () => {
-  const token = localStorage.getItem('access');
-
   if (!isRefreshTokenValid(token)) {
     console.log('토큰이 유효하지 않으므로 재발급을 요청합니다.');
     return reissueToken()
