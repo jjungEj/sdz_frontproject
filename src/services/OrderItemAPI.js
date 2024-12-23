@@ -1,11 +1,12 @@
 const url = "http://localhost:8080/api/order-item";
 
-async function fetchOrderItemData(userId) {
+async function fetchOrderItemData() {
     try {
-        const response = await fetch(`${url}/${userId}`, {
+        const response = await fetch(`${url}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem('access')}`,
             },
         });
 
@@ -20,11 +21,13 @@ async function fetchOrderItemData(userId) {
     }
 }
 
-async function modifyOrderItem(userId, productId, quantity) {
+async function modifyOrderItem(productId, quantity) {
     try {
-        const response = await fetch(`${url}/modify/${userId}`, {
+        const response = await fetch(`${url}/modify`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem('access')}`,
+            },
             body: JSON.stringify({ productId, quantity }),
         });
 
@@ -37,10 +40,13 @@ async function modifyOrderItem(userId, productId, quantity) {
     }
 }
 
-async function clearOrderItem(userId) {
+async function clearOrderItem() {
     try {
-        const response = await fetch(`${url}/clear/${userId}`, {
+        const response = await fetch(`${url}/clear`, {
             method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem('access')}`,
+            }
         });
 
         if (!response.ok) {

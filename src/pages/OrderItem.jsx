@@ -10,7 +10,6 @@ function OrderItem() {
     const [OrderItemData, setOrderItemData] = useState(null); // 장바구니 데이터 상태
     const [error, setError] = useState(null); // 에러 상태
     const [selectedItems, setSelectedItems] = useState([]); // 선택된 상품 ID 상태
-    const userId = "testuser@example.com"; // 사용자 ID (임시 고정값)
     const navigate = useNavigate();
     const hasSelection = selectedItems.length > 0;
     const indeterminate = hasSelection && selectedItems.length < OrderItemData.orderItemDetails.length;
@@ -21,7 +20,7 @@ function OrderItem() {
 
     const fetchData = async () => {
         try {
-            const data = await fetchOrderItemData(userId);
+            const data = await fetchOrderItemData();
             setOrderItemData(data);
             setError(null);
 
@@ -48,7 +47,7 @@ function OrderItem() {
             for (const productId of selectedItems) {
                 const item = OrderItemData.orderItemDetails.find((item) => item.productId === productId);
                 if (item) {
-                    await modifyOrderItem(userId, productId, -item.quantity);
+                    await modifyOrderItem(productId, -item.quantity);
                 }
             }
             fetchData();
@@ -64,7 +63,8 @@ function OrderItem() {
 
     const handleAddItem = async (productId) => {
         try {
-            await modifyOrderItem(userId, productId, 1);
+            await modifyOrderItem(
+                productId, 1);
             fetchData();
         } catch (error) {
             toaster.create({
@@ -78,7 +78,7 @@ function OrderItem() {
 
     const handleRemoveItem = async (productId) => {
         try {
-            await modifyOrderItem(userId, productId, -1);
+            await modifyOrderItem(productId, -1);
             fetchData();
         } catch (err) {
             toaster.create({
@@ -92,7 +92,7 @@ function OrderItem() {
 
     const handleClearOrderItem = async () => {
         try {
-            await clearOrderItem(userId);
+            await clearOrderItem();
             fetchData();
         } catch (err) {
             toaster.create({
