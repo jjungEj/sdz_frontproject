@@ -80,11 +80,34 @@ function Header() {
                 fontSize="sm"
                 margin="3"
               >
-              <Button onClick={handleLogout} variant="link" fontSize="sm" margin="3" padding="0">
-                로그아웃
-              </Button>
+                <Button onClick={handleLogout} variant="link" fontSize="sm" margin="3" padding="0">
+                  로그아웃
+                </Button>
               </ChakraLink>
-              <ChakraLink
+              {auth === 'admin' ? (
+                <ChakraLink
+                  asChild
+                  _focus={{ outline: "none" }}
+                  fontSize="sm"
+                  margin="3"
+                >
+                  <Link to="/admin">
+                    관리자페이지
+                  </Link>
+                </ChakraLink>
+              ) : (
+                <ChakraLink
+                  asChild
+                  _focus={{ outline: "none" }}
+                  fontSize="sm"
+                  margin="3"
+                >
+                  <Link to="/mypage">
+                    마이페이지
+                  </Link>
+                </ChakraLink>
+              )}
+              {/* <ChakraLink
                 asChild
                 _focus={{ outline: "none" }}
                 fontSize="sm"
@@ -105,7 +128,7 @@ function Header() {
                     관리자페이지
                   </Link>
                 </ChakraLink>
-              )}
+              )} */}
             </>
           )}
           <DrawerRoot size="md" open={open} onOpenChange={(e) => setOpen(e.open)}>
