@@ -3,12 +3,14 @@ import { Route, Routes, Navigate } from 'react-router-dom';
 
 import { useAuth } from '../services/AuthContext';
 
-import AdminDashboard from '../pages/admin/AdminDashboard';
-import UserManagement from '../pages/admin/UserManagement';
-import OrderManagement from '../pages/admin/OrderManagement';
-import CategoryManagement from '../pages/admin/CategoryManagement';
-import ProductManagement from '../pages/admin/ProductManagement';
-import ProductForm from '../pages/admin/ProductForm';
+import {
+    AdminDashboard,
+    UserManagement,
+    OrderManagement,
+    CategoryManagement,
+    ProductManagement,
+    ProductForm
+} from '@/pages/admin';
 
 function AdminRouter() {
     const { isLoggedIn, auth } = useAuth();
