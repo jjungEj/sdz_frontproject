@@ -155,7 +155,7 @@ function OrderItem() {
             <Toaster />
             <Heading as="h1" size="xl" mb={3}>장바구니</Heading>
                                 <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
-            {OrderItemData && OrderItemData.orderItemDetails.length > 0 ? (
+            {OrderItemData?.orderItemDetails.length > 0 ? (
                 <>
                     <Table.Root style={{ width: "100%", marginBottom: "20px" }}>
                         <Table.Header>
@@ -193,10 +193,11 @@ function OrderItem() {
                             </Button>
                         </HStack>
                         <Heading mr={1}>
-                            총 결제금액 : {OrderItemData.orderItemDetails
-                                .filter((item) => selectedItems.includes(item.productId)) // 체크된 상품만 필터링
-                                .reduce((total, item) => total + item.productAmount * item.quantity, 0)
-                                .toLocaleString()} 원
+                            총 결제금액 : {OrderItemData.orderItemDetails.reduce((total, item) => {
+                            return selectedItems.includes(item.productId)
+                                ? total + item.productAmount * item.quantity
+                                : total;
+                        }, 0).toLocaleString()} 원
                         </Heading>
                     </HStack>
                     <Button w="100%" onClick={handleCheckout}>
