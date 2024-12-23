@@ -5,7 +5,7 @@ import { Box, Link as ChakraLink, HStack } from '@chakra-ui/react';
 function AdminDashboard() {
     const [selectLink, setSelectLink] = useState("");
 
-    const onClick = (link) => {
+    const handleClick = (link) => {
         setSelectLink(link);
     }
 
@@ -13,7 +13,7 @@ function AdminDashboard() {
         <Box marginTop="-10">
             <HStack justify="center">
                 <ChakraLink
-                    onClick={() => onClick("user")}
+                    onClick={() => handleClick("user")}
                     asChild
                     _focus={{ outline: "none" }}
                     fontWeight={selectLink === "user" ? "bold" : "none"}
@@ -22,7 +22,7 @@ function AdminDashboard() {
                     <Link to="/admin/users">회원 관리</Link>
                 </ChakraLink>
                 <ChakraLink
-                    onClick={() => onClick("order")}
+                    onClick={() => handleClick("order")}
                     asChild
                     _focus={{ outline: "none" }}
                     fontWeight={selectLink === "order" ? "bold" : "none"}
@@ -31,7 +31,7 @@ function AdminDashboard() {
                     <Link to="/admin/orders">주문 관리</Link>
                 </ChakraLink>
                 <ChakraLink
-                    onClick={() => onClick("category")}
+                    onClick={() => handleClick("category")}
                     asChild
                     _focus={{ outline: "none" }}
                     fontWeight={selectLink === "category" ? "bold" : "none"}
@@ -40,7 +40,7 @@ function AdminDashboard() {
                     <Link to="/admin/categories">카테고리 관리</Link>
                 </ChakraLink>
                 <ChakraLink
-                    onClick={() => onClick("product")}
+                    onClick={() => handleClick("product")}
                     asChild
                     _focus={{ outline: "none" }}
                     fontWeight={selectLink === "product" ? "bold" : "none"}
@@ -49,7 +49,7 @@ function AdminDashboard() {
                     <Link to="/admin/products">상품 관리</Link>
                 </ChakraLink>
                 <ChakraLink
-                    onClick={() => onClick("create")}
+                    onClick={() => handleClick("create")}
                     asChild
                     _focus={{ outline: "none" }}
                     fontWeight={selectLink === "create" ? "bold" : "none"}
