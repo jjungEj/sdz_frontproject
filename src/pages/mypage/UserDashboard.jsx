@@ -21,7 +21,7 @@ import { LuCheck, LuPackage, LuShip } from "react-icons/lu"
 function UserDashboard() {
     const [selectLink, setSelectLink] = useState("");
 
-    const onClick = (link) => {
+    const handleClick = (link) => {
         setSelectLink(link);
     }
 
@@ -29,7 +29,7 @@ function UserDashboard() {
         <Box marginTop="-10">
             <HStack justify="center">
                 <ChakraLink
-                    onClick={() => onClick("mypage")}
+                    onClick={() => handleClick("mypage")}
                     asChild
                     _focus={{ outline: "none" }}
                     fontWeight={selectLink === "mypage" ? "bold" : "none"}
@@ -38,7 +38,7 @@ function UserDashboard() {
                     <Link to="/mypage">마이 페이지</Link>
                 </ChakraLink>
                 <ChakraLink
-                    onClick={() => onClick("orderItem")}
+                    onClick={() => handleClick("orderItem")}
                     asChild
                     _focus={{ outline: "none" }}
                     fontWeight={selectLink === "orderItem" ? "bold" : "none"}
@@ -47,7 +47,7 @@ function UserDashboard() {
                     <Link to="/mypage/order-item">장바구니</Link>
                 </ChakraLink>
                 <ChakraLink
-                    onClick={() => onClick("order")}
+                    onClick={() => handleClick("order")}
                     asChild
                     _focus={{ outline: "none" }}
                     fontWeight={selectLink === "order" ? "bold" : "none"}
@@ -56,7 +56,7 @@ function UserDashboard() {
                     <Link to="/mypage/orders">주문내역 조회</Link>
                 </ChakraLink>
                 <ChakraLink
-                    onClick={() => onClick("edit")}
+                    onClick={() => handleClick("edit")}
                     asChild
                     _focus={{ outline: "none" }}
                     fontWeight={selectLink === "edit" ? "bold" : "none"}
@@ -65,7 +65,7 @@ function UserDashboard() {
                     <Link to="/mypage/edit">회원정보 변경</Link>
                 </ChakraLink>
                 <ChakraLink
-                    onClick={() => onClick("delete")}
+                    onClick={() => handleClick("delete")}
                     asChild
                     _focus={{ outline: "none" }}
                     fontWeight={selectLink === "delete" ? "bold" : "none"}

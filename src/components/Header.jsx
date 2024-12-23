@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import OrderItem from '../pages/mypage/OrderItem';
+import { Link, useNavigate } from 'react-router-dom';
+import OrderItem from '../pages/OrderItem';
 import { Box, HStack, VStack, Text, Input, Link as ChakraLink, Button } from '@chakra-ui/react';
 import { ColorModeButton } from "@/components/ui/color-mode"
 import { InputGroup } from "@/components/ui/input-group"
@@ -94,6 +94,18 @@ function Header() {
                 <OrderItem />
               </DrawerBody>
               <DrawerCloseTrigger />
+              <DrawerFooter>
+                <ChakraLink
+                  asChild
+                  _focus={{ outline: "none" }}
+                  fontSize="sm"
+                  margin="3"
+                >
+                  <Link to="/order-item">
+                    장바구니 이동
+                  </Link>
+                </ChakraLink>
+              </DrawerFooter>
             </DrawerContent>
           </DrawerRoot>
         </HStack>
