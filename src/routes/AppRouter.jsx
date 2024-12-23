@@ -16,7 +16,7 @@ import AdminRouter from './AdminRouter';
 import UserRouter from './UserRouter';
 
 function AppRouter() {
-    const { isLogIn, role } = useAuth();
+    const { isLoggedIn, auth } = useAuth();
 
     return (
         <Routes>
@@ -30,14 +30,14 @@ function AppRouter() {
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/order/:id" element={<OrderConfirmation />} />
 
-            {isLogIn ? (
+            {isLoggedIn ? (
                 <>
-                    {role === "user" && (
-                        <UserRouter />
+                    {auth === "user" && (
+                        <Route path="/mypage/*" element={<UserRouter />} />
                     )}
 
-                    {role === "admin" && (
-                        <AdminRouter />
+                    {auth === "admin" && (
+                        <Route path="/admin/*" element={<AdminRouter />} />
                     )}
 
                     <Route path="/login" element={<Navigate to="/" />} />

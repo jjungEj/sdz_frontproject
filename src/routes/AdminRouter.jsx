@@ -11,15 +11,15 @@ import ProductManagement from '../pages/admin/ProductManagement';
 import ProductForm from '../pages/admin/ProductForm';
 
 function AdminRouter() {
-    const { isLogin, role } = useAuth();
+    const { isLoggedIn, auth } = useAuth();
 
-    if (!isLogin || role !== "admin") {
+    if (!isLoggedIn || auth !== "admin") {
         return <Navigate to="/" />
     }
 
     return (
         <Routes>
-            <Route path="/admin" element={<AdminDashboard />} >
+            <Route path="/" element={<AdminDashboard />} >
                 <Route path="users" element={<UserManagement />} />
                 <Route path="orders" element={<OrderManagement />} />
                 <Route path="categories" element={<CategoryManagement />} />

@@ -9,15 +9,15 @@ import UserInfoEdit from '../pages/mypage/UserInfoEdit';
 import DeleteAccount from '../pages/mypage/DeleteAccount';
 
 function UserRouter() {
-    const { isLogin, role } = useAuth();
+    const { isLoggedIn, auth } = useAuth();
 
-    if (!isLogin || role !== "user") {
+    if (!isLoggedIn || auth !== "user") {
         return <Navigate to="/" />
     }
 
     return (
         <Routes>
-            <Route path="/mypage" element={<UserDashboard />} >
+            <Route path="/" element={<UserDashboard />} >
                 <Route path="orders" element={<OrderHistory />} />
                 <Route path="edit" element={<UserInfoEdit />} />
                 <Route path="delete" element={<DeleteAccount />} />
