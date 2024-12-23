@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { Provider } from "@/components/ui/provider";
+import { AuthProvider } from './services/AuthContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Main from './components/Main';
@@ -26,7 +26,7 @@ import ProductForm from './pages/admin/ProductForm';
 function App() {
 
     return (
-        <Provider>
+        <AuthProvider>
             <Header />
             <Main>
                 <Routes>
@@ -56,7 +56,7 @@ function App() {
                 </Routes>
             </Main>
             <Footer />
-        </Provider>
+        </AuthProvider>
     );
 }
 

@@ -10,7 +10,7 @@ import {
     Button,
     Image
 } from '@chakra-ui/react';
-import { useToast } from '@chakra-ui/toast';
+// import { useToast } from '@chakra-ui/toast';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field } from "@/components/ui/field";
