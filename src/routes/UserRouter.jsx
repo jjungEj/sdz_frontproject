@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 
-import { useAuth } from '../services/AuthUtil';
+import { useAuth } from '../services/AuthContext';
 
 import UserDashboard from '../pages/mypage/UserDashboard';
 import OrderHistory from '../pages/mypage/OrderHistory';
