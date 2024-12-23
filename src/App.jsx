@@ -1,6 +1,6 @@
 import React from 'react';
 import { Provider } from "@/components/ui/provider";
-import { AuthProvider } from './services/AuthUtil';
+import { AuthProvider } from './services/AuthContext';
 
 import Header from './components/Header';
 import Footer from './components/Footer';

@@ -17,7 +17,6 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../services/AuthContext';
 import { logout } from '../services/LogoutAPI';
 
