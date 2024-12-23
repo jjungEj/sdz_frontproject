@@ -7,6 +7,7 @@ import {
   NativeSelectField,
   NativeSelectRoot,
 } from '@/components/ui/native-select'
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../services/AuthContext';
 import { deleteUser } from '../../services/UserAPI';
 
@@ -14,11 +15,13 @@ import { deleteUser } from '../../services/UserAPI';
 function DeleteAccount() {
     const { email, handleContextLogout } = useAuth();
     const [rememberMe, setRememberMe] = useState(false);
+    const navigate = useNavigate();
 
     const handleDelete = () => {
         console.log();
-    deleteUser(email);
-    handleContextLogout();
+        deleteUser(email);
+        handleContextLogout();
+        navigate('/');
     };
     
     return (

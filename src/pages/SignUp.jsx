@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Box, HStack, VStack, Text, Input, Link, Button } from '@chakra-ui/react';
 import { Field } from '@/components/ui/field';
 import { Checkbox } from '@/components/ui/checkbox';
+import {
+    PasswordInput,
+    PasswordStrengthMeter,
+} from "@/components/ui/password-input"
 import { useNavigate } from 'react-router-dom';
 import { signUpProcess } from '../services/UserAPI';
 
@@ -35,7 +39,7 @@ function SignUp() {
                 placeholder='이메일을 입력하세요' />
             </Field>
             <Field label='Password' invalid errorText='This is an error text'>
-                <Input value= {password} onChange={e => setPassword(e.target.value)}
+                <PasswordInput value= {password} onChange={e => setPassword(e.target.value)}
                 placeholder='비밀번호를 입력하세요' />
             </Field>
             <Field label='이름' invalid errorText='This is an error text'>

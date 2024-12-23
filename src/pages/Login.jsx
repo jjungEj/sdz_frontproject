@@ -78,7 +78,7 @@ function Login() {
                 placeholder='이메일을 입력하세요' />
             </Field>
             <Field label='Password' invalid errorText='This is an error text'>
-                <Input value= {password} onChange={e => setPassword(e.target.value)}
+                <PasswordInput value= {password} onChange={e => setPassword(e.target.value)}
                 placeholder='비밀번호를 입력하세요' />
             </Field>
             <Checkbox checked={rememberMe}

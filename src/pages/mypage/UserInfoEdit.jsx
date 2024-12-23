@@ -3,6 +3,7 @@ import { Box, Button, Input, Stack } from '@chakra-ui/react';
 import { Field } from '@/components/ui/field'
 import { PasswordInput } from '@/components/ui/password-input'
 import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../services/AuthContext';
 import { UserInfo, updateLocal, updateSocial } from '../../services/UserAPI';
 import { checkPassword } from '../../services/VerificationAPI';
@@ -18,10 +19,10 @@ const  Social = ({ userInfo, onSubmit }) => {
 
     useEffect(() => {
         if (userInfo) {
-            console.log("useEffect", userInfo);
+            console.log("Social useEffect", userInfo);
             setValue('nickname', userInfo.nickname);
             setValue('contact', userInfo.contact);
-            console.log("useEffect", userInfo);
+            console.log("Social useEffect", userInfo);
         }
     }, [userInfo, setValue]);
 
@@ -32,14 +33,14 @@ const  Social = ({ userInfo, onSubmit }) => {
     return (
         <form onSubmit={submitForm}>
         <Stack gap='4' align='flex-start' maxW='sm'>
-            <Field label='Email'>
+            <Field>
             <Input
             value={userInfo?.email || ''}
             type='hidden'
             />
             </Field>
 
-            <Field>
+            <Field label='UserName'>
             <Input
             value={userInfo?.userName || ''}
             readOnly 
@@ -52,8 +53,8 @@ const  Social = ({ userInfo, onSubmit }) => {
             errorText={errors.nickname?.message}
             >
             <Input
-                value={userInfo?.nickname || ''}
                 {...register('nickname', { required: 'Nickname is required' })}
+                defaultValue={userInfo?.nickname || ''}
             />
             </Field>
 
@@ -63,8 +64,8 @@ const  Social = ({ userInfo, onSubmit }) => {
             errorText={errors.contact?.message}
             >
             <Input
-                value={userInfo?.contact || ''}
                 {...register('contact', { required: 'Contact is required' })}
+                defaultValue={userInfo?.contact || ''}
             />
             </Field>
 
@@ -74,7 +75,7 @@ const  Social = ({ userInfo, onSubmit }) => {
     )
 }
 
-const  Local = ({ userInfo, onSubmit }) => {
+const  Local = ({ userInfo, onSubmit, isPasswordValid, setIsPasswordValid }) => {
     const {
         register,
         handleSubmit,
@@ -83,21 +84,28 @@ const  Local = ({ userInfo, onSubmit }) => {
         watch
     } = useForm({ defaultValues: userInfo || {} });
 
-    const [isPasswordValid, setIsPasswordValid] = useState(true);
     const password = watch('password');
 
     useEffect(() => {
         if (userInfo) {
-            console.log("useEffect", userInfo);
+            console.log("Local useEffect", userInfo);
             setValue('nickname', userInfo.nickname);
             setValue('contact', userInfo.contact);
-            console.log("useEffect", userInfo);
+            console.log("Local useEffect", userInfo);
         }
         }, [userInfo, setValue]);
 
         const checkExistingPassword = (existingPassword) => {
-        checkPassword(userInfo.email, existingPassword)
-            .then(() => setIsPasswordValid(true))
+            checkPassword(userInfo.email, existingPassword)
+            .then((response) => {
+                if (response.valid) {
+                    console.log(response.valid);
+                    setIsPasswordValid(true);
+                } else {
+                    console.log(response.valid);
+                    setIsPasswordValid(false);
+                }
+            })
             .catch(() => setIsPasswordValid(false));
         };
 
@@ -106,6 +114,7 @@ const  Local = ({ userInfo, onSubmit }) => {
             alert('기존 비밀번호가 올바르지 않습니다.');
             return;
         }
+        console.log("Form data submitted:", data);
         onSubmit(data);
     });
 
@@ -121,7 +130,7 @@ const  Local = ({ userInfo, onSubmit }) => {
 
             <Field label='Username'>
             <Input
-            value={userInfo?.username || ''}
+            value={userInfo?.userName || ''}
             readOnly 
             />
             </Field>
@@ -132,8 +141,8 @@ const  Local = ({ userInfo, onSubmit }) => {
             errorText={errors.nickname?.message}
             >
             <Input
-                value={userInfo?.username || ''}
                 {...register('nickname', { required: 'Nickname is required' })}
+                defaultValue={userInfo?.nickname || ''}
             />
             </Field>
 
@@ -143,8 +152,8 @@ const  Local = ({ userInfo, onSubmit }) => {
             errorText={errors.contact?.message}
             >
             <Input
-                value={userInfo?.contact || ''}
                 {...register('contact', { required: 'Contact is required' })}
+                defaultValue={userInfo?.contact || ''}
             />
             </Field>
 
@@ -190,8 +199,11 @@ const  Local = ({ userInfo, onSubmit }) => {
 }
 
 function UserInfoEdit() {
-    const { email, loginType } = useAuth();
+    const { email, loginType, handleContextLogout } = useAuth();
+    const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState({});
+    const [isPasswordValid, setIsPasswordValid] = useState(true);
+
     console.log("base useEffect", email);
     useEffect(() => {
         if (email) {
@@ -208,8 +220,12 @@ function UserInfoEdit() {
     const handleUpdateSocial = (data) => {
         const { nickname, contact } = data;
     
-        updateLocal(userInfo.email, userInfo.username, nickname, contact)
-        .then(() => alert('회원정보 수정이 완료되었습니다.'))
+        updateSocial(userInfo.email, userInfo.userName, nickname, contact)
+        .then(() => {
+            alert('회원정보 수정이 완료되었습니다.');
+            handleContextLogout();
+            navigate('/');
+        })
         .catch((error) => {});
     };
 
@@ -221,8 +237,12 @@ function UserInfoEdit() {
             return;
         }
     
-        updateLocal(userInfo.email, password, userInfo.username, nickname, contact)
-        .then(() => alert('회원정보 수정이 완료되었습니다.'))
+        updateLocal(userInfo.email, password, userInfo.userName, nickname, contact)
+        .then(() => {
+            alert('회원정보 수정이 완료되었습니다.');
+            handleContextLogout();
+            navigate('/');
+        })
         .catch((error) => {});
     };
 
@@ -230,11 +250,14 @@ function UserInfoEdit() {
         <Box>
             { loginType === 'social' ? (
                 <>
-                    <Social initialValues={userInfo} onSubmit={handleUpdateSocial} />
+                    <Social userInfo={userInfo} onSubmit={handleUpdateSocial} />
                 </>
             ) : loginType === 'local' ? (
                 <>
-                    <Local initialValues={userInfo} onSubmit={handleUpdateLocal} />
+                    <Local userInfo={userInfo}
+                    onSubmit={handleUpdateLocal}
+                    isPasswordValid={isPasswordValid}
+                    setIsPasswordValid={setIsPasswordValid} />
                 </>
             ) : null }
         </Box>
