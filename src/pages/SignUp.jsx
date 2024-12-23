@@ -1,9 +1,13 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, HStack, VStack, Text, Input, Link, Button } from '@chakra-ui/react';
-import { Field } from "@/components/ui/field";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Field } from '@/components/ui/field';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+    PasswordInput,
+    PasswordStrengthMeter,
+} from "@/components/ui/password-input"
 import { useNavigate } from 'react-router-dom';
-import { signUpProcess } from "../services/UserAPI";
+import { signUpProcess } from '../services/UserAPI';
 
 function SignUp() {
     const [email, setEmail] = useState('');
@@ -30,25 +34,25 @@ function SignUp() {
             <Text>SNS 계정으로 간단하게 회원가입</Text>
             <div>로고가 들어갈 자리</div>
             <hr></hr>
-            <Field label="Email" invalid errorText="This is an error text">
+            <Field label='Email' invalid errorText='This is an error text'>
                 <Input value= {email} onChange={e => setEmail(e.target.value)}
-                placeholder="이메일을 입력하세요" />
+                placeholder='이메일을 입력하세요' />
             </Field>
-            <Field label="Password" invalid errorText="This is an error text">
-                <Input value= {password} onChange={e => setPassword(e.target.value)}
-                placeholder="비밀번호를 입력하세요" />
+            <Field label='Password' invalid errorText='This is an error text'>
+                <PasswordInput value= {password} onChange={e => setPassword(e.target.value)}
+                placeholder='비밀번호를 입력하세요' />
             </Field>
-            <Field label="이름" invalid errorText="This is an error text">
+            <Field label='이름' invalid errorText='This is an error text'>
                 <Input value= {userName} onChange={e => setUserName(e.target.value)}
-                placeholder="이름을 입력하세요" />
+                placeholder='이름을 입력하세요' />
             </Field>
-            <Field label="닉네임" invalid errorText="This is an error text">
+            <Field label='닉네임' invalid errorText='This is an error text'>
                 <Input value= {nickname} onChange={e => setNickname(e.target.value)}
-                placeholder="비밀번호를 입력하세요" />
+                placeholder='비밀번호를 입력하세요' />
             </Field>
-            <Field label="연락처" invalid errorText="This is an error text">
+            <Field label='연락처' invalid errorText='This is an error text'>
                 <Input value= {contact} onChange={e => setContact(e.target.value)}
-                placeholder="연락처를 입력하세요" />
+                placeholder='연락처를 입력하세요' />
             </Field>
             <Box>
                 <Checkbox>

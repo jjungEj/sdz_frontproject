@@ -1,12 +1,10 @@
-const BASE_URL = "http://localhost:8080/api/check";
-
-const createUrl = (endpoint) => `${BASE_URL}${endpoint}`;
+const url = 'http://localhost:8080/api/check/';
 
 export const checkEmailExists = (email) => {
   const payload = { email };
-  return fetch(createUrl("/email"), {
-    method: "POST",
-    headers: { "Content-Type": "application/json", },
+  return fetch(`${url}email`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', },
     body: JSON.stringify(payload),
   })
     .then((response) => {
@@ -24,9 +22,9 @@ export const checkEmailExists = (email) => {
 
 export const checkNickname = (nickname) => {
   const payload = { nickname };
-  return fetch(createUrl("/nickname"), {
-    method: "POST",
-    headers: { "Content-Type": "application/json", },
+  return fetch(`${url}nickname`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', },
     body: JSON.stringify(payload),
   })
     .then((response) => {
@@ -44,9 +42,9 @@ export const checkNickname = (nickname) => {
 
 export const checkAccountLimit = (userName, contact) => {
   const payload = { userName, contact };
-  return fetch(createUrl("/userLimit"), {
-    method: "POST",
-    headers: { "Content-Type": "application/json", },
+  return fetch(`${url}userLimit`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', },
     body: JSON.stringify(payload),
   })
     .then((response) => {
@@ -64,9 +62,9 @@ export const checkAccountLimit = (userName, contact) => {
 
 export const validateEmailExists = (userName, email) => {
   const payload = { userName, email };
-  return fetch(createUrl("/userInfo"), {
-    method: "POST",
-    headers: { "Content-Type": "application/json", },
+  return fetch(`${url}userInfo`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', },
     body: JSON.stringify(payload),
   })
     .then((response) => {
@@ -84,9 +82,9 @@ export const validateEmailExists = (userName, email) => {
 
 export const checkPassword = (email, userPassword) => {
   const payload = { email, userPassword };
-  return fetch(createUrl("/password"), {
-    method: "POST",
-    headers: { "Content-Type": "application/json", },
+  return fetch(`${url}password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', },
     body: JSON.stringify(payload),
   })
     .then((response) => {

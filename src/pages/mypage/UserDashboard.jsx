@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import { Box, Link as ChakraLink, HStack, VStack, Card, Button, Heading, Stack, Text, Group } from '@chakra-ui/react';
 import { Avatar } from "@/components/ui/avatar"
@@ -17,9 +17,32 @@ import {
 } from "@/components/ui/radio-card"
 
 import { LuCheck, LuPackage, LuShip } from "react-icons/lu"
+import { useAuth } from '../../services/AuthContext';
+import { UserInfo } from '../../services/UserAPI';
+import { getDeliveryAddressList, createNewAddress, updateAddress, updateDefaultAddress, deleteAddress } from '../../services/DeliveryAdressAPI';
 
 function UserDashboard() {
     const [selectLink, setSelectLink] = useState("");
+    const { email, loginType } = useAuth();
+    const [userInfo, setUserInfo] = useState({});
+    const [deliveryAddress, setDeliveryAddress] = useState({});
+
+    useEffect(() => {
+        if (email) {
+            UserInfo(email)
+                .then((data) => {
+                    setUserInfo(data);
+                })
+                .catch((error) => {
+                });
+            getDeliveryAddressList(email)
+                .then((data) => {
+                    setDeliveryAddress(data);
+                })
+                .catch((error) => {
+                });
+        }
+    }, [email]);
 
     const handleClick = (link) => {
         setSelectLink(link);
@@ -89,10 +112,12 @@ function UserDashboard() {
                                             <Button>수정</Button>
                                         </Stack>
                                         <Stack gap="1" ml={10}>
-                                            <Card.Title>() 님</Card.Title>
-                                            <Text fontSize="sm">닉네임 : ()</Text>
-                                            <Text fontSize="sm">전화번호 : ()</Text>
-                                            <Text fontSize="sm">이메일 : ()</Text>
+                                            <Card.Title>{userInfo.userName} 님</Card.Title>
+                                            <Text fontSize="sm">닉네임 : {userInfo?.nickname || '설정 전 입니다'}</Text>
+                                            <Text fontSize="sm">전화번호 : {userInfo?.contact || '설정 전 입니다'}</Text>
+                                            { loginType === 'local' ? (
+                                                <Text fontSize="sm">이메일 : {userInfo.email}</Text>
+                                            ) : null }
                                         </Stack>
                                     </HStack>
                                 </Card.Body>

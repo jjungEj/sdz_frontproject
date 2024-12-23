@@ -1,8 +1,5 @@
-import { useNavigate } from 'react-router-dom';
-
 export const logout = (navigate) => {
   const url = 'http://localhost:8080/api/logout';
-  const navigate = useNavigate();
   return fetch(url, {
     method: 'POST',
     headers: {
