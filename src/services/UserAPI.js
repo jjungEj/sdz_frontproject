@@ -1,4 +1,4 @@
-const url = "http://localhost:8080/api/user/";
+const url = 'http://localhost:8080/api/user/';
 
 export const signUpProcess = (email, password, userName, nickname, contact) => {
   const payload = {
@@ -9,9 +9,9 @@ export const signUpProcess = (email, password, userName, nickname, contact) => {
     contact: contact
   };
   return fetch(`${url}sign-up`, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify(payload),
   })
@@ -29,8 +29,13 @@ export const signUpProcess = (email, password, userName, nickname, contact) => {
 }
 
 export const UserInfo = () => {
-    return fetch(`${url}my-page`)
-    .then(response => {
+    return fetch(`${url}my-page`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access')}`,
+        },
+    }).then(response => {
         return response.json();
     });
 }
@@ -44,9 +49,9 @@ export const updateLocal = (email, password, userName, nickname, contact) => {
     contact: contact
   };
   return fetch(`${url}local/${email}`, {
-      method: "PUT",
+      method: 'PUT',
       headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
       },
       body: JSON.stringify(payload),
   })
@@ -63,7 +68,7 @@ export const updateLocal = (email, password, userName, nickname, contact) => {
   });
 }
 
-export const updateSocail = (email, userName, nickname, contact) => {
+export const updateSocial = (email, userName, nickname, contact) => {
   const payload = {
     email: email,
     userName: userName,
@@ -71,9 +76,9 @@ export const updateSocail = (email, userName, nickname, contact) => {
     contact: contact
   };
   return fetch(`${url}social/${email}`, {
-      method: "PUT",
+      method: 'PUT',
       headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
       },
       body: JSON.stringify(payload),
   })
@@ -91,8 +96,9 @@ export const updateSocail = (email, userName, nickname, contact) => {
 }
 
 export const deleteUser = (email) => {
-    return fetch(`${url}/${email}`, {
-        method: "DELETE",
+    return fetch(`${url}${email}`, {
+        method: 'DELETE',
+        credentials: 'include',
     })
     .then(response => {
         if (!response.ok) {
@@ -103,5 +109,8 @@ export const deleteUser = (email) => {
     })
     .catch(error => {
         throw error;
+    })
+    .finally(() => {
+      localStorage.removeItem('access');
     });
 }

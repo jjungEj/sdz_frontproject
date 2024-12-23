@@ -1,17 +1,18 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { isAccessTokenValid, checkRefreshToken } from './TokenUtil';
-import { assignRole } from './AuthUtil';
+import { assignAuth } from './AuthUtil';
 
 const getAuth = () => {
   const token = localStorage.getItem('access');
   let auth = {
     isLoggedIn: false,
     email: null,
-    role: null,
+    auth: null,
+    loginType : null,
   };
   if (token) {
     if (isAccessTokenValid(token)) {
-      assignRole(true, token);
+      auth = assignAuth(true, token);
     } else {
       checkRefreshToken();
     }
@@ -26,13 +27,17 @@ export const AuthProvider = ({ children }) => {
   const initialState = getAuth();
   const [isLoggedIn, setIsLoggedIn] = useState(initialState.isLoggedIn);
   const [email, setEmail] = useState(initialState.email);
-  const [role, setRole] = useState(initialState.role);
+  const [auth, setAuth] = useState(initialState.auth);
+  const [loginType, setLoginType] = useState(initialState.loginType);
+
+  console.log(initialState);
 
   const updateAuthState = () => {
     const newAuth = getAuth();
     setIsLoggedIn(newAuth.isLoggedIn);
     setEmail(newAuth.email);
-    setRole(newAuth.role);
+    setAuth(newAuth.auth);
+    setLoginType(newAuth.loginType);
   };
 
   useEffect(() => {
@@ -56,7 +61,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-      <AuthContext.Provider value={{ isLoggedIn, email, role, handleContextLogin, handleContextLogout }}>
+      <AuthContext.Provider value={{ isLoggedIn, email, auth, loginType, handleContextLogin, handleContextLogout }}>
           {children}
       </AuthContext.Provider>
   );

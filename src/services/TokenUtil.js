@@ -1,17 +1,11 @@
 import { jwtDecode } from 'jwt-decode';
-import { assignRole } from './AuthUtil';
+import { assignAuth } from './AuthUtil';
 
 const isAccessTokenExist = (token) => {
-  if (!token) {
-      console.log('토큰이 존재하지 않습니다.');
-      return false;
+  if (!token || typeof token !== 'string') {
+    console.log('유효하지 않은 토큰입니다.');
+    return false;
   }
-
-  if (typeof token !== 'string') {
-      console.log('유효하지 않은 토큰입니다.');
-      return false;
-  }
-
   console.log('토큰이 유효합니다.');
   return true;
 }
@@ -69,7 +63,7 @@ const reissueToken = () => {
     if (authorizationHeader) {
       const newAccessToken = authorizationHeader.split(' ')[1];
       localStorage.setItem('access', newAccessToken);
-      console.log('토큰이 성공적으로 재발급되었습니다.');
+      console.log('엑세스 토큰이 성공적으로 재발급되었습니다.');
     }
     if (!response.ok) {
         return response.json().then(errorData => {
@@ -78,22 +72,22 @@ const reissueToken = () => {
     }
   })
   .catch(error => {
-    console.error('토큰 재발급 요청이 실패하였습니다.:', error);
+    console.error('엑세스 토큰 재발급 요청이 실패하였습니다.:', error);
     throw error;
   });
 }
 
 export function checkRefreshToken() {
-  if (hasCookie("refresh")) {
+  if (hasCookie('refresh')) {
     console.log('엑세스 토큰이 유효하지 않으므로 재발급을 요청합니다.');
     return reissueToken()
       .then(newToken => {
         if (newToken) {
           localStorage.setItem('access', newToken);
-          assignRole(true, newToken);
+          assignAuth(true, newToken);
           return true;
         }
-        assignRole(false, null);
+        assignAuth(false, null);
         return false;
       })
       .catch(error => {

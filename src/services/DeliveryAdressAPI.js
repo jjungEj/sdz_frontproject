@@ -1,14 +1,15 @@
-const BASE_URL = "http://localhost:8080/api/deliveryAddress";
+const url = 'http://localhost:8080/api/deliveryAddress/';
 
-const createUrl = (endpoint) => `${BASE_URL}${endpoint}`;
-
-export const getDeliveryAddressList = (page, size) => {
-  const params = new URLSearchParams({ page, size }).toString();
-  return fetch(createUrl(`/list?${params}`), {
-    method: "GET",
-    headers: { "Content-Type": "application/json", },
-  })
-    .then((response) => {
+export const getDeliveryAddressList = (/*page, size*/) => {
+  // const params = new URLSearchParams({ page, size }).toString();
+  
+  return fetch(`${url}list`/*?${params}*/, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('access')}`,
+    },
+  }).then((response) => {
       if (!response.ok) {
         return response.json().then((errorData) => {
           throw new Error(errorData.message);
@@ -23,9 +24,9 @@ export const getDeliveryAddressList = (page, size) => {
 
 export const createNewAddress = ( deliveryAddressId, email, deliveryAddress1, deliveryAddress2, deliveryAddress3, receiverName, receiverContact, deliveryRequest, defaultCheck ) => {
   const payload = { deliveryAddressId, email, deliveryAddress1, deliveryAddress2, deliveryAddress3, receiverName, receiverContact, deliveryRequest, defaultCheck };
-  return fetch(createUrl(""), {
-    method: "POST",
-    headers: { "Content-Type": "application/json", },
+  return fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', },
     body: JSON.stringify(payload),
   })
     .then((response) => {
@@ -42,9 +43,10 @@ export const createNewAddress = ( deliveryAddressId, email, deliveryAddress1, de
 
 export const updateAddress = ( deliveryAddressId, email, deliveryAddress1, deliveryAddress2, deliveryAddress3, receiverName, receiverContact, deliveryRequest, defaultCheck ) => {
   const payload = { deliveryAddressId, email, deliveryAddress1, deliveryAddress2, deliveryAddress3, receiverName, receiverContact, deliveryRequest, defaultCheck };
-  return fetch(createUrl(`/${deliveryAddressId}`), {
-    method: "PUT",
-    headers: { "Content-Type": "application/json", },
+  
+  return fetch(`${url}${deliveryAddressId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', },
     body: JSON.stringify(payload),
   })
     .then((response) => {
@@ -61,9 +63,9 @@ export const updateAddress = ( deliveryAddressId, email, deliveryAddress1, deliv
 
 export const updateDefaultAddress = (deliveryAddressId, email, defaultCheck) => {
   const payload = { deliveryAddressId, email, defaultCheck };
-  return fetch(createUrl(`/${deliveryAddressId}/default`), {
-    method: "PUT",
-    headers: { "Content-Type": "application/json", },
+  return fetch(`${url}${deliveryAddressId}/default`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', },
     body: JSON.stringify(payload),
   })
     .then((response) => {
@@ -79,8 +81,8 @@ export const updateDefaultAddress = (deliveryAddressId, email, defaultCheck) => 
 };
 
 export const deleteAddress = (deliveryAddressId) => {
-  return fetch(createUrl(`/${deliveryAddressId}`), {
-    method: "DELETE",
+  return fetch(`${url}${deliveryAddressId}`, {
+    method: 'DELETE',
   })
     .then((response) => {
       if (!response.ok) {

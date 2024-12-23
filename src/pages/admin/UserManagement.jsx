@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { getUserList } from "../../services/AdminAPI";
-import { Box, Heading, Table, } from '@chakra-ui/react';
-import { Toaster, toaster } from "@/components/ui/toaster";
-import { Checkbox } from "@/components/ui/checkbox"
+import { Box, Heading, Table, Button, HStack  } from '@chakra-ui/react';
+import { Toaster, toaster } from '@/components/ui/toaster';
+import { Checkbox } from '@/components/ui/checkbox'
+import { updateLoginLock, updateAuth, deleteUser, deleteUsers } from '../../services/AdminAPI';
 
 function UserManagement() {
     const [users, setUsers] = useState([]);
@@ -23,10 +24,60 @@ function UserManagement() {
             
     }
 
+    const handleUpdateLoginLock = (email) => {
+        updateLoginLock(email)
+            .then(() => {
+                loadUsers();
+            })
+            .catch((error) => {
+            });
+    };
+
+
+    const handleUpdateAuth = (email) => {
+        updateAuth(email)
+            .then(() => {
+                loadUsers();
+            })
+            .catch((error) => {
+            });
+    };
+
+    const handleDeleteUser = (email) => {
+        deleteUser(email)
+            .then(() => {
+                loadUsers();
+            })
+            .catch((error) => {
+            });
+    };
+
+    const handleDeleteUsers = () => {
+        if (selection.length === 0) {
+            alert("삭제할 사용자를 선택하세요.");
+            return;
+        }
+        
+        deleteUsers(selection)
+            .then(() => {
+                loadUsers();
+            })
+            .catch((error) => {
+            });
+    };
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString("ko-KR", { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\.$/, '');
+    };
+
     return (
         <Box>
             <Toaster />
-            <Heading as="h1" size="xl" mb={3}>회원 관리</Heading>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+                <Heading as="h1" size="xl" mb={3}>회원 관리</Heading>
+                <Button colorScheme="red" onClick={() => handleDeleteUsers()}>선택한 사용자 삭제</Button>
+            </Box>
             <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
             <Box display="flex" justifyContent="center">
                 <Table.Root width="100%" mt={3}>
@@ -70,13 +121,19 @@ function UserManagement() {
                                         }}
                                     />
                                 </Table.Cell>
-                                <Table.Cell>{user.social}</Table.Cell>
+                                <Table.Cell>{user.social==false?'일반':'소셜'}</Table.Cell>
                                 <Table.Cell>{user.email}</Table.Cell>
                                 <Table.Cell>{user.userName}</Table.Cell>
-                                <Table.Cell>{user.createdAt}</Table.Cell>
-                                <Table.Cell>{user.loginLock}</Table.Cell>
-                                <Table.Cell>{user.userAuth}</Table.Cell>
-                                <Table.Cell>탈퇴 버튼</Table.Cell>
+                                <Table.Cell>{formatDate(user.createdAt)}</Table.Cell>
+                                <Table.Cell>
+                                    <Button onClick={() => handleUpdateLoginLock(user.email)}>{user.loginLock==false?'로그인잠금':'로그인잠금해제'}</Button>
+                                </Table.Cell>
+                                <Table.Cell>
+                                    <Button onClick={() => handleUpdateAuth(user.email)}>{user.userAuth=='ROLE_USER'?'관리자임명':'회원변경'}</Button>
+                                </Table.Cell>
+                                <Table.Cell>
+                                    <Button onClick={() => handleDeleteUser(user.email)}>탈퇴</Button>
+                                </Table.Cell>
                             </Table.Row>
                         )}
                     </Table.Body>

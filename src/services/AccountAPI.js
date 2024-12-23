@@ -1,12 +1,10 @@
-const BASE_URL = "http://localhost:8080/api/account";
-
-const createUrl = (endpoint) => `${BASE_URL}${endpoint}`;
+const BASE_URL = 'http://localhost:8080/api/account/';
 
 export const findId = (userName, contact) => {
   const payload = { userName, contact };
-  return fetch(createUrl("/find-id"), {
-    method: "POST",
-    headers: { "Content-Type": "application/json", },
+  return fetch(`${url}find-id`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', },
     body: JSON.stringify(payload),
   })
     .then((response) => {
@@ -24,9 +22,9 @@ export const findId = (userName, contact) => {
 
 export const findPw = (userName, email) => {
   const payload = { userName, email };
-  return fetch(createUrl("/find-pw"), {
-    method: "POST",
-    headers: { "Content-Type": "application/json", },
+  return fetch(`${url}find-pw`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', },
     body: JSON.stringify(payload),
   })
     .then((response) => {
