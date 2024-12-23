@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { fetchOrderItemData, modifyOrderItem, clearOrderItem } from "../../services/OrderItemAPI";
+import { fetchOrderItemData, modifyOrderItem, clearOrderItem } from "../services/OrderItemAPI";
 import { Box, Stack, HStack, VStack, Link, Heading, Table, Button, Text, } from '@chakra-ui/react';
 import { Toaster, toaster } from "@/components/ui/toaster"
 import { Checkbox } from "@/components/ui/checkbox"

@@ -1,75 +1,73 @@
 const url = "http://localhost:8080/api/categories";
 
-function createCategory(categoryName) {
-    return fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({categoryName: categoryName}),
-    })
-    .then(response => {
-        if (!response.ok) {
-            return response.json().then(errorData => {
-                throw new Error(errorData.message);
-            });
-        }
-        return response.json();
-    })
-    .catch(error => {
+async function handleResponse(response) {
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message);
+    }
+    if (response.status === 204) {
+        return;
+    }
+    return await response.json();
+}
+
+async function createCategory(categoryName) {
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ categoryName: categoryName }),
+        });
+        return await handleResponse(response);
+    } catch (error) {
         throw error;
-    });
+    }
 }
 
-function getCategories() {
-    return fetch(url)
-    .then(response => {
-        return response.json();
-    });
-}
-
-function getCategory(categoryId) {
-    return fetch(`${url}/${categoryId}`)
-    .then(response => {
-        return response.json();
-    });
-}
-
-function updateCategory(categoryId, categoryName) {
-    return fetch(`${url}/${categoryId}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({categoryName: categoryName}),
-    })
-    .then(response => {
-        if (!response.ok) {
-            return response.json().then(errorData => {
-                throw new Error(errorData.message);
-            });
-        }
-        return response.json();
-    })
-    .catch(error => {
+async function getCategories() {
+    try {
+        const response = await fetch(url);
+        return await handleResponse(response);
+    } catch (error) {
         throw error;
-    });
+    }
 }
 
-function deleteCategory(categoryId) {
-    return fetch(`${url}/${categoryId}`, {
-        method: "DELETE",
-    })
-    .then(response => {
-        if (!response.ok) {
-            return response.json().then(errorData => {
-                throw new Error(errorData.message);
-            });
-        }
-    })
-    .catch(error => {
+async function getCategory(categoryId) {
+    try {
+        const response = await fetch(`${url}/${categoryId}`);
+        return await handleResponse(response);
+    } catch (error) {
         throw error;
-    });
+    }
+}
+
+async function updateCategory(categoryId, categoryName) {
+    try {
+        const response = await fetch(`${url}/${categoryId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ categoryName: categoryName }),
+        });
+        return await handleResponse(response); 
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function deleteCategory(categoryId) {
+    try {
+        const response = await fetch(`${url}/${categoryId}`, {
+            method: "DELETE",
+        });
+        return await handleResponse(response);
+    } catch {
+        throw error;
+    }
 }
 
 export { createCategory, getCategories, getCategory, updateCategory, deleteCategory };

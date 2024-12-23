@@ -12,69 +12,76 @@ function CategoryManagement() {
         loadCategories();
     }, []);
 
-    function loadCategories() {
-        getCategories()
-            .then(data => {
-                setCategories(data);
+    async function loadCategories() {
+        try {
+            const data = await getCategories();
+            setCategories(data);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+            toaster.create({
+                title: error.message,
+                type: "error",
+                isClosable: true,
+                duration: 3000,
             });
-    }
-
-    function handleCreateCategory() {
-        if (newCategoryName.trim()) {
-            createCategory(newCategoryName.trim())
-                .then(data => {
-                    setCategories([...categories, data]);
-                    setNewCategoryName("");
-                })
-                .catch(error => {
-                    toaster.create({
-                        title: error.message,
-                        type: "error",
-                        isClosable: true,
-                        duration: 3000,
-                    });
-                });
         }
     }
 
-    function handleUpdateCategory() {
-        if (editingCategory?.categoryName.trim()) {
-            updateCategory(editingCategory.categoryId, editingCategory.categoryName.trim())
-                .then(() => {
-                    setCategories(categories.map(category =>
-                        category.categoryId === editingCategory.categoryId ? {
-                            ...category, categoryName: editingCategory.categoryName.trim()
-                        }
-                            : category
-                    ));
+    async function handleCreateCategory() {
+        try {
+            if (newCategoryName?.trim()) {
+                const data = await createCategory(newCategoryName.trim());
+                setCategories(prevCategories => [...prevCategories, data]);
+                setNewCategoryName("");
+            }
+        } catch (error) {
+            console.error('Error creating category:', error);
+            toaster.create({
+                title: error.message,
+                type: "error",
+                isClosable: true,
+                duration: 3000,
+            });
+        }
+    }
+
+    async function handleUpdateCategory() {
+        try {
+            if (editingCategory?.categoryName.trim()) {
+                await updateCategory(editingCategory.categoryId, editingCategory.categoryName.trim());
+                setCategories(prevCategories => prevCategories.map(category =>
+                    category.categoryId === editingCategory.categoryId 
+                    ? {...category, categoryName: editingCategory.categoryName.trim()}
+                    : category));
                     setEditingCategory(null);
-                })
-                .catch(error => {
-                    toaster.create({
-                        title: error.message,
-                        type: "error",
-                        isClosable: true,
-                        duration: 3000,
-                    });
-                });
+            }
+        } catch (error) {
+            console.error('Error updating category:', error);
+            toaster.create({
+                title: error.message,
+                type: "error",
+                isClosable: true,
+                duration: 3000,
+            });
         }
+
     }
 
-    function handleDeleteCategory(categoryId) {
-        deleteCategory(categoryId)
-            .then(() => {
-                setCategories(categories.filter(category =>
-                    category.categoryId !== categoryId)
-                );
-            })
-            .catch(error => {
-                toaster.create({
-                    title: error.message,
-                    type: "error",
-                    isClosable: true,
-                    duration: 3000,
-                });
+    async function handleDeleteCategory(categoryId) {
+        try {
+            await deleteCategory(categoryId);
+            setCategories(categories.filter(category =>
+                category.categoryId !== categoryId)
+            );
+        } catch (error) {
+            console.error('Error deleting category:', error);
+            toaster.create({
+                title: error.message,
+                type: "error",
+                isClosable: true,
+                duration: 3000,
             });
+        }
     }
 
     return (
@@ -100,7 +107,7 @@ function CategoryManagement() {
                                     />
                                     <Button
                                         colorScheme="teal"
-                                        onClick={() => { handleCreateCategory(); }}
+                                        onClick={ handleCreateCategory}
                                         size="sm" pl={5} pr={5}
                                     >
                                         카테고리 생성

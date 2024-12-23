@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import { Box, Link as ChakraLink, HStack, VStack, Card, Button, Heading, Stack, Text, Group } from '@chakra-ui/react';
 import { Avatar } from "@/components/ui/avatar"
@@ -17,11 +17,34 @@ import {
 } from "@/components/ui/radio-card"
 
 import { LuCheck, LuPackage, LuShip } from "react-icons/lu"
+import { useAuth } from '../../services/AuthContext';
+import { UserInfo } from '../../services/UserAPI';
+import { getDeliveryAddressList, createNewAddress, updateAddress, updateDefaultAddress, deleteAddress } from '../../services/DeliveryAdressAPI';
 
 function UserDashboard() {
     const [selectLink, setSelectLink] = useState("");
+    const { email, loginType } = useAuth();
+    const [userInfo, setUserInfo] = useState({});
+    const [deliveryAddress, setDeliveryAddress] = useState({});
 
-    const onClick = (link) => {
+    useEffect(() => {
+        if (email) {
+            UserInfo(email)
+                .then((data) => {
+                    setUserInfo(data);
+                })
+                .catch((error) => {
+                });
+            getDeliveryAddressList(email)
+                .then((data) => {
+                    setDeliveryAddress(data);
+                })
+                .catch((error) => {
+                });
+        }
+    }, [email]);
+
+    const handleClick = (link) => {
         setSelectLink(link);
     }
 
@@ -29,7 +52,7 @@ function UserDashboard() {
         <Box marginTop="-10">
             <HStack justify="center">
                 <ChakraLink
-                    onClick={() => onClick("mypage")}
+                    onClick={() => handleClick("mypage")}
                     asChild
                     _focus={{ outline: "none" }}
                     fontWeight={selectLink === "mypage" ? "bold" : "none"}
@@ -38,7 +61,7 @@ function UserDashboard() {
                     <Link to="/mypage">마이 페이지</Link>
                 </ChakraLink>
                 <ChakraLink
-                    onClick={() => onClick("orderItem")}
+                    onClick={() => handleClick("orderItem")}
                     asChild
                     _focus={{ outline: "none" }}
                     fontWeight={selectLink === "orderItem" ? "bold" : "none"}
@@ -47,7 +70,7 @@ function UserDashboard() {
                     <Link to="/mypage/order-item">장바구니</Link>
                 </ChakraLink>
                 <ChakraLink
-                    onClick={() => onClick("order")}
+                    onClick={() => handleClick("order")}
                     asChild
                     _focus={{ outline: "none" }}
                     fontWeight={selectLink === "order" ? "bold" : "none"}
@@ -56,7 +79,7 @@ function UserDashboard() {
                     <Link to="/mypage/orders">주문내역 조회</Link>
                 </ChakraLink>
                 <ChakraLink
-                    onClick={() => onClick("edit")}
+                    onClick={() => handleClick("edit")}
                     asChild
                     _focus={{ outline: "none" }}
                     fontWeight={selectLink === "edit" ? "bold" : "none"}
@@ -65,7 +88,7 @@ function UserDashboard() {
                     <Link to="/mypage/edit">회원정보 변경</Link>
                 </ChakraLink>
                 <ChakraLink
-                    onClick={() => onClick("delete")}
+                    onClick={() => handleClick("delete")}
                     asChild
                     _focus={{ outline: "none" }}
                     fontWeight={selectLink === "delete" ? "bold" : "none"}
@@ -89,10 +112,12 @@ function UserDashboard() {
                                             <Button>수정</Button>
                                         </Stack>
                                         <Stack gap="1" ml={10}>
-                                            <Card.Title>() 님</Card.Title>
-                                            <Text fontSize="sm">닉네임 : ()</Text>
-                                            <Text fontSize="sm">전화번호 : ()</Text>
-                                            <Text fontSize="sm">이메일 : ()</Text>
+                                            <Card.Title>{userInfo.userName} 님</Card.Title>
+                                            <Text fontSize="sm">닉네임 : {userInfo?.nickname || '설정 전 입니다'}</Text>
+                                            <Text fontSize="sm">전화번호 : {userInfo?.contact || '설정 전 입니다'}</Text>
+                                            { loginType === 'local' ? (
+                                                <Text fontSize="sm">이메일 : {userInfo.email}</Text>
+                                            ) : null }
                                         </Stack>
                                     </HStack>
                                 </Card.Body>

@@ -1,12 +1,10 @@
-const BASE_URL = "http://localhost:8080/api/admin";
-
-const createUrl = (endpoint) => `${BASE_URL}${endpoint}`;
+const url = 'http://localhost:8080/api/admin/';
 
 export const getUserList = (/*page, size, type, keyword*/) => {
   // const params = new URLSearchParams({ page, size, type, keyword }).toString();
-  return fetch(createUrl(`/user-management`/*?${params}*/), {
-    method: "GET",
-    headers: { "Content-Type": "application/json", },
+  return fetch(`${url}user-management`/*?${params}*/, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json', },
   })
     .then((response) => {
       if (!response.ok) {
@@ -22,9 +20,9 @@ export const getUserList = (/*page, size, type, keyword*/) => {
 };
 
 export const updateLoginLock = (email) => {
-  return fetch(createUrl(`/${email}/login-lock`), {
-    method: "PUT",
-    headers: { "Content-Type": "application/json", },
+  return fetch(`${url}${email}/login-lock`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', },
   })
     .then((response) => {
       if (!response.ok) {
@@ -39,9 +37,9 @@ export const updateLoginLock = (email) => {
 };
 
 export const updateAuth = (email) => {
-  return fetch(createUrl(`/${email}/auth`), {
-    method: "PUT",
-    headers: { "Content-Type": "application/json", },
+  return fetch(`${url}${email}/auth`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', },
   })
     .then((response) => {
       if (!response.ok) {
@@ -56,8 +54,8 @@ export const updateAuth = (email) => {
 };
 
 export const deleteUser = (email) => {
-  return fetch(createUrl(`/${email}`), {
-    method: "DELETE",
+  return fetch(`${url}${email}`, {
+    method: 'DELETE',
   })
     .then((response) => {
       if (!response.ok) {
@@ -72,10 +70,10 @@ export const deleteUser = (email) => {
 };
 
 export const deleteUsers = (emails) => {
-  return fetch(createUrl(`/users`), {
-    method: "DELETE",
+  return fetch(`${url}users`, {
+    method: 'DELETE',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify(emails),
   })
