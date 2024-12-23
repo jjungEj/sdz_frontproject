@@ -61,15 +61,6 @@ function UserDashboard() {
                     <Link to="/mypage">마이 페이지</Link>
                 </ChakraLink>
                 <ChakraLink
-                    onClick={() => handleClick("orderItem")}
-                    asChild
-                    _focus={{ outline: "none" }}
-                    fontWeight={selectLink === "orderItem" ? "bold" : "none"}
-                    margin="3"
-                >
-                    <Link to="/mypage/order-item">장바구니</Link>
-                </ChakraLink>
-                <ChakraLink
                     onClick={() => handleClick("order")}
                     asChild
                     _focus={{ outline: "none" }}
@@ -115,9 +106,9 @@ function UserDashboard() {
                                             <Card.Title>{userInfo.userName} 님</Card.Title>
                                             <Text fontSize="sm">닉네임 : {userInfo?.nickname || '설정 전 입니다'}</Text>
                                             <Text fontSize="sm">전화번호 : {userInfo?.contact || '설정 전 입니다'}</Text>
-                                            { loginType === 'local' ? (
+                                            {loginType === 'local' ? (
                                                 <Text fontSize="sm">이메일 : {userInfo.email}</Text>
-                                            ) : null }
+                                            ) : null}
                                         </Stack>
                                     </HStack>
                                 </Card.Body>
@@ -168,23 +159,23 @@ function UserDashboard() {
                         <VStack width="100%" maxWidth="550px" height="600px" align="flex-start">
                             <Heading as="h3" size="lg">배송지 관리</Heading>
                             {/* <Card.Root variant='subtle' width="100%" height="100%"> */}
-                                {/* <Card.Body gap="2"> */}
-                                    <RadioCardRoot defaultValue="next" gap="4" width="100%">
-                                        {/* <RadioCardLabel>How well do you know React?</RadioCardLabel> */}
-                                        <Group attached orientation="vertical">
-                                            {items.map((item) => (
-                                                <RadioCardItem
-                                                    width="full"
-                                                    indicatorPlacement="start"
-                                                    label={`${item.name} (${item.contact})`}
-                                                    description={`${item.addr1} ${item.addr2} ${item.addr3}`}
-                                                    key={item.id}
-                                                    value={item.id}
-                                                />
-                                            ))}
-                                        </Group>
-                                    </RadioCardRoot>
-                                {/* </Card.Body> */}
+                            {/* <Card.Body gap="2"> */}
+                            <RadioCardRoot defaultValue="next" gap="4" width="100%">
+                                {/* <RadioCardLabel>How well do you know React?</RadioCardLabel> */}
+                                <Group attached orientation="vertical">
+                                    {items.map((item) => (
+                                        <RadioCardItem
+                                            width="full"
+                                            indicatorPlacement="start"
+                                            label={`${item.name} (${item.contact})`}
+                                            description={`${item.addr1} ${item.addr2} ${item.addr3}`}
+                                            key={item.id}
+                                            value={item.id}
+                                        />
+                                    ))}
+                                </Group>
+                            </RadioCardRoot>
+                            {/* </Card.Body> */}
                             {/* </Card.Root> */}
                         </VStack>
                     </HStack>
@@ -198,12 +189,12 @@ function UserDashboard() {
 }
 const items = [
     {
-      id: "1",
-      name: "엘리스",
-      contact: "010-1234-1234",
-      addr1: "서울시",
-      addr2: "강남구",
-      addr3: "강남대로 123",
+        id: "1",
+        name: "엘리스",
+        contact: "010-1234-1234",
+        addr1: "서울시",
+        addr2: "강남구",
+        addr3: "강남대로 123",
     },
     {
         id: "2",
@@ -212,7 +203,7 @@ const items = [
         addr1: "부산시",
         addr2: "해운대구",
         addr3: "해운대 해변로 45",
-      },
-  ]
+    },
+]
 
 export default UserDashboard;
