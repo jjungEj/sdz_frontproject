@@ -22,15 +22,24 @@ import {
     PaginationRoot,
 } from "@/components/ui/pagination"
 import { LuCheck, LuPackage, LuShip } from "react-icons/lu"
+import DaumPostcode from 'react-daum-postcode';
 import { useAuth } from '../../services/AuthContext';
 import { UserInfo } from '../../services/UserAPI';
 import { getDeliveryAddressList, createNewAddress, updateAddress, updateDefaultAddress, deleteAddress } from '../../services/DeliveryAdressAPI';
 
 function UserDashboard() {
-    const [selectLink, setSelectLink] = useState("");
+    const [selectLink, setSelectLink] = useState('');
     const { email, loginType } = useAuth();
     const [userInfo, setUserInfo] = useState({});
     const [deliveryAddress, setDeliveryAddress] = useState([]);
+    // const { isOpen, onOpen, onClose } = useDisclosure();
+    const [deliveryAddress1, setDeliveryAddress1] = useState('');
+    const [deliveryAddress2, setDeliveryAddress2] = useState('');
+    const [deliveryAddress3, setDeliveryAddress3] = useState('');
+    const [receiverName, setReceiverName] = useState('');
+    const [receiverContact, setReceiverContact] = useState('');
+    const [deliveryRequest, setDeliveryRequest] = useState('');
+    const [defaultCheck, setDefaultCheck] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
     const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
     const [totalPages, setTotalPages] = useState(1);
@@ -72,6 +81,23 @@ function UserDashboard() {
     const handleAddressSelect = (addressId) => {
         setSelectedAddressId(addressId);
         console.log("선택된 주소 ID:", addressId);
+    };
+
+    const handleAddAddress = () => {
+        const newAddress  = {
+            deliveryAddress1,
+            deliveryAddress2,
+            deliveryAddress3,
+            receiverName,
+            receiverContact,
+            deliveryRequest,
+            defaultCheck
+        };
+        createNewAddress(newAddress)
+            .then((response) => {
+            })
+            .catch((error) => {
+            });
     };
 
     const handleClick = (link) => {
@@ -187,7 +213,10 @@ function UserDashboard() {
                             </Card.Root>
                         </VStack>
                         <VStack width="100%" maxWidth="550px" height="600px" align="flex-start">
+                            <HStack>
                             <Heading as="h3" size="lg">배송지 관리</Heading>
+                            <Button colorScheme='red'>배송지 추가</Button>
+                            </HStack>
                             <RadioCardRoot defaultValue="next" gap="4" width="100%">
                                 <Group attached orientation="vertical">
                                     {deliveryAddress.map((item) => (
@@ -209,7 +238,7 @@ function UserDashboard() {
                                     ))}
                                 </Group>
                             </RadioCardRoot>
-                            <Stack gap="4" alignItems="center" mt="3" mb="3">
+                            <Stack gap='4' alignItems='center' mt='3'>
                                 <PaginationRoot
                                     page={page}
                                     count={totalPages}
