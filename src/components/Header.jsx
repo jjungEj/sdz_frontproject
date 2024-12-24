@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/services/AuthContext';
 import { logout } from '@/services/LogoutAPI';
+import Search from './Search';
 import OrderItem from '@/pages/OrderItem';
 import useCategoryStore from '@/store/CategoryStore';
 
@@ -25,7 +26,6 @@ import {
 
 function Header() {
   const navigate = useNavigate();
-  const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const { isLoggedIn, email, auth, handleContextLogout } = useAuth();
   const { categories, getCategories } = useCategoryStore();
@@ -157,14 +157,7 @@ function Header() {
         </HStack>
       </HStack>
       <HStack justify="flex-end" mb={3}>
-        <InputGroup
-          flex="1"
-          endElement={<LuSearch />}
-          maxWidth="300px"
-          w="100%"
-        >
-          <Input placeholder="Search" />
-        </InputGroup>
+        <Search />
       </HStack>
       <VStack justify="center" mb={3}>
         <Link
