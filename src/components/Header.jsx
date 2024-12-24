@@ -6,6 +6,8 @@ import { ColorModeButton } from "@/components/ui/color-mode"
 import { InputGroup } from "@/components/ui/input-group"
 import { LuSearch } from "react-icons/lu"
 import { getCategories } from "../services/CategoryAPI";
+import { useAuth } from '../services/AuthContext';
+import { logout } from '../services/LogoutAPI';
 import {
   DrawerBackdrop,
   DrawerBody,
@@ -17,8 +19,6 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
-import { useAuth } from '../services/AuthContext';
-import { logout } from '../services/LogoutAPI';
 
 
 function Header() {
