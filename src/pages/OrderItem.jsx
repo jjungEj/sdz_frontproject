@@ -135,7 +135,7 @@ function OrderItem() {
                 <HStack spacing={3}>
                     {/* 추가: 썸네일 이미지 표시 */}
                     <img
-                        src={`http://localhost:8080/${item.thumbnailPath}`} // 썸네일 경로 사용
+                        src={`http://localhost:8080${item.thumbnailPath}`} // 썸네일 경로 사용
                         alt={item.productName}
                         style={{
                             width: "75px",
