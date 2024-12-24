@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"; 
-import { Box, Text, Heading, Spinner, Grid, GridItem } from "@chakra-ui/react"; 
+import { Box, Text, Heading, Spinner, Grid, GridItem, Link } from "@chakra-ui/react"; 
+import { Link as RouterLink, useLocation } from "react-router-dom"; // Link와 useLocation import
 import axios from "axios";
-import { useLocation } from "react-router-dom"; // useLocation 추가
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -69,14 +69,17 @@ const ProductList = () => {
       <Grid templateColumns="repeat(5, 1fr)" gap={6}>
         {products.map((product) => (
           <GridItem key={product.productId}>
-            <Box borderWidth="1px" borderRadius="md" p={4} boxShadow="md">
-              <Heading as="h3" size="md" mb={2}>
-                {product.productName}
-              </Heading>
-              <Text>가격: {product.productAmount} 원</Text>
-              <Text>재고: {product.productCount} 개</Text>
-              <Text mt={2}>{product.productContent}</Text>
-            </Box>
+            {/* 상품 클릭 시 ProductDetail 페이지로 이동 */}
+            <Link as={RouterLink} to={`/product/${product.productId}`} style={{ textDecoration: "none" }}>
+              <Box borderWidth="1px" borderRadius="md" p={4} boxShadow="md">
+                <Heading as="h3" size="md" mb={2}>
+                  {product.productName}
+                </Heading>
+                <Text>가격: {product.productAmount} 원</Text>
+                <Text>재고: {product.productCount} 개</Text>
+                <Text mt={2}>{product.productContent}</Text>
+              </Box>
+            </Link>
           </GridItem>
         ))}
       </Grid>
@@ -85,3 +88,4 @@ const ProductList = () => {
 };
 
 export default ProductList;
+
