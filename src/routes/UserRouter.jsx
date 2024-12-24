@@ -3,10 +3,12 @@ import { Route, Routes, Navigate } from 'react-router-dom';
 
 import { useAuth } from '../services/AuthContext';
 
-import UserDashboard from '../pages/mypage/UserDashboard';
-import OrderHistory from '../pages/mypage/OrderHistory';
-import UserInfoEdit from '../pages/mypage/UserInfoEdit';
-import DeleteAccount from '../pages/mypage/DeleteAccount';
+import {
+    UserDashboard,
+    UserInfoEdit,
+    OrderHistory,
+    DeleteAccount
+} from '@/pages/mypage';
 
 function UserRouter() {
     const { isLoggedIn, auth } = useAuth();

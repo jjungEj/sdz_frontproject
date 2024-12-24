@@ -3,12 +3,15 @@ import { Route, Routes, Navigate } from 'react-router-dom';
 
 import { useAuth } from '../services/AuthContext';
 
-import AdminDashboard from '../pages/admin/AdminDashboard';
-import UserManagement from '../pages/admin/UserManagement';
-import OrderManagement from '../pages/admin/OrderManagement';
-import CategoryManagement from '../pages/admin/CategoryManagement';
-import ProductManagement from '../pages/admin/ProductManagement';
-import ProductForm from '../pages/admin/ProductForm';
+import {
+    AdminDashboard,
+    UserManagement,
+    OrderManagement,
+    CategoryManagement,
+    ProductManagement,
+    ProductForm,
+    ProductUpdateForm
+} from '@/pages/admin';
 
 function AdminRouter() {
     const { isLoggedIn, auth } = useAuth();
@@ -25,6 +28,7 @@ function AdminRouter() {
                 <Route path="categories" element={<CategoryManagement />} />
                 <Route path="products" element={<ProductManagement />} />
                 <Route path="products/create" element={<ProductForm />} />
+                <Route path="products/update/:productId" element={<ProductUpdateForm />} />
             </Route>
             {/* <Route path="*" element={<NotFoundPage />} /> */}
         </Routes>
