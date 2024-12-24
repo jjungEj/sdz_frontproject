@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/services/AuthContext';
 import { logout } from '@/services/LogoutAPI';
-import Search from './Search';
+import Search from './Search';
 import CartDrawer from './CartDrawer';
 import useCategoryStore from '@/store/CategoryStore';
 
