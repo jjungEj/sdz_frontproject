@@ -10,7 +10,6 @@ function OrderItem() {
     const [OrderItemData, setOrderItemData] = useState(null); // 장바구니 데이터 상태
     const [error, setError] = useState(null); // 에러 상태
     const [selectedItems, setSelectedItems] = useState([]); // 선택된 상품 ID 상태
-    const userId = "testuser@example.com"; // 사용자 ID (임시 고정값)
     const navigate = useNavigate();
     const hasSelection = selectedItems.length > 0;
     const indeterminate = hasSelection && selectedItems.length < OrderItemData.orderItemDetails.length;
@@ -21,7 +20,7 @@ function OrderItem() {
 
     const fetchData = async () => {
         try {
-            const data = await fetchOrderItemData(userId);
+            const data = await fetchOrderItemData();
             setOrderItemData(data);
             setError(null);
 
@@ -48,7 +47,7 @@ function OrderItem() {
             for (const productId of selectedItems) {
                 const item = OrderItemData.orderItemDetails.find((item) => item.productId === productId);
                 if (item) {
-                    await modifyOrderItem(userId, productId, -item.quantity);
+                    await modifyOrderItem(productId, -item.quantity);
                 }
             }
             fetchData();
@@ -64,7 +63,8 @@ function OrderItem() {
 
     const handleAddItem = async (productId) => {
         try {
-            await modifyOrderItem(userId, productId, 1);
+            await modifyOrderItem(
+                productId, 1);
             fetchData();
         } catch (error) {
             toaster.create({
@@ -78,7 +78,7 @@ function OrderItem() {
 
     const handleRemoveItem = async (productId) => {
         try {
-            await modifyOrderItem(userId, productId, -1);
+            await modifyOrderItem(productId, -1);
             fetchData();
         } catch (err) {
             toaster.create({
@@ -92,7 +92,7 @@ function OrderItem() {
 
     const handleClearOrderItem = async () => {
         try {
-            await clearOrderItem(userId);
+            await clearOrderItem();
             fetchData();
         } catch (err) {
             toaster.create({
@@ -155,7 +155,7 @@ function OrderItem() {
             <Toaster />
             <Heading as="h1" size="xl" mb={3}>장바구니</Heading>
                                 <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
-            {OrderItemData && OrderItemData.orderItemDetails.length > 0 ? (
+            {OrderItemData?.orderItemDetails.length > 0 ? (
                 <>
                     <Table.Root style={{ width: "100%", marginBottom: "20px" }}>
                         <Table.Header>
@@ -193,10 +193,11 @@ function OrderItem() {
                             </Button>
                         </HStack>
                         <Heading mr={1}>
-                            총 결제금액 : {OrderItemData.orderItemDetails
-                                .filter((item) => selectedItems.includes(item.productId)) // 체크된 상품만 필터링
-                                .reduce((total, item) => total + item.productAmount * item.quantity, 0)
-                                .toLocaleString()} 원
+                            총 결제금액 : {OrderItemData.orderItemDetails.reduce((total, item) => {
+                            return selectedItems.includes(item.productId)
+                                ? total + item.productAmount * item.quantity
+                                : total;
+                        }, 0).toLocaleString()} 원
                         </Heading>
                     </HStack>
                     <Button w="100%" onClick={handleCheckout}>

@@ -91,7 +91,7 @@ function ProductManagement() {
                                         <Text>재고: {product.productCount} 개</Text>
                                         <Text mt={2}>{product.productContent}</Text>
                                         <HStack spacing={4} mt={4}>
-                                            <Button size="sm" onClick={() => navigate(`/admin/product/update/${product.productId}`)}>
+                                            <Button size="sm" onClick={() => navigate(`/admin/products/update/${product.productId}`)}>
                                                 수정
                                             </Button>
                                             <Button size="sm" colorScheme="red" onClick={() => handleDelete(product.productId)}>
