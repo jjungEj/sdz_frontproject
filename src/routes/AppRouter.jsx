@@ -3,14 +3,16 @@ import { Route, Routes, Navigate } from 'react-router-dom';
 
 import { useAuth } from '../services/AuthContext';
 
-import Home from '../pages/Home';
-import ProductList from '../pages/ProductList';
-import ProductDetail from '../pages/ProductDetail';
-import OrderItem from '../pages/OrderItem';
-import Checkout from '../pages/Checkout';
-import OrderConfirmation from '../pages/OrderConfirmation';
-import Login from '../pages/Login';
-import SignUp from '../pages/SignUp';
+import {
+    Home,
+    ProductList,
+    ProductDetail,
+    OrderItem,
+    Checkout,
+    OrderConfirmation,
+    Login,
+    SignUp
+} from '@/pages';
 
 import AdminRouter from './AdminRouter';
 import UserRouter from './UserRouter';
