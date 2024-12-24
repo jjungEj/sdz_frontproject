@@ -1,28 +1,66 @@
 import React, { useState, useEffect } from 'react';
 import { getUserList } from "../../services/AdminAPI";
-import { Box, Heading, Table, Button, HStack  } from '@chakra-ui/react';
+import { Box, Heading, Table, Button, HStack, Stack, Grid, GridItem, Input, createListCollection } from '@chakra-ui/react';
 import { Toaster, toaster } from '@/components/ui/toaster';
 import { Checkbox } from '@/components/ui/checkbox'
+import {
+    SelectContent,
+    SelectItem,
+    SelectLabel,
+    SelectRoot,
+    SelectTrigger,
+    SelectValueText,
+} from "@/components/ui/select"
+import {
+    PaginationItems,
+    PaginationNextTrigger,
+    PaginationPrevTrigger,
+    PaginationRoot,
+} from "@/components/ui/pagination"
+import { useSearchParams } from 'react-router-dom';
 import { updateLoginLock, updateAuth, deleteUser, deleteUsers } from '../../services/AdminAPI';
 
 function UserManagement() {
     const [users, setUsers] = useState([]);
     const [selection, setSelection] = useState([]);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [type, setType] = useState('all');
+    const [keyword, setKeyword] = useState('');
+    const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [pageSize] = useState(10);
 
     const hasSelection = selection.length > 0
     const indeterminate = hasSelection && selection.length < users.length
+    
+    const types = createListCollection({
+        items: [
+            { label: "전체", value: "all" },
+            { label: "일반 회원", value: "local" },
+            { label: "소셜 회원", value: "social" },
+        ],
+    });
 
     useEffect(() => {
         loadUsers();
-    }, []);
+    }, [page, keyword, type]);
 
-    function loadUsers() {
-        getUserList()
-            .then(data => {
-                setUsers(data.dtoList);
-            });
-            
-    }
+    const loadUsers = () => {
+        getUserList(page, pageSize, type, keyword)
+        .then((data) => {
+            console.log(data.dtoList);
+            console.log(data);
+            setUsers(data.dtoList);
+            setTotalPages(data.total);
+        }).catch((error) => {
+            console.error("회원 목록을 가져오는 중 오류가 발생했습니다:", error);
+        });
+    };
+
+    const handlePageChange = (newPage) => {
+        setPage(newPage);
+        setSearchParams({ page: newPage });
+    };
 
     const handleUpdateLoginLock = (email) => {
         updateLoginLock(email)
@@ -32,7 +70,6 @@ function UserManagement() {
             .catch((error) => {
             });
     };
-
 
     const handleUpdateAuth = (email) => {
         updateAuth(email)
@@ -75,8 +112,31 @@ function UserManagement() {
         <Box>
             <Toaster />
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-                <Heading as="h1" size="xl" mb={3}>회원 관리</Heading>
-                <Button colorScheme="red" onClick={() => handleDeleteUsers()}>선택한 사용자 삭제</Button>
+                <HStack gap={0} alignItems="center">
+                    <Heading as="h1" size="xl" mr="5">회원 관리</Heading>
+                    <SelectRoot size="sm" width="150px" collection={types} onChange={(e) => setType(e.target.value)}
+                    style={{ height: '36px'}}>
+                        <SelectTrigger>
+                            <SelectValueText placeholder="검색 유형" />
+                        </SelectTrigger>
+                        <SelectContent>
+                        {types.items.map((type) => (
+                            <SelectItem item={type} key={type.value}>
+                                {type.label}
+                            </SelectItem>
+                        ))}
+                        </SelectContent>
+                    </SelectRoot>
+                    <Input
+                        placeholder="검색 키워드 입력"
+                        value={keyword}
+                        onChange={(e) => setKeyword(e.target.value)}
+                        height="36px"
+                        width="250px"
+                        padding="0"
+                    />
+                </HStack>
+                <Button colorScheme="red" onClick={() => handleDeleteUsers()}>삭제</Button>
             </Box>
             <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
             <Box display="flex" justifyContent="center">
@@ -139,6 +199,20 @@ function UserManagement() {
                     </Table.Body>
                 </Table.Root>
             </Box>
+            <Stack gap="4" alignItems="center" mt="3" mb="3">
+                    <PaginationRoot
+                        page={page}
+                        count={totalPages}
+                        pageSize={pageSize}
+                        onPageChange={(e) => handlePageChange(e.page)}
+                    >
+                        <HStack>
+                            <PaginationPrevTrigger />
+                            <   PaginationItems />
+                            <PaginationNextTrigger />
+                        </HStack>
+                    </PaginationRoot>
+                </Stack>
             <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
         </Box>
     );
