@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Box, Text, Heading, Spinner, Grid, GridItem, Highlight } from "@chakra-ui/react";
 import axios from "axios";
-import { useLocation } from "react-router-dom"; // useLocation 추가
 
 import useSearchStore from "@/store/SearchStore";
 import { getCategoryAPI } from "@/services/CategoryAPI";
@@ -126,3 +125,4 @@ const ProductList = () => {
 };
 
 export default ProductList;
+
