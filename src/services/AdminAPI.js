@@ -1,8 +1,7 @@
 const url = 'http://localhost:8080/api/admin/';
 
-export const getUserList = (/*page, size, type, keyword*/) => {
-  // const params = new URLSearchParams({ page, size, type, keyword }).toString();
-  return fetch(`${url}user-management`/*?${params}*/, {
+export const getUserList = (page, size, type, keyword) => {
+  return fetch(`${url}user-management?page=${page}&size=${size}&type=${type}&keyword=${keyword}`, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json', },
   })

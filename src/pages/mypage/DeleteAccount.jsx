@@ -30,7 +30,9 @@ function DeleteAccount() {
             <Stack>
                 <Fieldset.Legend>유의사항</Fieldset.Legend>
                 <Fieldset.HelperText>
-                    회원탈퇴 유의사항
+                    회원탈퇴 유의사항 <br/>
+                    탈퇴 시 회원님의 이용정보가 삭제되며 복구가 불가능하오니 신중히 선택하시기 바랍니다. <br/>
+                    회원 탈퇴와 함께 등록된 모든 개인정보는 삭제, 폐기 처리되며 복구되지 않습니다.
                 </Fieldset.HelperText>
             </Stack>
 

@@ -2,11 +2,11 @@ const url = 'http://localhost:8080/api/user/';
 
 export const signUpProcess = (email, password, userName, nickname, contact) => {
   const payload = {
-    email: email,
+    email,
     userPassword: password,
-    userName: userName,
-    nickname: nickname,
-    contact: contact
+    userName,
+    nickname,
+    contact
   };
   return fetch(`${url}sign-up`, {
     method: 'POST',
@@ -42,11 +42,11 @@ export const UserInfo = () => {
 
 export const updateLocal = (email, password, userName, nickname, contact) => {
   const payload = {
-    email: email,
+    email,
     userPassword: password,
-    userName: userName,
-    nickname: nickname,
-    contact: contact
+    userName,
+    nickname,
+    contact
   };
   return fetch(`${url}local/${email}`, {
       method: 'PUT',
@@ -70,10 +70,10 @@ export const updateLocal = (email, password, userName, nickname, contact) => {
 
 export const updateSocial = (email, userName, nickname, contact) => {
   const payload = {
-    email: email,
-    userName: userName,
-    nickname: nickname,
-    contact: contact
+    email,
+    userName,
+    nickname,
+    contact
   };
   return fetch(`${url}social/${email}`, {
       method: 'PUT',

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, useSearchParams } from 'react-router-dom';
 import { Box, Link as ChakraLink, HStack, VStack, Card, Button, Heading, Stack, Text, Group } from '@chakra-ui/react';
 import { Avatar } from "@/components/ui/avatar"
 import {
@@ -15,17 +15,36 @@ import {
     RadioCardLabel,
     RadioCardRoot,
 } from "@/components/ui/radio-card"
-
+import {
+    PaginationItems,
+    PaginationNextTrigger,
+    PaginationPrevTrigger,
+    PaginationRoot,
+} from "@/components/ui/pagination"
 import { LuCheck, LuPackage, LuShip } from "react-icons/lu"
+import DaumPostcode from 'react-daum-postcode';
 import { useAuth } from '../../services/AuthContext';
 import { UserInfo } from '../../services/UserAPI';
 import { getDeliveryAddressList, createNewAddress, updateAddress, updateDefaultAddress, deleteAddress } from '../../services/DeliveryAdressAPI';
 
 function UserDashboard() {
-    const [selectLink, setSelectLink] = useState("");
+    const [selectLink, setSelectLink] = useState('');
     const { email, loginType } = useAuth();
     const [userInfo, setUserInfo] = useState({});
-    const [deliveryAddress, setDeliveryAddress] = useState({});
+    const [deliveryAddress, setDeliveryAddress] = useState([]);
+    // const { isOpen, onOpen, onClose } = useDisclosure();
+    const [deliveryAddress1, setDeliveryAddress1] = useState('');
+    const [deliveryAddress2, setDeliveryAddress2] = useState('');
+    const [deliveryAddress3, setDeliveryAddress3] = useState('');
+    const [receiverName, setReceiverName] = useState('');
+    const [receiverContact, setReceiverContact] = useState('');
+    const [deliveryRequest, setDeliveryRequest] = useState('');
+    const [defaultCheck, setDefaultCheck] = useState(false);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [pageSize] = useState(5);
+    const [selectedAddressId, setSelectedAddressId] = useState(null);
 
     useEffect(() => {
         if (email) {
@@ -35,14 +54,51 @@ function UserDashboard() {
                 })
                 .catch((error) => {
                 });
-            getDeliveryAddressList(email)
-                .then((data) => {
-                    setDeliveryAddress(data);
-                })
-                .catch((error) => {
-                });
         }
     }, [email]);
+
+    useEffect(() => {
+        fetchDeliveryAddresses(page);
+    }, [page]);
+
+    const fetchDeliveryAddresses = (page) => {
+        getDeliveryAddressList(page, pageSize)
+        .then((data) => {
+            console.log(data.dtoList);
+            console.log(data);
+            setDeliveryAddress(data.dtoList);
+            setTotalPages(data.total);
+        }).catch((error) => {
+            console.error("배송지 목록을 가져오는 중 오류가 발생했습니다:", error);
+        });
+    };
+
+    const handlePageChange = (newPage) => {
+        setPage(newPage);
+        setSearchParams({ page: newPage });
+    };    
+
+    const handleAddressSelect = (addressId) => {
+        setSelectedAddressId(addressId);
+        console.log("선택된 주소 ID:", addressId);
+    };
+
+    const handleAddAddress = () => {
+        const newAddress  = {
+            deliveryAddress1,
+            deliveryAddress2,
+            deliveryAddress3,
+            receiverName,
+            receiverContact,
+            deliveryRequest,
+            defaultCheck
+        };
+        createNewAddress(newAddress)
+            .then((response) => {
+            })
+            .catch((error) => {
+            });
+    };
 
     const handleClick = (link) => {
         setSelectLink(link);
@@ -157,26 +213,45 @@ function UserDashboard() {
                             </Card.Root>
                         </VStack>
                         <VStack width="100%" maxWidth="550px" height="600px" align="flex-start">
+                            <HStack>
                             <Heading as="h3" size="lg">배송지 관리</Heading>
-                            {/* <Card.Root variant='subtle' width="100%" height="100%"> */}
-                            {/* <Card.Body gap="2"> */}
+                            <Button colorScheme='red'>배송지 추가</Button>
+                            </HStack>
                             <RadioCardRoot defaultValue="next" gap="4" width="100%">
-                                {/* <RadioCardLabel>How well do you know React?</RadioCardLabel> */}
                                 <Group attached orientation="vertical">
-                                    {items.map((item) => (
+                                    {deliveryAddress.map((item) => (
                                         <RadioCardItem
-                                            width="full"
-                                            indicatorPlacement="start"
-                                            label={`${item.name} (${item.contact})`}
-                                            description={`${item.addr1} ${item.addr2} ${item.addr3}`}
-                                            key={item.id}
-                                            value={item.id}
+                                        key={item.deliveryAddressId}
+                                        width="full"
+                                        indicatorPlacement="start"
+                                        label={`${item.receiverName} (${item.receiverContact})`}
+                                        description={
+                                        <>
+                                            {item.deliveryAddress1} {item.deliveryAddress2} {item.deliveryAddress3}
+                                            <br />
+                                            {item.deliveryRequest}
+                                        </>}
+                                        value={item.deliveryAddressId}
+                                        checked={selectedAddressId === item.defaultCheck==true}
+                                        onChange={() => handleAddressSelect(item.deliveryAddressId)}
                                         />
                                     ))}
                                 </Group>
                             </RadioCardRoot>
-                            {/* </Card.Body> */}
-                            {/* </Card.Root> */}
+                            <Stack gap='4' alignItems='center' mt='3'>
+                                <PaginationRoot
+                                    page={page}
+                                    count={totalPages}
+                                    pageSize={pageSize}
+                                    onPageChange={(e) => handlePageChange(e.page)}
+                                >
+                                    <HStack>
+                                        <PaginationPrevTrigger />
+                                        <   PaginationItems />
+                                        <PaginationNextTrigger />
+                                    </HStack>
+                                </PaginationRoot>
+                            </Stack>
                         </VStack>
                     </HStack>
                 </Box>
@@ -187,23 +262,5 @@ function UserDashboard() {
         </Box>
     );
 }
-const items = [
-    {
-        id: "1",
-        name: "엘리스",
-        contact: "010-1234-1234",
-        addr1: "서울시",
-        addr2: "강남구",
-        addr3: "강남대로 123",
-    },
-    {
-        id: "2",
-        name: "스프링",
-        contact: "010-9876-9876",
-        addr1: "부산시",
-        addr2: "해운대구",
-        addr3: "해운대 해변로 45",
-    },
-]
 
 export default UserDashboard;

@@ -1,9 +1,7 @@
 const url = 'http://localhost:8080/api/deliveryAddress/';
 
-export const getDeliveryAddressList = (/*page, size*/) => {
-  // const params = new URLSearchParams({ page, size }).toString();
-  
-  return fetch(`${url}list`/*?${params}*/, {
+export const getDeliveryAddressList = (page, size) => {
+  return fetch(`${url}list?page=${page}&size=${size}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
