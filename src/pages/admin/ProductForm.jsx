@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getCategories } from "../../services/CategoryAPI";
+import { getCategoriesAPI } from "../../services/CategoryAPI";
 import { useNavigate } from "react-router-dom";
 import { Box, Heading, Grid, GridItem, Input, Button, Textarea, Text } from '@chakra-ui/react';
 
@@ -18,7 +18,7 @@ const ProductForm = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await getCategories();
+        const response = await getCategoriesAPI();
         setCategories(response);
       } catch (error) {
         console.error("Failed to fetch categories:", error);

@@ -1,88 +1,49 @@
 import { useState, useEffect } from 'react';
-import { createCategory, getCategories, updateCategory, deleteCategory } from "../../services/CategoryAPI";
-import { Box, Heading, Button, Input, VStack, HStack, Table } from '@chakra-ui/react';
+
+import useCategoryStore from '@/store/CategoryStore';
+
+import { Box, Heading, Button, Input, HStack, Table } from '@chakra-ui/react';
 import { Toaster, toaster } from "@/components/ui/toaster"
 
 function CategoryManagement() {
-    const [categories, setCategories] = useState([]);
     const [editingCategory, setEditingCategory] = useState(null);
     const [newCategoryName, setNewCategoryName] = useState("");
+    const { categories, getCategories, createCategory, updateCategory, deleteCategory, error, setError } = useCategoryStore();
 
     useEffect(() => {
-        loadCategories();
+        getCategories();
     }, []);
 
-    async function loadCategories() {
-        try {
-            const data = await getCategories();
-            setCategories(data);
-        } catch (error) {
-            console.error('Error fetching categories:', error);
+    useEffect(() => {
+        if (error) {
             toaster.create({
-                title: error.message,
+                title: error,
                 type: "error",
                 isClosable: true,
                 duration: 3000,
             });
+            setError(null);
         }
-    }
+    }, [error]);
 
     async function handleCreateCategory() {
-        try {
-            if (newCategoryName?.trim()) {
-                const data = await createCategory(newCategoryName.trim());
-                setCategories(prevCategories => [...prevCategories, data]);
-                setNewCategoryName("");
-            }
-        } catch (error) {
-            console.error('Error creating category:', error);
-            toaster.create({
-                title: error.message,
-                type: "error",
-                isClosable: true,
-                duration: 3000,
-            });
+        if (newCategoryName?.trim()) {
+            await createCategory(newCategoryName.trim());
+            setNewCategoryName("");
         }
-    }
+    };
+
 
     async function handleUpdateCategory() {
-        try {
-            if (editingCategory?.categoryName.trim()) {
-                await updateCategory(editingCategory.categoryId, editingCategory.categoryName.trim());
-                setCategories(prevCategories => prevCategories.map(category =>
-                    category.categoryId === editingCategory.categoryId 
-                    ? {...category, categoryName: editingCategory.categoryName.trim()}
-                    : category));
-                    setEditingCategory(null);
-            }
-        } catch (error) {
-            console.error('Error updating category:', error);
-            toaster.create({
-                title: error.message,
-                type: "error",
-                isClosable: true,
-                duration: 3000,
-            });
+        if (editingCategory?.categoryName.trim()) {
+            await updateCategory(editingCategory);
+            setEditingCategory(null);
         }
-
-    }
+    };
 
     async function handleDeleteCategory(categoryId) {
-        try {
-            await deleteCategory(categoryId);
-            setCategories(categories.filter(category =>
-                category.categoryId !== categoryId)
-            );
-        } catch (error) {
-            console.error('Error deleting category:', error);
-            toaster.create({
-                title: error.message,
-                type: "error",
-                isClosable: true,
-                duration: 3000,
-            });
-        }
-    }
+        await deleteCategory(categoryId);
+    };
 
     return (
         <Box>
@@ -107,7 +68,7 @@ function CategoryManagement() {
                                     />
                                     <Button
                                         colorScheme="teal"
-                                        onClick={ handleCreateCategory}
+                                        onClick={handleCreateCategory}
                                         size="sm" pl={5} pr={5}
                                     >
                                         카테고리 생성

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Stack, HStack, VStack, Heading, Link as ChakraLink, Container, Text } from '@chakra-ui/react';
-import { getCategories } from "../services/CategoryAPI";
+import { getCategoriesAPI } from "../services/CategoryAPI";
 import Slider from 'react-slick'
 
 const settings = {
@@ -25,7 +25,7 @@ function Home() {
   }, []);
 
   function loadCategories() {
-    getCategories()
+    getCategoriesAPI()
       .then(data => {
         setCategories(data);
       })
