@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Box, Heading, Grid, GridItem, Input, Button, Textarea } from "@chakra-ui/react";
-import { getCategories } from "../../services/CategoryAPI"; // 카테고리 가져오기
+import { getCategoriesAPI } from "../../services/CategoryAPI"; // 카테고리 가져오기
 import axios from "axios";
 
 const ProductUpdateForm = () => {
@@ -42,7 +42,7 @@ const ProductUpdateForm = () => {
 
     const fetchCategories = async () => {
       try {
-        const response = await getCategories();
+        const response = await getCategoriesAPI();
         setCategories(response);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
