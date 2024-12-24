@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import OrderItem from '../pages/OrderItem';
-import { Box, HStack, VStack, Text, Input, Link as ChakraLink, Button } from '@chakra-ui/react';
+
+import { useAuth } from '@/services/AuthContext';
+import { logout } from '@/services/LogoutAPI';
+import Search from './Search';
+import OrderItem from '@/pages/OrderItem';
+import useCategoryStore from '@/store/CategoryStore';
+
+import { Box, HStack, VStack, Input, Link as ChakraLink, Button } from '@chakra-ui/react';
 import { ColorModeButton } from "@/components/ui/color-mode"
 import { InputGroup } from "@/components/ui/input-group"
 import { LuSearch } from "react-icons/lu"
-import { getCategories } from "../services/CategoryAPI";
 import {
   DrawerBackdrop,
   DrawerBody,
@@ -17,27 +22,17 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
-import { useAuth } from '../services/AuthContext';
-import { logout } from '../services/LogoutAPI';
 
 
 function Header() {
-  const { isLoggedIn, email, auth, handleContextLogout } = useAuth();
   const navigate = useNavigate();
-  const [search, setSearch] = useState("");
-  const [categories, setCategories] = useState([]);
   const [open, setOpen] = useState(false);
+  const { isLoggedIn, email, auth, handleContextLogout } = useAuth();
+  const { categories, getCategories } = useCategoryStore();
 
   useEffect(() => {
-    loadCategories();
+    getCategories();
   }, []);
-
-  function loadCategories() {
-    getCategories()
-      .then(data => {
-        setCategories(data);
-      });
-  }
 
   const handleLogout = () => {
     logout(navigate);
@@ -162,14 +157,7 @@ function Header() {
         </HStack>
       </HStack>
       <HStack justify="flex-end" mb={3}>
-        <InputGroup
-          flex="1"
-          endElement={<LuSearch />}
-          maxWidth="300px"
-          w="100%"
-        >
-          <Input placeholder="Search" />
-        </InputGroup>
+        <Search />
       </HStack>
       <VStack justify="center" mb={3}>
         <Link

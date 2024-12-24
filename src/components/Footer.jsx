@@ -1,24 +1,18 @@
 import React, { useState, useEffect } from 'react';
+
+import useCategoryStore from '@/store/CategoryStore';
+
 import { Box, HStack, VStack, Text } from '@chakra-ui/react';
-import { getCategories } from "../services/CategoryAPI";
 
 function Footer() {
-  const [categories, setCategories] = useState([]);
+  const { categories, getCategories } = useCategoryStore();
 
   useEffect(() => {
-    loadCategories();
+    getCategories();
   }, []);
-
-  function loadCategories() {
-    getCategories()
-      .then(data => {
-        setCategories(data);
-      });
-  }
 
   return (
     <Box maxWidth="1200px" width="100%" margin="0 auto" p={5}>
-      {/* <Box borderBottom={{ base: "2px solid black", _dark: "2px solid white" }} mb={5} /> */}
       <HStack align="flex-start" spacing={4}>
         <VStack align="flex-start" width="400px">
           <Text fontWeight="bold" fontSize="sm">Copyright (c) 2024 SDZ</Text>

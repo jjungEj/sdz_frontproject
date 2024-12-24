@@ -2,9 +2,11 @@ import React from 'react';
 import { Provider } from "@/components/ui/provider";
 import { AuthProvider } from './services/AuthContext';
 
-import Header from './components/Header';
-import Footer from './components/Footer';
-import Main from './components/Main';
+import {
+    Header,
+    Footer,
+    Main
+} from '@/components';
 
 import AppRouter from './routes/AppRouter';
 
