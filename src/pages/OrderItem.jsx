@@ -111,7 +111,7 @@ function OrderItem() {
         const selectedProducts = OrderItemData.orderItemDetails.filter(item => selectedItems.includes(item.productId));
         navigate('/checkout', { state: { orderData: selectedProducts } });
     };
-    
+
     const rows = (OrderItemData?.orderItemDetails ?? []).map((item) =>
         <Table.Row
             key={item.productId}
@@ -149,16 +149,19 @@ function OrderItem() {
                 </HStack>
             </Table.Cell>
             <Table.Cell>
-                {item.productName} ({item.productId})
-            </Table.Cell>
-            <Table.Cell>
                 {item.productAmount.toLocaleString()} 원
             </Table.Cell>
             <Table.Cell >
-                <HStack>
-                    <Button onClick={() => handleRemoveItem(item.productId)} variant="plain" size="xs">-</Button>
-                    <Text >{item.quantity}</Text>
-                    <Button onClick={() => handleAddItem(item.productId)} variant="plain" size="xs">+</Button>
+                <HStack spacing={3} align="center" justify="center" minW="100px">
+                    <Button onClick={() => handleRemoveItem(item.productId)} variant="plain" size="xs" w="30px">
+                        -
+                    </Button>
+                    <Text textAlign="center" w="40px" fontSize="sm">
+                        {item.quantity}
+                    </Text>
+                    <Button onClick={() => handleAddItem(item.productId)} variant="plain" size="xs" w="30px">
+                        +
+                    </Button>
                 </HStack>
             </Table.Cell>
             <Table.Cell>
@@ -191,7 +194,9 @@ function OrderItem() {
                                 </Table.ColumnHeader>
                                 <Table.ColumnHeader>제품정보</Table.ColumnHeader>
                                 <Table.ColumnHeader>판매가격</Table.ColumnHeader>
-                                <Table.ColumnHeader>수량</Table.ColumnHeader>
+                                <Table.ColumnHeader textAlign="center" w="100px">
+                                    수량
+                                </Table.ColumnHeader>
                                 <Table.ColumnHeader>주문금액</Table.ColumnHeader>
                             </Table.Row>
                         </Table.Header>

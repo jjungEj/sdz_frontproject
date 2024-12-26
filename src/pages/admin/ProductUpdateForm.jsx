@@ -284,4 +284,3 @@ const ProductUpdateForm = () => {
 };
 
 export default ProductUpdateForm;
-
