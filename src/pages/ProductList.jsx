@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom'; // Link 추가
 import { Box, Text, Heading, Spinner, Grid, GridItem, Highlight } from "@chakra-ui/react";
-import axios from "axios";
 
 import useSearchStore from "@/store/SearchStore";
 import { getCategoryAPI } from "@/services/CategoryAPI";
+import { fetchProductsByCategory, fetchAllProducts } from "@/services/ProductAPI";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -15,29 +15,19 @@ const ProductList = () => {
 
   const searchTerm = useSearchStore(state => state.search);
 
-  // URL의 쿼리 파라미터를 가져오기
   const location = useLocation();
-  const queryParams = new URLSearchParams(location.search); // 쿼리 파라미터 파싱
-  const categoryId = queryParams.get("categoryId"); // categoryId 파라미터 가져오기
+  const queryParams = new URLSearchParams(location.search);
+  const categoryId = queryParams.get("categoryId");
   const searchQuery = queryParams.get("search");
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        // 카테고리 ID를 포함한 URL로 상품 데이터 요청
-        const response = categoryId
-          ? await axios.get(`http://localhost:8080/api/products/category/${categoryId}`)
-          : await axios.get('http://localhost:8080/api/products');
+        const data = categoryId
+          ? await fetchProductsByCategory(categoryId)
+          : await fetchAllProducts();
 
-        // 응답 데이터 로깅
-        console.log('Fetched products:', response.data);
-
-        if (response.data && Array.isArray(response.data)) {
-          setProducts(response.data); // 상품 목록 업데이트
-        } else {
-          setProducts([]); // 상품 목록이 비었을 때
-          setError("상품 데이터를 가져올 수 없습니다.");
-        }
+        setProducts(data);
       } catch (err) {
         console.error('Error fetching products:', err);
         setError('상품을 불러오는 데 실패했습니다.');
@@ -47,7 +37,7 @@ const ProductList = () => {
     };
 
     fetchProducts();
-  }, [categoryId]);  // categoryId가 변경될 때마다 상품 목록을 다시 가져옴
+  }, [categoryId]);
 
   useEffect(() => {
     const filterProducts = () => {
@@ -79,7 +69,6 @@ const ProductList = () => {
     fetchCategoryName();
   }, [categoryId]);
 
-
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -107,14 +96,16 @@ const ProductList = () => {
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product) => (
             <GridItem key={product.productId}>
-              <Box borderWidth="1px" borderRadius="md" p={4} boxShadow="md">
-                <Heading as="h3" size="md" mb={2}>
-                  {product.productName}
-                </Heading>
-                <Text>가격: {product.productAmount} 원</Text>
-                <Text>재고: {product.productCount} 개</Text>
-                <Text mt={2}>{product.productContent}</Text>
-              </Box>
+              <Link to={`/product/${product.productId}`}> {/* Link를 사용하여 상세 페이지로 이동 */}
+                <Box borderWidth="1px" borderRadius="md" p={4} boxShadow="md">
+                  <Heading as="h3" size="md" mb={2}>
+                    {product.productName}
+                  </Heading>
+                  <Text>가격: {product.productAmount} 원</Text>
+                  <Text>재고: {product.productCount} 개</Text>
+                  <Text mt={2}>{product.productContent}</Text>
+                </Box>
+              </Link>
             </GridItem>
           ))
         ) : (
@@ -126,4 +117,3 @@ const ProductList = () => {
 };
 
 export default ProductList;
-

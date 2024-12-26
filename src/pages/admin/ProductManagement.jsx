@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Box, Heading, Button, Input, HStack, Table } from "@chakra-ui/react";
 import { Checkbox } from '@/components/ui/checkbox';
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { Toaster, toaster } from "@/components/ui/toaster";
+import { fetchProducts, deleteProduct, deleteSelectedProducts } from '../../services/ProductAPI'; // API 함수 임포트
 
 function ProductManagement() {
     const navigate = useNavigate();
@@ -16,14 +16,17 @@ function ProductManagement() {
 
     // 상품 목록 불러오기
     useEffect(() => {
-        axios.get("http://localhost:8080/api/products")
-            .then(response => {
-                setAllItems(response.data);
-                setFilteredItems(response.data); // 초기에는 전체 목록을 표시
-            })
-            .catch(error => {
-                console.error("상품 목록을 불러오는 데 오류가 발생했습니다:", error);
-            });
+        const loadProducts = async () => {
+            try {
+                const data = await fetchProducts();
+                setAllItems(data);
+                setFilteredItems(data); // 초기에는 전체 목록을 표시
+            } catch (error) {
+                console.error(error);
+                toaster.error("상품 목록을 불러오는 데 오류가 발생했습니다.");
+            }
+        };
+        loadProducts();
     }, []);
 
     // 검색 처리 함수
@@ -39,34 +42,29 @@ function ProductManagement() {
     };
 
     // 상품 삭제 함수
-    const handleDelete = (productId) => {
-        axios.delete(`http://localhost:8080/api/products/${productId}`)
-            .then(() => {
-                setFilteredItems(filteredItems.filter(item => item.productId !== productId));
-                toaster.success("상품이 삭제되었습니다.");
-            })
-            .catch((error) => {
-                console.error("상품 삭제 중 오류 발생:", error);
-                toaster.error("상품 삭제에 실패했습니다.");
-            });
+    const handleDelete = async (productId) => {
+        try {
+            await deleteProduct(productId);
+            setFilteredItems(filteredItems.filter(item => item.productId !== productId));
+            toaster.success("상품이 삭제되었습니다.");
+        } catch (error) {
+            console.error(error);
+            toaster.error("상품 삭제에 실패했습니다.");
+        }
     };
 
     // 선택된 상품 삭제
-    const handleSelectedDelete = () => {
+    const handleSelectedDelete = async () => {
         if (selection.length > 0) {
-            // 선택된 상품들을 하나씩 삭제
-            selection.forEach((productId) => {
-                axios.delete(`http://localhost:8080/api/products/${productId}`)
-                    .then(() => {
-                        setFilteredItems(filteredItems.filter(item => item.productId !== productId)); // 삭제된 상품 제외
-                    })
-                    .catch((error) => {
-                        console.error("상품 삭제 중 오류 발생:", error);
-                        toaster.error("상품 삭제에 실패했습니다.");
-                    });
-            });
-            toaster.success("선택된 상품들이 삭제되었습니다.");
-            setSelection([]); // 삭제 후 선택 초기화
+            try {
+                await deleteSelectedProducts(selection);
+                setFilteredItems(filteredItems.filter(item => !selection.includes(item.productId))); // 삭제된 상품 제외
+                toaster.success("선택된 상품들이 삭제되었습니다.");
+                setSelection([]); // 삭제 후 선택 초기화
+            } catch (error) {
+                console.error(error);
+                toaster.error("선택된 상품 삭제에 실패했습니다.");
+            }
         }
     };
 
@@ -141,7 +139,7 @@ function ProductManagement() {
                                         }}
                                     />
                                 </Table.Cell>
-                                <Table.Cell>{product.category}</Table.Cell>
+                                <Table.Cell>{product.categoryName}</Table.Cell>
                                 <Table.Cell>{product.productName}</Table.Cell>
                                 <Table.Cell>{product.productName}</Table.Cell>
                                 <Table.Cell>{product.productAmount}</Table.Cell>
@@ -167,3 +165,4 @@ function ProductManagement() {
 }
 
 export default ProductManagement;
+
