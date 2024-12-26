@@ -20,7 +20,9 @@ function Footer() {
         </VStack>
         <VStack align="flex-start" width="100px">
           <Text fontWeight="bold" fontSize="sm">제품</Text>
-          {categories.map((category, index) => (
+          {categories
+          .filter(category => category.parentId === null)
+          .map((category, index) => (
             <Text key={index} fontSize="xs">{category.categoryName}</Text>
           ))}
         </VStack>
