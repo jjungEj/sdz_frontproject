@@ -238,6 +238,7 @@ const ProductUpdateForm = () => {
                   borderRadius="5px"
                   padding="5px"
                   cursor="pointer"
+                  onClick={() => handleThumbnailSelect(image)}
                 >
                   <img src={image.path} alt={`image-${index}`} style={{ maxWidth: "100px" }} />
                   <Button
@@ -250,7 +251,14 @@ const ProductUpdateForm = () => {
                   >
                     {image.markedForDeletion ? "복원" : "삭제"}
                   </Button>
-                  <Text>{thumbnail === image ? "썸네일" : ""}</Text>
+                  <Text fontSize="sm" mt="5px" textAlign="center" isTruncated>
+                    {image.name}
+                  </Text>
+                  {thumbnail === image && (
+                      <Text fontSize="xs" color="blue">
+                        썸네일
+                      </Text>
+                  )}
                 </Box>
               ))}
             </Flex>
