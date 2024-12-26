@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { fetchOrderItemData, modifyOrderItem, clearOrderItem } from "../services/OrderItemAPI";
 import { Box, Stack, HStack, VStack, Link, Heading, Table, Button, Text, } from '@chakra-ui/react';
 import { Toaster, toaster } from "@/components/ui/toaster"
@@ -145,7 +145,15 @@ function OrderItem() {
                             border: "1px solid #ccc",
                         }}
                     />
-                    <Text>{item.productName} ({item.productId})</Text>
+                    {/* 상품명 클릭 시 상세 페이지로 이동 */}
+                    <VStack align="flex-start" spacing={1}>
+                        <Text as={RouterLink} to={`/product/${item.productId}`} fontWeight="bold" color="teal.500">
+                            {item.productName}
+                        </Text>
+                        <Text fontSize="xs" color="gray.600">
+                            ({item.productId})
+                        </Text>
+                    </VStack>
                 </HStack>
             </Table.Cell>
             <Table.Cell>
