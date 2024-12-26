@@ -22,7 +22,9 @@ function Home() {
         <MainSlider cards={cards} />
       </Box>
       <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
-      {categories.map((category) => (
+      {categories
+      .filter(category => category.parentId === null)
+      .map((category) => (
         <Box key={category.categoryId} mb={5}>
           <HStack justify="space-between" margin="5">
             <VStack>

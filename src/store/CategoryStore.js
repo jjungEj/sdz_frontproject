@@ -16,11 +16,11 @@ const useCategoryStore = create((set) => ({
         }
     },
 
-    createCategory: async (categoryName) => {
+    createCategory: async (categoryName, parentId = null) => {
         try {
-            const newCategory = await createCategoryAPI(categoryName);
+            const data = await createCategoryAPI(categoryName, parentId);
             set((state) => ({
-                categories: [...state.categories, newCategory], error: null
+                categories: [...state.categories, categoryName], error: null
             }));
         } catch (error) {
             set({ error: error.message });
