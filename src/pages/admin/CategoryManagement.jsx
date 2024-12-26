@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 
 import useCategoryStore from '@/store/CategoryStore';
 
-import { Box, Heading, Button, Input, HStack, Table, VStack, AbsoluteCenter, IconButton } from '@chakra-ui/react';
-import { LuCheck, LuPencilLine, LuX, LuTrash2, LuCornerDownRight } from "react-icons/lu"
+import { Box, Heading, Button, Input, HStack, AbsoluteCenter, IconButton } from '@chakra-ui/react';
+import { LuCheck, LuPencilLine, LuX, LuTrash2 } from "react-icons/lu"
 import { Toaster, toaster } from "@/components/ui/toaster"
 import {
     AccordionItem,
@@ -15,8 +15,8 @@ import {
 function CategoryManagement() {
     const [editingCategory, setEditingCategory] = useState(null);
     const [newCategoryName, setNewCategoryName] = useState("");
-    const [selectedParentId, setSelectedParentId] = useState(null);
-    const { categories, getCategories, createCategory, updateCategory, deleteCategory, error, setError } = useCategoryStore();
+    const [newSubCategoryName, setNewSubCategoryName] = useState("");
+    const { categories, getCategories, createCategory, createSubCategory, updateCategory, deleteCategory, error, setError } = useCategoryStore();
 
     useEffect(() => {
         getCategories();
@@ -36,26 +36,29 @@ function CategoryManagement() {
 
     async function handleCreateCategory() {
         if (newCategoryName?.trim()) {
-            await createCategory(newCategoryName.trim(), selectedParentId);
-            getCategories();
+            await createCategory(newCategoryName.trim());
             setNewCategoryName("");
-            setSelectedParentId(null);
         }
     };
 
+    async function handleCreateSubCategory(parentId) {
+        if (newSubCategoryName?.trim()) {
+            await createSubCategory(newSubCategoryName.trim(), parentId);
+            setNewSubCategoryName("");
+            getCategories();
+        }
+    };
 
     async function handleUpdateCategory() {
         if (editingCategory?.categoryName.trim()) {
             await updateCategory(editingCategory);
-            getCategories();
             setEditingCategory(null);
-            setSelectedParentId(null);
+            getCategories();
         }
     };
 
     async function handleDeleteCategory(categoryId) {
         await deleteCategory(categoryId);
-        setSelectedParentId(null);
     };
 
     return (
@@ -124,9 +127,7 @@ function CategoryManagement() {
                                         </>
                                     ) : (
                                         <>
-                                            <AccordionItemTrigger
-                                                indicatorPlacement="start"
-                                                onClick={() => setSelectedParentId(category.categoryId)}>
+                                            <AccordionItemTrigger indicatorPlacement="start">
                                                 {category.categoryName}
                                             </AccordionItemTrigger>
                                             <AbsoluteCenter axis="vertical" insetEnd="0">
@@ -152,87 +153,83 @@ function CategoryManagement() {
                                     )}
                                 </Box>
                                 <AccordionItemContent>
-                                    {selectedParentId === category.categoryId && (
-                                        <Box>
-                                            <HStack justify="flex-end">
-                                                <Input
-                                                    type="text"
-                                                    value={newCategoryName}
-                                                    onChange={e => setNewCategoryName(e.target.value)}
-                                                    placeholder="카테고리명 입력"
-                                                    size="sm"
-                                                    maxWidth="200px"
-                                                    w="100%"
-                                                />
-                                                <Button
-                                                    colorScheme="blue"
-                                                    onClick={handleCreateCategory}
-                                                    size="sm"
-                                                >
-                                                    카테고리 추가
-                                                </Button>
-                                            </HStack>
-                                            {categories
-                                                .filter(child => child.parentId === category.categoryId)
-                                                .map(child => (
-                                                    <Box key={`${category.categoryId}-${child.categoryId}`} position="relative" mt={3}>
-                                                        {editingCategory?.categoryId === child.categoryId ? (
-                                                            <>
-                                                                <Input
-                                                                    type="text"
-                                                                    value={editingCategory.categoryName}
-                                                                    onChange={e => setEditingCategory({ ...editingCategory, categoryName: e.target.value })}
-                                                                    placeholder="카테고리 이름"
-                                                                    size="sm"
-                                                                    maxWidth="300px"
-                                                                    w="100%"
-                                                                />
-                                                                <AbsoluteCenter axis="vertical" insetEnd="0">
-                                                                    <HStack justify="flex-end">
-                                                                        <IconButton
-                                                                            variant="outline"
-                                                                            size="xs"
-                                                                            onClick={handleUpdateCategory}
-                                                                        >
-                                                                            <LuCheck />
-                                                                        </IconButton>
-                                                                        <IconButton
-                                                                            variant="outline"
-                                                                            size="xs"
-                                                                            onClick={() => setEditingCategory(null)}
-                                                                        >
-                                                                            <LuX />
-                                                                        </IconButton>
-                                                                    </HStack>
-                                                                </AbsoluteCenter>
-                                                            </>
-                                                        ) : (
-                                                            <>
-                                                                {child.categoryName}
-                                                                <AbsoluteCenter axis="vertical" insetEnd="0">
-                                                                    <HStack justify="flex-end">
-                                                                        <IconButton
-                                                                            variant="ghost"
-                                                                            size="xs"
-                                                                            onClick={() =>
-                                                                                setEditingCategory({ categoryId: child.categoryId, categoryName: child.categoryName })}>
-                                                                            <LuPencilLine />
-                                                                        </IconButton>
-                                                                        <IconButton
-                                                                            variant="ghost"
-                                                                            size="xs"
-                                                                            onClick={() => handleDeleteCategory(child.categoryId)}
-                                                                        >
-                                                                            <LuTrash2 />
-                                                                        </IconButton>
-                                                                    </HStack>
-                                                                </AbsoluteCenter>
-                                                            </>
-                                                        )}
-                                                    </Box>
-                                                ))}
-                                        </Box>
-                                    )}
+                                    <HStack justify="flex-end">
+                                        <Input
+                                            type="text"
+                                            value={newSubCategoryName}
+                                            onChange={e => setNewSubCategoryName(e.target.value)}
+                                            placeholder="카테고리명 입력"
+                                            size="sm"
+                                            maxWidth="200px"
+                                            w="100%"
+                                        />
+                                        <Button
+                                            colorScheme="blue"
+                                            onClick={() => handleCreateSubCategory(category.categoryId)}
+                                            size="sm"
+                                        >
+                                            카테고리 추가
+                                        </Button>
+                                    </HStack>
+                                    {categories
+                                        .filter(child => child.parentId === category.categoryId)
+                                        .map(child => (
+                                            <Box key={`${category.categoryId}-${child.categoryId}`} position="relative" mt={3}>
+                                                {editingCategory?.categoryId === child.categoryId ? (
+                                                    <>
+                                                        <Input
+                                                            type="text"
+                                                            value={editingCategory.categoryName}
+                                                            onChange={e => setEditingCategory({ ...editingCategory, categoryName: e.target.value })}
+                                                            placeholder="카테고리 이름"
+                                                            size="sm"
+                                                            maxWidth="300px"
+                                                            w="100%"
+                                                        />
+                                                        <AbsoluteCenter axis="vertical" insetEnd="0">
+                                                            <HStack justify="flex-end">
+                                                                <IconButton
+                                                                    variant="outline"
+                                                                    size="xs"
+                                                                    onClick={handleUpdateCategory}
+                                                                >
+                                                                    <LuCheck />
+                                                                </IconButton>
+                                                                <IconButton
+                                                                    variant="outline"
+                                                                    size="xs"
+                                                                    onClick={() => setEditingCategory(null)}
+                                                                >
+                                                                    <LuX />
+                                                                </IconButton>
+                                                            </HStack>
+                                                        </AbsoluteCenter>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        {child.categoryName}
+                                                        <AbsoluteCenter axis="vertical" insetEnd="0">
+                                                            <HStack justify="flex-end">
+                                                                <IconButton
+                                                                    variant="ghost"
+                                                                    size="xs"
+                                                                    onClick={() =>
+                                                                        setEditingCategory({ categoryId: child.categoryId, categoryName: child.categoryName })}>
+                                                                    <LuPencilLine />
+                                                                </IconButton>
+                                                                <IconButton
+                                                                    variant="ghost"
+                                                                    size="xs"
+                                                                    onClick={() => handleDeleteCategory(child.categoryId)}
+                                                                >
+                                                                    <LuTrash2 />
+                                                                </IconButton>
+                                                            </HStack>
+                                                        </AbsoluteCenter>
+                                                    </>
+                                                )}
+                                            </Box>
+                                        ))}
                                 </AccordionItemContent>
                             </AccordionItem>
                         ))
