@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { getCategoriesAPI } from "../../services/CategoryAPI";
+import { createProductAPI } from "../../services/ProductAPI";
 import { useNavigate } from "react-router-dom";
-import { Box, Heading, Grid, GridItem, Input, Button, Textarea, Text, Flex } from "@chakra-ui/react";
+import { Box, Heading, Grid, GridItem, Input, Button, Textarea, Text, Flex,} from "@chakra-ui/react";
 
 const ProductForm = () => {
   const [productName, setProductName] = useState("");
@@ -10,17 +11,16 @@ const ProductForm = () => {
   const [productContent, setProductContent] = useState("");
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [images, setImages] = useState([]); // 첨부파일 관리
-  const [thumbnail, setThumbnail] = useState(null); // 썸네일 선택 관리
+  const [images, setImages] = useState([]);
+  const [thumbnail, setThumbnail] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Fetch categories on component mount
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await getCategoriesAPI();
-        setCategories(response);
+        const data = await getCategoriesAPI();
+        setCategories(data);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
         alert("Failed to load categories. Please try again.");
@@ -30,61 +30,47 @@ const ProductForm = () => {
     fetchCategories();
   }, []);
 
-  // 파일 변경 핸들러
   const handleFileChange = (e) => {
-    const files = Array.from(e.target.files); // 선택된 파일들을 배열로 변환
+    const files = Array.from(e.target.files);
     const filePreviews = files.map((file) => ({
       name: file.name,
-      preview: URL.createObjectURL(file), // 파일 미리보기 URL 생성
+      preview: URL.createObjectURL(file),
       file,
     }));
-    setImages(filePreviews); // 미리보기 정보를 포함한 파일 목록 저장
+    setImages(filePreviews);
   };
 
-  // 썸네일 선택 핸들러
   const handleThumbnailSelect = (image) => {
-    setThumbnail(thumbnail === image ? null : image); // 동일한 이미지를 클릭하면 해제
+    setThumbnail(thumbnail === image ? null : image);
   };
 
   const handleSubmit = async () => {
-    if (loading) return; // 이미 제출 중이라면 추가 제출을 방지
+    if (loading) return;
     setLoading(true);
 
-    const formData = new FormData(); // FormData 객체 생성
-
-    // JSON 데이터를 FormData에 추가
+    const formData = new FormData();
     formData.append(
-        "productDTO",
-        JSON.stringify({
-          productName,
-          productAmount,
-          productCount,
-          productContent,
-          userId: "admin@example.com",
-          categoryId: selectedCategory,
-        })
+      "productDTO",
+      JSON.stringify({
+        productName,
+        productAmount,
+        productCount,
+        productContent,
+        userId: "admin@example.com",
+        categoryId: selectedCategory,
+      })
     );
 
-    // 첨부된 파일 추가
     images.forEach((image) => {
       formData.append("images", image.file);
     });
 
-    // 썸네일 이미지 추가
     formData.append("thumbnail", thumbnail ? thumbnail.file : null);
 
     try {
-      const response = await fetch("http://localhost:8080/api/products", {
-        method: "POST",
-        body: formData, // FormData를 전송
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
+      await createProductAPI(formData);
       alert("Product successfully created.");
-      navigate("/");
+      navigate("/admin/products");
     } catch (error) {
       console.error("Product creation failed:", error);
       alert("An error occurred while creating the product. Please try again.");
@@ -94,15 +80,7 @@ const ProductForm = () => {
   };
 
   const handleCancel = () => {
-    // Clear the form data
-    setProductName("");
-    setProductAmount(0);
-    setProductCount(0);
-    setProductContent("");
-    setSelectedCategory("");
-    images.forEach((image) => URL.revokeObjectURL(image.preview)); // 미리보기 URL 해제
-    setImages([]);
-    setThumbnail(null); // 썸네일 초기화
+    navigate(-1); // 이전 페이지로 이동
   };
 
   return (

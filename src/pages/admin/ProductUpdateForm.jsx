@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Box, Heading, Grid, GridItem, Input, Button, Textarea } from "@chakra-ui/react";
 import { getCategoriesAPI } from "../../services/CategoryAPI"; // 카테고리 가져오기
-import axios from "axios";
 
 const ProductUpdateForm = () => {
   const { productId } = useParams(); // URL 파라미터에서 상품 ID 받기
@@ -17,20 +16,18 @@ const ProductUpdateForm = () => {
 
   // 상품 정보와 카테고리 목록을 비동기적으로 가져오기
   useEffect(() => {
-    console.log("Product ID: ", productId); // 디버깅 코드
-
     const fetchProduct = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/api/products/${productId}`);
-        const product = response.data;
-
-        console.log("Fetched product:", product); // 디버깅: 상품 정보 출력
+        const response = await fetch(`http://localhost:8080/api/products/${productId}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const product = await response.json();
         setProductName(product.productName);
         setProductAmount(product.productAmount);
         setProductCount(product.productCount);
         setProductContent(product.productContent);
 
-        // 카테고리 ID가 있을 경우에만 설정
         if (product.categoryId) {
           setSelectedCategory(product.categoryId); // 카테고리 ID 설정
         }
@@ -42,8 +39,8 @@ const ProductUpdateForm = () => {
 
     const fetchCategories = async () => {
       try {
-        const response = await getCategoriesAPI();
-        setCategories(response);
+        const categoriesData = await getCategoriesAPI();
+        setCategories(categoriesData);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
         alert("Failed to load categories. Please try again.");
@@ -69,14 +66,20 @@ const ProductUpdateForm = () => {
     };
 
     try {
-      const response = await axios.put(`http://localhost:8080/api/products/${productId}`, formData);
+      const response = await fetch(`http://localhost:8080/api/products/${productId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-      if (response.status === 200) {
-        alert("Product successfully updated.");
-        navigate(`/admin/products`); // 수정 후 관리자 상품 페이지로 이동
-      } else {
+      if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+
+      alert("Product successfully updated.");
+      navigate(`/admin/products`); // 수정 후 관리자 상품 페이지로 이동
     } catch (error) {
       console.error("Product update failed:", error);
       alert("An error occurred while updating the product. Please try again.");
@@ -241,3 +244,4 @@ const ProductUpdateForm = () => {
 };
 
 export default ProductUpdateForm;
+
