@@ -89,3 +89,23 @@ export const createProductAPI = async (formData) => {
   
     return response.json();
   };
+
+  export const getProductByIdAPI = async (productId) => {
+    const response = await fetch(`${BASE_URL}/${productId}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch product with ID: ${productId}`);
+    }
+    return response.json();
+  };
+  
+  export const updateProductAPI = async (productId, formData) => {
+    const response = await fetch(`${BASE_URL}/${productId}`, {
+      method: "PUT",
+      body: formData,
+    });
+    if (!response.ok) {
+      throw new Error("Failed to update product");
+    }
+    return response.json();
+  };
+
