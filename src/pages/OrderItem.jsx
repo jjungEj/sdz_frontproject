@@ -149,9 +149,6 @@ function OrderItem() {
                 </HStack>
             </Table.Cell>
             <Table.Cell>
-                {item.productName} ({item.productId})
-            </Table.Cell>
-            <Table.Cell>
                 {item.productAmount.toLocaleString()} 원
             </Table.Cell>
             <Table.Cell >
