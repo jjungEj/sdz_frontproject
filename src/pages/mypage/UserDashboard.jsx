@@ -191,7 +191,7 @@ function UserDashboard() {
                             </Card.Root>
                         </VStack>
                         <VStack width='100%' maxWidth='550px' height='600px' align='center'>
-                            <HStack justify="space-between" width="100%" align="center">
+                            <HStack justify='space-between' width='100%' align='center'>
                                 <Heading as='h3' size='lg'>배송지 관리</Heading>
                                 <HStack>
                                 <DeliveryAddressDialog

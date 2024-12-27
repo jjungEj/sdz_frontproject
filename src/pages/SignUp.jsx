@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, HStack, VStack, Stack, Text, Input, Link, Button, Heading } from '@chakra-ui/react';
 import { Field } from '@/components/ui/field';
 import { Checkbox } from '@/components/ui/checkbox';
-import { PasswordInput } from "@/components/ui/password-input"
+import { PasswordInput } from '@/components/ui/password-input'
 import { useNavigate } from 'react-router-dom';
 import { SocialLoginButtons } from '../components/SocialLoginButtons';
 import { NativeSelectField, NativeSelectRoot } from '@/components/ui/native-select'
@@ -27,8 +27,9 @@ function SignUp() {
     const [consent2, setConsent2] = useState(true);
     const [consent3, setConsent3] = useState(true);
     const navigate = useNavigate();
-
     const { register, handleSubmit, formState: { errors }, setError  } = useForm();
+
+    const isFormValid = userId && domain && userPassword && userName && nickname && contactPrefix && contactMid && contactLast;
 
     useEffect(() => {
         if (userId && domain) {
@@ -308,12 +309,13 @@ function SignUp() {
                         </VStack>
                         <Button
                             type='submit'
+                            disabled={!isFormValid}
                         >
                             회원가입하기
                         </Button>
                         <Text>
                             이미 아이디가 있으신가요?
-                            <Link href="/login">로그인</Link>
+                            <Link href='/login'>로그인</Link>
                         </Text>
                         </Stack>
                     </form>
