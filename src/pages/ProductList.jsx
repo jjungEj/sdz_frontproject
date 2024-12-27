@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, Link } from 'react-router-dom'; // Link 추가
-import { Box, Text, Heading, Spinner, Grid, GridItem, Highlight } from "@chakra-ui/react";
+import { Box, Text, Heading, Spinner, Grid, GridItem, Highlight, Card, Image, Button, HStack } from "@chakra-ui/react";
 
 import useSearchStore from "@/store/SearchStore";
 import { getCategoryAPI } from "@/services/CategoryAPI";
@@ -92,27 +92,59 @@ const ProductList = () => {
           {categoryId ? `${categoryName} 상품 목록` : searchTerm ? `"${searchTerm}" 검색 결과` : "전체 상품 목록"}
         </Highlight>
       </Heading>
-      <Grid templateColumns="repeat(5, 1fr)" gap={6}>
+      <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={6} />
+      <HStack wrap="wrap" justify="flex-start" margin="5">
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product) => (
-            <GridItem key={product.productId}>
-              <Link to={`/product/${product.productId}`}> {/* Link를 사용하여 상세 페이지로 이동 */}
-                <Box borderWidth="1px" borderRadius="md" p={4} boxShadow="md">
-                  <Heading as="h3" size="md" mb={2}>
-                    {product.productName}
-                  </Heading>
-                  <Text>가격: {product.productAmount} 원</Text>
-                  <Text>재고: {product.productCount} 개</Text>
-                  <Text mt={2}>{product.productContent}</Text>
-                </Box>
-              </Link>
-            </GridItem>
+            <Box key={product.productId} width="calc(33.33% - 20px)" mb="5">
+              <Card.Root borderRadius="2xl" maxW="xs" overflow="hidden" cursor="pointer">
+                <Link to={`/product/${product.productId}`}>
+                  <Image
+                    src={`http://localhost:8080${product.thumbnailPath}`}
+                    alt={product.productName}
+                    style={{ width: '100%', height: '300px', objectFit: 'cover' }}
+                    bgColor="gray.100"
+                  />
+                  <Card.Body gap="2">
+                    <Card.Title>{product.productName}</Card.Title>
+                    <Text textStyle="2xl" fontWeight="medium" letterSpacing="tight" mt="2">
+                      &#8361;{product.productAmount}
+                    </Text>
+                  </Card.Body>
+                </Link>
+                <Card.Footer gap="2">
+                  <Button variant="solid">Buy now</Button>
+                  <Button variant="ghost">Add to cart</Button>
+                </Card.Footer>
+              </Card.Root>
+            </Box>
           ))
         ) : (
           <Text>상품이 없습니다.</Text>
         )}
-      </Grid>
+      </HStack>
     </Box>
+    //   <Grid templateColumns="repeat(5, 1fr)" gap={6}>
+    //     {filteredProducts.length > 0 ? (
+    //       filteredProducts.map((product) => (
+    //         <GridItem key={product.productId}>
+    //           <Link to={`/product/${product.productId}`}> {/* Link를 사용하여 상세 페이지로 이동 */}
+    //             <Box borderWidth="1px" borderRadius="md" p={4} boxShadow="md">
+    //               <Heading as="h3" size="md" mb={2}>
+    //                 {product.productName}
+    //               </Heading>
+    //               <Text>가격: {product.productAmount} 원</Text>
+    //               <Text>재고: {product.productCount} 개</Text>
+    //               <Text mt={2}>{product.productContent}</Text>
+    //             </Box>
+    //           </Link>
+    //         </GridItem>
+    //       ))
+    //     ) : (
+    //       <Text>상품이 없습니다.</Text>
+    //     )}
+    //   </Grid>
+    // </Box>
   );
 };
 
