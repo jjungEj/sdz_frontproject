@@ -11,15 +11,6 @@ export const fetchProductsByCategory = async (categoryId) => {
   return response.json();
 };
 
-
-export const fetchAllProducts = async () => {
-  const response = await fetch(`${BASE_URL}/products`);
-  if (!response.ok) {
-    throw new Error("전체 상품 데이터를 가져오는 데 실패했습니다.");
-  }
-  return response.json();
-};
-
 export const fetchProducts = async () => {
     try {
         const response = await fetch(`${BASE_URL}`);
