@@ -93,11 +93,11 @@ const ProductList = () => {
         </Highlight>
       </Heading>
       <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={6} />
-      <HStack wrap="wrap" justify="flex-start" margin="5">
+      <HStack wrap="wrap" justify="flex-start" margin="5" ml="20">
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product) => (
             <Box key={product.productId} width="calc(33.33% - 20px)" mb="5">
-              <Card.Root borderRadius="2xl" maxW="xs" overflow="hidden" cursor="pointer">
+              <Card.Root borderRadius="2xl" maxW="300px" overflow="hidden" cursor="pointer">
                 <Link to={`/product/${product.productId}`}>
                   <Image
                     src={`http://localhost:8080${product.thumbnailPath}`}
