@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 
 import MainSlider from '@/components/MainSlider';
 import { cards } from '@/data/slideCards';
-import CategoryContent from '@/components/CategoryContent';
+import SubCategoryCard from '@/components/SubCategoryCard';
 import useCategoryStore from '@/store/CategoryStore';
 
 
-import { Box, Stack, HStack, VStack, Heading, Link as ChakraLink, Image } from '@chakra-ui/react';
+import { Box, HStack, VStack, Heading, Link as ChakraLink } from '@chakra-ui/react';
 
 function Home() {
   const { categories, getCategories } = useCategoryStore();
@@ -17,36 +17,42 @@ function Home() {
   }, []);
 
   return (
-    <Box>
+    <>
       <Box marginBottom="20">
         <MainSlider cards={cards} />
       </Box>
       <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
-      {categories.map((category) => (
-        <Box key={category.categoryId} mb={5}>
-          <HStack justify="space-between" margin="5">
-            <VStack>
-              <Heading>{category.categoryName}</Heading>
-            </VStack>
-            <VStack>
-              <ChakraLink
-                asChild
-                _focus={{ outline: "none" }}
-                fontSize="xs"
-                fontWeight="medium"
-                color="teal.600"
-              >
-                <Link to={`/products?categoryId=${category.categoryId}`}>
-                  ALL PRODUCTS
-                </Link>
-              </ChakraLink>
-            </VStack>
-          </HStack>
-          <CategoryContent category={category} />
-          <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} mt={10} />
-        </Box>
-      ))}
-    </Box>
+      {categories
+        .filter(category => category.parentId === null)
+        .map((category) => {
+          const subCategories = categories.filter(subCategory => subCategory.parentId === category.categoryId);
+          return (
+            <Box key={category.categoryId} mb={5}>
+              <HStack justify="space-between" margin="5">
+                <VStack>
+                  <Heading>{category.categoryName}</Heading>
+                </VStack>
+                <VStack>
+                  <ChakraLink
+                    asChild
+                    _focus={{ outline: "none" }}
+                    fontSize="xs"
+                    fontWeight="medium"
+                    color="teal.600"
+                  >
+                    <Link to={`/products?categoryId=${category.categoryId}`}>
+                      ALL PRODUCTS
+                    </Link>
+                  </ChakraLink>
+                </VStack>
+              </HStack>
+              <SubCategoryCard categories={subCategories} />
+              <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} mt={10} />
+            </Box>
+          );
+        }
+        )}
+    </>
   );
 }
 

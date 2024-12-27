@@ -11,14 +11,14 @@ async function handleResponse(response) {
     return await response.json();
 }
 
-async function createCategoryAPI(categoryName) {
+async function createCategoryAPI(categoryName, parentId) {
     try {
         const response = await fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ categoryName: categoryName }),
+            body: JSON.stringify({ categoryName, parentId }),
         });
         return await handleResponse(response);
     } catch (error) {

@@ -76,7 +76,9 @@ function Header() {
         </Link>
       </VStack>
       <HStack justify="center" mb={3}>
-        {categories.map((category, index) => (
+        {categories
+        .filter(category => category.parentId === null)
+        .map((category, index) => (
           <ChakraLink
             key={index}
             asChild

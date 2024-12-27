@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { fetchOrderItemData, modifyOrderItem, clearOrderItem } from "../services/OrderItemAPI";
 import { Box, Stack, HStack, VStack, Link, Heading, Table, Button, Text, } from '@chakra-ui/react';
 import { Toaster, toaster } from "@/components/ui/toaster"
@@ -111,7 +111,7 @@ function OrderItem() {
         const selectedProducts = OrderItemData.orderItemDetails.filter(item => selectedItems.includes(item.productId));
         navigate('/checkout', { state: { orderData: selectedProducts } });
     };
-    
+
     const rows = (OrderItemData?.orderItemDetails ?? []).map((item) =>
         <Table.Row
             key={item.productId}
@@ -145,20 +145,31 @@ function OrderItem() {
                             border: "1px solid #ccc",
                         }}
                     />
-                    <Text>{item.productName} ({item.productId})</Text>
+                    {/* 상품명 클릭 시 상세 페이지로 이동 */}
+                    <VStack align="flex-start" spacing={1}>
+                        <Text as={RouterLink} to={`/product/${item.productId}`} fontWeight="bold" color="teal.500">
+                            {item.productName}
+                        </Text>
+                        <Text fontSize="xs" color="gray.600">
+                            ({item.productId})
+                        </Text>
+                    </VStack>
                 </HStack>
-            </Table.Cell>
-            <Table.Cell>
-                {item.productName} ({item.productId})
             </Table.Cell>
             <Table.Cell>
                 {item.productAmount.toLocaleString()} 원
             </Table.Cell>
             <Table.Cell >
-                <HStack>
-                    <Button onClick={() => handleRemoveItem(item.productId)} variant="plain" size="xs">-</Button>
-                    <Text >{item.quantity}</Text>
-                    <Button onClick={() => handleAddItem(item.productId)} variant="plain" size="xs">+</Button>
+                <HStack spacing={3} align="center" justify="center" minW="100px">
+                    <Button onClick={() => handleRemoveItem(item.productId)} variant="plain" size="xs" w="30px">
+                        -
+                    </Button>
+                    <Text textAlign="center" w="40px" fontSize="sm">
+                        {item.quantity}
+                    </Text>
+                    <Button onClick={() => handleAddItem(item.productId)} variant="plain" size="xs" w="30px">
+                        +
+                    </Button>
                 </HStack>
             </Table.Cell>
             <Table.Cell>
@@ -191,7 +202,9 @@ function OrderItem() {
                                 </Table.ColumnHeader>
                                 <Table.ColumnHeader>제품정보</Table.ColumnHeader>
                                 <Table.ColumnHeader>판매가격</Table.ColumnHeader>
-                                <Table.ColumnHeader>수량</Table.ColumnHeader>
+                                <Table.ColumnHeader textAlign="center" w="100px">
+                                    수량
+                                </Table.ColumnHeader>
                                 <Table.ColumnHeader>주문금액</Table.ColumnHeader>
                             </Table.Row>
                         </Table.Header>
