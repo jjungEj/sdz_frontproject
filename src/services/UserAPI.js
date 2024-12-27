@@ -47,7 +47,7 @@ export const updateLocal = (userData) => {
               throw new Error(errorData.message);
           });
       }
-      return response.text().then(text => text ? JSON.parse(text) : {});
+      return response.json();
   })
   .catch(error => {
       throw error;
@@ -68,7 +68,7 @@ export const updateSocial = (userData) => {
               throw new Error(errorData.message);
           });
       }
-      return response.text().then(text => text ? JSON.parse(text) : {});
+      return response.json();
   })
   .catch(error => {
       throw error;
