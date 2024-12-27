@@ -5,6 +5,7 @@ import { Box, Text, Heading, Spinner, Grid, GridItem, Highlight, Card, Image, Bu
 import useSearchStore from "@/store/SearchStore";
 import { getCategoryAPI } from "@/services/CategoryAPI";
 import { fetchProductsByCategory, fetchProducts } from "@/services/ProductAPI";
+import { modifyOrderItem } from "@/services/OrderItemAPI"; // 장바구니 API 추가
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -69,6 +70,17 @@ const ProductList = () => {
     fetchCategoryName();
   }, [categoryId]);
 
+  // 장바구니에 상품 추가
+  const handleAddToCart = async (productId) => {
+    try {
+      await modifyOrderItem(productId, 1); // 수량 1로 추가
+      alert("장바구니에 상품이 추가되었습니다!");
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      alert("장바구니에 상품을 추가하는 데 실패했습니다.");
+    }
+  };
+
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -114,7 +126,12 @@ const ProductList = () => {
                 </Link>
                 <Card.Footer gap="2">
                   <Button variant="solid">Buy now</Button>
-                  <Button variant="ghost">Add to cart</Button>
+                  <Button
+                      variant="ghost"
+                      onClick={() => handleAddToCart(product.productId)} // 장바구니 추가 버튼 동작
+                  >
+                    Add to cart
+                  </Button>
                 </Card.Footer>
               </Card.Root>
             </Box>
