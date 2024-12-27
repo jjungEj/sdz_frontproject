@@ -1,9 +1,11 @@
-const url = 'http://localhost:8080/api/admin/';
+const url = 'http://localhost:8080/api/admin';
 
 export const getUserList = (page, size, type, keyword) => {
-  return fetch(`${url}user-management?page=${page}&size=${size}&type=${type}&keyword=${keyword}`, {
+  return fetch(`${url}/user-management?page=${page}&size=${size}&type=${type}&keyword=${keyword}`, {
     method: 'GET',
-    headers: { 'Content-Type': 'application/json', },
+    headers: { 
+      'Content-Type': 'application/json',
+    },
   })
     .then((response) => {
       if (!response.ok) {
@@ -19,9 +21,11 @@ export const getUserList = (page, size, type, keyword) => {
 };
 
 export const updateLoginLock = (email) => {
-  return fetch(`${url}${email}/login-lock`, {
+  return fetch(`${url}/${email}/login-lock`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json', },
+    headers: { 
+      'Content-Type': 'application/json',
+    },
   })
     .then((response) => {
       if (!response.ok) {
@@ -36,9 +40,11 @@ export const updateLoginLock = (email) => {
 };
 
 export const updateAuth = (email) => {
-  return fetch(`${url}${email}/auth`, {
+  return fetch(`${url}/${email}/auth`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json', },
+    headers: { 
+      'Content-Type': 'application/json',
+    },
   })
     .then((response) => {
       if (!response.ok) {
@@ -53,7 +59,7 @@ export const updateAuth = (email) => {
 };
 
 export const deleteUser = (email) => {
-  return fetch(`${url}${email}`, {
+  return fetch(`${url}/${email}`, {
     method: 'DELETE',
   })
     .then((response) => {
@@ -69,7 +75,7 @@ export const deleteUser = (email) => {
 };
 
 export const deleteUsers = (emails) => {
-  return fetch(`${url}users`, {
+  return fetch(`${url}/users`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',

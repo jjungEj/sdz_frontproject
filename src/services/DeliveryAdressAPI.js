@@ -1,7 +1,7 @@
-const url = 'http://localhost:8080/api/deliveryAddress/';
+const url = 'http://localhost:8080/api/deliveryAddress';
 
 export const getDeliveryAddressList = (page, size) => {
-  return fetch(`${url}list?page=${page}&size=${size}`, {
+  return fetch(`${url}/list?page=${page}&size=${size}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -20,12 +20,26 @@ export const getDeliveryAddressList = (page, size) => {
     });
 };
 
-export const createNewAddress = ( deliveryAddressId, email, deliveryAddress1, deliveryAddress2, deliveryAddress3, receiverName, receiverContact, deliveryRequest, defaultCheck ) => {
-  const payload = { deliveryAddressId, email, deliveryAddress1, deliveryAddress2, deliveryAddress3, receiverName, receiverContact, deliveryRequest, defaultCheck };
+export const AddressInfo = (deliveryAddressId) => {
+    return fetch(`${url}/${deliveryAddressId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access')}`,
+        },
+    }).then(response => {
+        return response.json();
+    });
+}
+
+export const createNewAddress = ( newAddress ) => {
   return fetch(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', },
-    body: JSON.stringify(payload),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('access')}`,
+    },
+    body: JSON.stringify(newAddress),
   })
     .then((response) => {
       if (!response.ok) {
@@ -39,13 +53,14 @@ export const createNewAddress = ( deliveryAddressId, email, deliveryAddress1, de
     });
 };
 
-export const updateAddress = ( deliveryAddressId, email, deliveryAddress1, deliveryAddress2, deliveryAddress3, receiverName, receiverContact, deliveryRequest, defaultCheck ) => {
-  const payload = { deliveryAddressId, email, deliveryAddress1, deliveryAddress2, deliveryAddress3, receiverName, receiverContact, deliveryRequest, defaultCheck };
-  
-  return fetch(`${url}${deliveryAddressId}`, {
+export const updateAddress = ( address ) => {
+  return fetch(`${url}/${address.deliveryAddressId}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json', },
-    body: JSON.stringify(payload),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('access')}`,
+    },
+    body: JSON.stringify(address),
   })
     .then((response) => {
       if (!response.ok) {
@@ -59,12 +74,13 @@ export const updateAddress = ( deliveryAddressId, email, deliveryAddress1, deliv
     });
 };
 
-export const updateDefaultAddress = (deliveryAddressId, email, defaultCheck) => {
-  const payload = { deliveryAddressId, email, defaultCheck };
-  return fetch(`${url}${deliveryAddressId}/default`, {
+export const updateDefaultAddress = (deliveryAddressId) => {
+  return fetch(`${url}/${deliveryAddressId}/default`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json', },
-    body: JSON.stringify(payload),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('access')}`,
+    },
   })
     .then((response) => {
       if (!response.ok) {
@@ -79,8 +95,11 @@ export const updateDefaultAddress = (deliveryAddressId, email, defaultCheck) => 
 };
 
 export const deleteAddress = (deliveryAddressId) => {
-  return fetch(`${url}${deliveryAddressId}`, {
+  return fetch(`${url}/${deliveryAddressId}`, {
     method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('access')}`,
+    },
   })
     .then((response) => {
       if (!response.ok) {

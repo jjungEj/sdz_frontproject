@@ -1,36 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Box, HStack, VStack, Text, Input, Link, Button } from '@chakra-ui/react';
+import { Box, HStack, VStack, Text, Input, Button } from '@chakra-ui/react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Field } from '@/components/ui/field';
 import { useNavigate } from 'react-router-dom';
-import {
-    PasswordInput,
-    PasswordStrengthMeter,
-} from "@/components/ui/password-input"
+import { PasswordInput } from '@/components/ui/password-input'
 import { loginProcess } from '../services/LoginAPI';
+import { FindId, FindPassword } from './AccountDialog';
 import { useAuth } from '../services/AuthContext';
+import { SocialLoginButtons } from '../components/SocialLoginButtons';
 
 function getCookie(name) {
-    const cookies = document.cookie.split("; ");
+    const cookies = document.cookie.split('; ');
     for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].split("=");
+        const cookie = cookies[i].split('=');
         if (cookie[0] === name) {
             return decodeURIComponent(cookie[1]);
         }
     }
     return null;
-}
-
-function SNS({ imgSrc, altText, url }) {
-    const handleClick = () => {
-        window.location.href = url;
-    };
-
-    return (
-        <button onClick={handleClick} style={{ border: 'none', background: 'none', cursor: 'pointer' }}>
-            <img src={imgSrc} alt={altText} style={{ width: '30px', height: '30px' }} />
-        </button>
-    );
 }
 
 function Login() {
@@ -50,10 +37,17 @@ function Login() {
         }
     }, []);
 
-    const handleLogin = (event) => {
-        event.preventDefault();
-        loginProcess(email, password, rememberId, rememberMe)
-            .then(() => {
+    const isLoginButtonDisabled = !email || !password;
+
+    const handleLogin = () => {
+        const LoginAcount = {
+            email, 
+            password, 
+            rememberId, 
+            rememberMe
+        };
+        loginProcess(LoginAcount)
+            .then((response) => {
                 handleContextLogin();
                 navigate('/');
             })
@@ -61,47 +55,70 @@ function Login() {
             });
     };
 
-    const snsButtons = [
-        { imgSrc: '/path/to/google-icon.png', altText: 'Google', 
-            url: 'http://localhost:8080/oauth2/authorization/google' },
-        { imgSrc: '/path/to/kakao-icon.png', altText: 'Kakao', 
-            url: 'http://localhost:8080/oauth2/authorization/kakao' },
-        { imgSrc: '/path/to/naver-icon.png', altText: 'Naver', 
-            url: 'http://localhost:8080/oauth2/authorization/naver' },
-    ];
-
     return (
         <Box>
-            <div>로고가 들어갈 자리</div>
-            <Field label='Email' invalid errorText='This is an error text'>
-                <Input value= {email} onChange={e => setEmail(e.target.value)}
-                placeholder='이메일을 입력하세요' />
-            </Field>
-            <Field label='Password' invalid errorText='This is an error text'>
-                <PasswordInput value= {password} onChange={e => setPassword(e.target.value)}
-                placeholder='비밀번호를 입력하세요' />
-            </Field>
-            <Checkbox checked={rememberMe}
-                    onCheckedChange={(e) => setRememberMe(!!e.checked)}>
-                        로그인 상태 유지
-            </Checkbox>
-            <Checkbox checked={rememberId}
-                    onCheckedChange={(e) => setRememberId(!!e.checked)}>
-                        아이디 기억하기
-            </Checkbox>
-            <Button onClick={ handleLogin }>로그인</Button>
-            <Button onClick={() => navigate('/signUp')}>회원가입</Button>
-            <Text>SNS 계정으로 간편 로그인/회원가입</Text>
-            <HStack spacing={4}>
-                {snsButtons.map((sns, index) => (
-                    <SNS
-                        key={index}
-                        imgSrc={sns.imgSrc}
-                        altText={sns.altText}
-                        url={sns.url}
+            <VStack
+                maxWidth='600px'
+                margin='0 auto'
+                align='center'
+                gap='20px'
+            >
+                <Text>로고가 들어갈 자리</Text>
+                <Field
+                    label='Email'
+                >
+                    <Input
+                        value= {email}
+                        onChange={e => setEmail(e.target.value)}
                     />
-                ))}
-            </HStack>
+                </Field>
+                <Field
+                    label='Password'
+                >
+                    <PasswordInput 
+                        value= {password} 
+                        onChange={e => setPassword(e.target.value)}
+                    />
+                </Field>
+                <HStack width='100%' align='start'>
+                    <HStack gap={5}>
+                        <Checkbox 
+                            checked={rememberMe}
+                            onCheckedChange={(e) => setRememberMe(!!e.checked)}>
+                            로그인 상태 유지
+                        </Checkbox>
+                        <Checkbox 
+                            checked={rememberId}
+                            onCheckedChange={(e) => setRememberId(!!e.checked)}>
+                            아이디 기억하기
+                        </Checkbox>
+                    </HStack>
+                </HStack>
+                <HStack>
+                    <FindId />
+                    <FindPassword />
+                </HStack>
+                <Button 
+                    onClick={ handleLogin }
+                    style={{ width: '100%', height: '50px' }}
+                    disabled={isLoginButtonDisabled}
+                >
+                    로그인
+                </Button>
+                <Button 
+                    onClick={() => navigate('/signUp')}
+                    style={{ width: '100%',
+                            height: '50px',
+                            border: '1px solid black', background: 'none',
+                            cursor: 'pointer',
+                            color: 'black'
+                    }}
+                >
+                    회원가입
+                </Button>
+                <Text>SNS 계정으로 간편 로그인/회원가입</Text>
+                <SocialLoginButtons />
+            </VStack>
         </Box>
     );
 }
