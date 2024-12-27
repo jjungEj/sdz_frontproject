@@ -4,7 +4,7 @@ import { Box, Text, Heading, Spinner, Grid, GridItem, Highlight } from "@chakra-
 
 import useSearchStore from "@/store/SearchStore";
 import { getCategoryAPI } from "@/services/CategoryAPI";
-import { fetchProductsByCategory, fetchAllProducts } from "@/services/ProductAPI";
+import { fetchProductsByCategory, fetchProducts } from "@/services/ProductAPI";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -21,11 +21,11 @@ const ProductList = () => {
   const searchQuery = queryParams.get("search");
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchAllProducts = async () => {
       try {
         const data = categoryId
           ? await fetchProductsByCategory(categoryId)
-          : await fetchAllProducts();
+          : await fetchProducts();
 
         setProducts(data);
       } catch (err) {
@@ -36,7 +36,7 @@ const ProductList = () => {
       }
     };
 
-    fetchProducts();
+    fetchAllProducts();
   }, [categoryId]);
 
   useEffect(() => {
