@@ -1,12 +1,17 @@
 export const loginProcess = (email, password, rememberId, rememberMe) => {
   const url = 'http://localhost:8080/api/user/loginProcess';
-  const payload = { email, password, rememberId, rememberMe };
-    return fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', },
-        body: JSON.stringify(payload),
-        credentials: 'include'
-    })
+  const payload = { 
+    email, 
+    password, 
+    rememberId, 
+    rememberMe
+  };
+  return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', },
+      body: JSON.stringify(payload),
+      credentials: 'include'
+  })
     .then(response => {
       const authorizationHeader = response.headers.get('Authorization');
       if (authorizationHeader) {

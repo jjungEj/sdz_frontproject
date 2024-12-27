@@ -9,7 +9,8 @@ import {
     OrderManagement,
     CategoryManagement,
     ProductManagement,
-    ProductForm
+    ProductForm,
+    ProductUpdateForm
 } from '@/pages/admin';
 
 function AdminRouter() {

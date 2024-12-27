@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { getCategories } from "../../services/CategoryAPI";
+import { getCategoriesAPI } from "../../services/CategoryAPI";
+import { createProductAPI } from "../../services/ProductAPI";
 import { useNavigate } from "react-router-dom";
-import { Box, Heading, Grid, GridItem, Input, Button, Textarea, Text } from '@chakra-ui/react';
+import { Box, Heading, Grid, GridItem, Input, Button, Textarea, Text, Flex,} from "@chakra-ui/react";
 
 const ProductForm = () => {
   const [productName, setProductName] = useState("");
@@ -10,16 +11,16 @@ const ProductForm = () => {
   const [productContent, setProductContent] = useState("");
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [images, setImages] = useState([]); // 추가: 첨부파일 관리
+  const [images, setImages] = useState([]);
+  const [thumbnail, setThumbnail] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Fetch categories on component mount
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await getCategories();
-        setCategories(response);
+        const data = await getCategoriesAPI();
+        setCategories(data);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
         alert("Failed to load categories. Please try again.");
@@ -29,47 +30,47 @@ const ProductForm = () => {
     fetchCategories();
   }, []);
 
-  // 파일 변경 핸들러 (추가)
   const handleFileChange = (e) => {
-    setImages([...e.target.files]); // 여러 파일 선택 가능
+    const files = Array.from(e.target.files);
+    const filePreviews = files.map((file) => ({
+      name: file.name,
+      preview: URL.createObjectURL(file),
+      file,
+    }));
+    setImages(filePreviews);
+  };
+
+  const handleThumbnailSelect = (image) => {
+    setThumbnail(thumbnail === image ? null : image);
   };
 
   const handleSubmit = async () => {
-    if (loading) return; // Disable further submissions if already loading
+    if (loading) return;
     setLoading(true);
 
-    const formData = new FormData(); // 추가: FormData 객체 생성
-
-    // JSON 데이터를 FormData에 추가
+    const formData = new FormData();
     formData.append(
-        "productDTO",
-        JSON.stringify({
-          productName,
-          productAmount,
-          productCount,
-          productContent,
-          userId: "admin@example.com",
-          categoryId: selectedCategory,
-        })
+      "productDTO",
+      JSON.stringify({
+        productName,
+        productAmount,
+        productCount,
+        productContent,
+        userId: "admin@example.com",
+        categoryId: selectedCategory,
+      })
     );
 
-    // 첨부된 파일 추가 (추가)
     images.forEach((image) => {
-      formData.append("images", image);
+      formData.append("images", image.file);
     });
 
+    formData.append("thumbnail", thumbnail ? thumbnail.file : null);
+
     try {
-      const response = await fetch("http://localhost:8080/api/products", {
-        method: "POST",
-        body: formData, // FormData를 전송
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
+      await createProductAPI(formData);
       alert("Product successfully created.");
-      navigate("/");
+      navigate("/admin/products");
     } catch (error) {
       console.error("Product creation failed:", error);
       alert("An error occurred while creating the product. Please try again.");
@@ -79,62 +80,57 @@ const ProductForm = () => {
   };
 
   const handleCancel = () => {
-    // Clear the form data
-    setProductName("");
-    setProductAmount(0);
-    setProductCount(0);
-    setProductContent("");
-    setSelectedCategory("");
-    setImages([]); // 추가: 파일 입력 초기화
+    navigate(-1); // 이전 페이지로 이동
   };
 
   return (
-      <Box>
-        <Heading as="h1" size="xl" mb={3}>상품 등록</Heading>
-        <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
-        <Box>
+      <Box display="flex" flexDirection="column" alignItems="center" w="100%">
+        <Heading as="h1" size="xl" mb={3}>
+          상품 등록
+        </Heading>
+        <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} w="100%" />
+        <Flex direction="column" w="90%" maxWidth="800px">
           <Grid
-              h="300px"
-              templateRows="repeat(5, 1fr)"
+              templateRows="repeat(6, auto)"
               templateColumns="repeat(6, 1fr)"
+              gap={4}
+              border="1px solid #ccc" // 전체 Grid에 외곽선 추가
+              borderRadius="5px"
+              p={4}
           >
-
-            {/* 1번째 줄 */}
+            {/* 상품명 */}
             <GridItem
                 colSpan={1}
-                border="1px solid black"
                 display="flex"
                 alignItems="center"
-                justifyContent="center">
+                justifyContent="center"
+                border="1px solid #ccc"
+                padding="5px"
+            >
               <label htmlFor="productName">상품명</label>
             </GridItem>
-            <GridItem colSpan={2} border="1px solid black">
+            <GridItem colSpan={5} border="1px solid #ccc" padding="5px">
               <Input
                   id="productName"
                   type="text"
                   value={productName}
                   onChange={(e) => setProductName(e.target.value)}
                   required
-                  width="97%"
-                  border="1px solid #ccc"
-                  borderRadius="2px"
-                  margin="5px"
               />
             </GridItem>
 
-            <GridItem colSpan={1} border="1px solid black"></GridItem>
-            <GridItem colSpan={2} border="1px solid black"></GridItem>
-
-            {/* 2번째 줄 */}
+            {/* 상품가격 */}
             <GridItem
                 colSpan={1}
-                border="1px solid black"
                 display="flex"
                 alignItems="center"
-                justifyContent="center">
+                justifyContent="center"
+                border="1px solid #ccc"
+                padding="5px"
+            >
               <label htmlFor="productAmount">상품가격</label>
             </GridItem>
-            <GridItem colSpan={2} border="1px solid black">
+            <GridItem colSpan={2} border="1px solid #ccc" padding="5px">
               <Input
                   id="productAmount"
                   type="text"
@@ -142,48 +138,52 @@ const ProductForm = () => {
                   value={productAmount}
                   onChange={(e) => setProductAmount(Number(e.target.value))}
                   required
-                  min="0"
               />
             </GridItem>
 
+            {/* 상품수량 */}
             <GridItem
                 colSpan={1}
-                border="1px solid black"
                 display="flex"
                 alignItems="center"
-                justifyContent="center">
+                justifyContent="center"
+                border="1px solid #ccc"
+                padding="5px"
+            >
               <label htmlFor="productCount">상품수량</label>
             </GridItem>
-
-            <GridItem colSpan={2} border="1px solid black">
+            <GridItem colSpan={2} border="1px solid #ccc" padding="5px">
               <Input
                   id="productCount"
                   type="number"
                   value={productCount}
                   onChange={(e) => setProductCount(Number(e.target.value))}
                   required
-                  min="0"
               />
             </GridItem>
 
-            {/* 3번째 줄 */}
+            {/* 카테고리 */}
             <GridItem
                 colSpan={1}
-                border="1px solid black"
                 display="flex"
                 alignItems="center"
-                justifyContent="center">
+                justifyContent="center"
+                border="1px solid #ccc"
+                padding="5px"
+            >
               <label htmlFor="category">카테고리</label>
             </GridItem>
-
-            <GridItem colSpan={5} border="1px solid black">
+            <GridItem colSpan={5} border="1px solid #ccc" padding="5px">
               <select
                   id="category"
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
                   required
+                  style={{ width: "100%", padding: "8px" }}
               >
-                <option value="" disabled>선택하세요</option>
+                <option value="" disabled>
+                  선택하세요
+                </option>
                 {categories.map((category) => (
                     <option key={category.categoryId} value={category.categoryId}>
                       {category.categoryName}
@@ -192,79 +192,110 @@ const ProductForm = () => {
               </select>
             </GridItem>
 
-            {/* 4번째 줄 */}
+            {/* 이미지 */}
             <GridItem
                 colSpan={1}
-                border="1px solid black"
                 display="flex"
                 alignItems="center"
-                justifyContent="center">
+                justifyContent="center"
+                border="1px solid #ccc"
+                padding="5px"
+            >
               <label htmlFor="ProductImage">이미지</label>
             </GridItem>
-            <GridItem colSpan={5} border="1px solid black">
-              {/* 추가: 파일 입력 필드 */}
-              <Input
-                  id="ProductImage"
-                  type="file"
-                  multiple
-                  onChange={handleFileChange}
-                  accept="image/*" // 이미지 파일만 선택 가능
-                  required
-              />
+            <GridItem colSpan={5} border="1px solid #ccc" padding="5px">
+              <Box display="flex" flexDirection="column" gap={3}>
+                <Input
+                    id="ProductImage"
+                    type="file"
+                    multiple
+                    onChange={handleFileChange}
+                    accept="image/*"
+                />
+                <Box
+                    display="flex"
+                    flexWrap="wrap"
+                    gap="10px"
+                    padding="10px"
+                    border="1px solid #ccc"
+                    borderRadius="5px"
+                    maxHeight="200px"
+                    overflowY="auto"
+                    backgroundColor="#f9f9f9"
+                >
+                  {images.map((image, index) => (
+                      <Box
+                          key={index}
+                          textAlign="center"
+                          minWidth="100px"
+                          maxWidth="100px"
+                          border={thumbnail === image ? "2px solid blue" : "1px solid #ccc"}
+                          borderRadius="5px"
+                          padding="5px"
+                          cursor="pointer"
+                          onClick={() => handleThumbnailSelect(image)}
+                      >
+                        <img
+                            src={image.preview}
+                            alt={image.name}
+                            style={{
+                              maxWidth: "100%",
+                              height: "auto",
+                              objectFit: "cover",
+                              borderRadius: "5px",
+                            }}
+                        />
+                        <Text fontSize="sm" mt="5px" textAlign="center" isTruncated>
+                          {image.name}
+                        </Text>
+                        {thumbnail === image && (
+                            <Text fontSize="xs" color="blue">
+                              썸네일
+                            </Text>
+                        )}
+                      </Box>
+                  ))}
+                </Box>
+              </Box>
             </GridItem>
 
-            {/* 5번째 줄 */}
+            {/* 상품 소개 */}
             <GridItem
                 colSpan={1}
-                border="1px solid black"
                 display="flex"
                 alignItems="center"
-                justifyContent="center">
-              <Text as="label" htmlFor="ProductContent">상품 소개</Text>
+                justifyContent="center"
+                border="1px solid #ccc"
+                padding="5px"
+            >
+              <label htmlFor="ProductContent">상품 소개</label>
             </GridItem>
-            <GridItem colSpan={5} border="1px solid black">
+            <GridItem colSpan={5} border="1px solid #ccc" padding="5px">
               <Textarea
                   id="productContent"
                   value={productContent}
                   onChange={(e) => setProductContent(e.target.value)}
                   required
-                  rows="2"
-                  margin="10px"
-                  width="97%"
+                  rows="4"
               />
             </GridItem>
-
           </Grid>
 
-          <Box mt={4} textAlign="right">
+          {/* 버튼 */}
+          <Box mt={6} textAlign="right">
             <Button
                 onClick={handleSubmit}
-                style={{
-                  display: "inline",
-                  width: "100px",
-                  margin: "10px",
-                  color: "white",
-                  cursor: loading ? "not-allowed" : "pointer",
-                }}
+                isLoading={loading}
+                colorScheme="blue"
+                mr={3}
             >
-              {loading ? "Submitting..." : "상품 등록"}
+              상품 등록
             </Button>
-
-            <Button
-                onClick={handleCancel}
-                style={{
-                  display: "inline",
-                  width: "100px",
-                  height: "40px",
-                  margin: "10px",
-                  color: "white",
-                }}
-            >
+            <Button onClick={handleCancel} colorScheme="red">
               등록 취소
             </Button>
           </Box>
-        </Box>
-        <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
+        </Flex>
       </Box>
   );
 };

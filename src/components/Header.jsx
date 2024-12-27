@@ -1,43 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import OrderItem from '../pages/OrderItem';
-import { Box, HStack, VStack, Text, Input, Link as ChakraLink, Button } from '@chakra-ui/react';
-import { ColorModeButton } from "@/components/ui/color-mode"
-import { InputGroup } from "@/components/ui/input-group"
-import { LuSearch } from "react-icons/lu"
-import { getCategories } from "../services/CategoryAPI";
-import { useAuth } from '../services/AuthContext';
-import { logout } from '../services/LogoutAPI';
-import {
-  DrawerBackdrop,
-  DrawerBody,
-  DrawerCloseTrigger,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerRoot,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer"
 
+import { useAuth } from '@/services/AuthContext';
+import { logout } from '@/services/LogoutAPI';
+import Search from './Search';
+import CartDrawer from './CartDrawer';
+import useCategoryStore from '@/store/CategoryStore';
+
+import { Box, HStack, VStack, Link as ChakraLink, Button } from '@chakra-ui/react';
+import { ColorModeButton } from "@/components/ui/color-mode"
 
 function Header() {
-  const { isLoggedIn, email, auth, handleContextLogout } = useAuth();
   const navigate = useNavigate();
-  const [search, setSearch] = useState("");
-  const [categories, setCategories] = useState([]);
-  const [open, setOpen] = useState(false);
+  const { isLoggedIn, email, auth, handleContextLogout } = useAuth();
+  const { categories, getCategories } = useCategoryStore();
 
   useEffect(() => {
-    loadCategories();
+    getCategories();
   }, []);
-
-  function loadCategories() {
-    getCategories()
-      .then(data => {
-        setCategories(data);
-      });
-  }
 
   const handleLogout = () => {
     logout(navigate);
@@ -51,138 +31,54 @@ function Header() {
         <HStack justify="flex-end">
           {!isLoggedIn ? (
             <>
-              <ChakraLink
-                asChild
-                _focus={{ outline: "none" }}
-                fontSize="sm"
-                margin="3"
-              >
-                <Link to="/login">
+              <ChakraLink asChild _focus={{ outline: "none" }} fontSize="sm" margin="3">
+                <Button as={Link} to="/login" variant="link" fontSize="sm" margin="3" padding="0">
                   로그인
-                </Link>
+                </Button>
               </ChakraLink>
-              <ChakraLink
-                asChild
-                _focus={{ outline: "none" }}
-                fontSize="sm"
-                margin="3"
-              >
-                <Link to="/signUp">
+              <ChakraLink asChild _focus={{ outline: "none" }} fontSize="sm" margin="3">
+                <Button as={Link} to="/signUp" variant="link" fontSize="sm" margin="3" padding="0">
                   회원가입
-                </Link>
+                </Button>
               </ChakraLink>
             </>
           ) : (
             <>
-              <ChakraLink
-                asChild
-                _focus={{ outline: "none" }}
-                fontSize="sm"
-                margin="3"
-              >
+              <ChakraLink asChild _focus={{ outline: "none" }} fontSize="sm" margin="3">
                 <Button onClick={handleLogout} variant="link" fontSize="sm" margin="3" padding="0">
                   로그아웃
                 </Button>
               </ChakraLink>
               {auth === 'admin' ? (
-                <ChakraLink
-                  asChild
-                  _focus={{ outline: "none" }}
-                  fontSize="sm"
-                  margin="3"
-                >
-                  <Link to="/admin">
+                <ChakraLink asChild _focus={{ outline: "none" }} fontSize="sm" margin="3">
+                  <Button as={Link} to="/admin" variant="link" fontSize="sm" margin="3" padding="0">
                     관리자페이지
-                  </Link>
+                  </Button>
                 </ChakraLink>
               ) : (
-                <ChakraLink
-                  asChild
-                  _focus={{ outline: "none" }}
-                  fontSize="sm"
-                  margin="3"
-                >
-                  <Link to="/mypage">
+                <ChakraLink asChild _focus={{ outline: "none" }} fontSize="sm" margin="3">
+                  <Button as={Link} to="/mypage" variant="link" fontSize="sm" margin="3" padding="0">
                     마이페이지
-                  </Link>
+                  </Button>
                 </ChakraLink>
               )}
-              {/* <ChakraLink
-                asChild
-                _focus={{ outline: "none" }}
-                fontSize="sm"
-                margin="3"
-              >
-                <Link to="/mypage">
-                  마이페이지
-                </Link>
-              </ChakraLink>
-              {auth === 'admin' && (
-                <ChakraLink
-                  asChild
-                  _focus={{ outline: "none" }}
-                  fontSize="sm"
-                  margin="3"
-                >
-                  <Link to="/admin">
-                    관리자페이지
-                  </Link>
-                </ChakraLink>
-              )} */}
             </>
           )}
-          <DrawerRoot size="md" open={open} onOpenChange={(e) => setOpen(e.open)}>
-            <DrawerBackdrop />
-            <DrawerTrigger asChild>
-              <Button variant="plain" fontSize="sm">
-                장바구니
-              </Button>
-            </DrawerTrigger>
-            <DrawerContent>
-              <DrawerHeader>
-              </DrawerHeader>
-              <DrawerBody>
-                <OrderItem />
-              </DrawerBody>
-              <DrawerCloseTrigger />
-              <DrawerFooter>
-                <ChakraLink
-                  asChild
-                  _focus={{ outline: "none" }}
-                  fontSize="sm"
-                  margin="3"
-                >
-                  <Link to="/order-item">
-                    장바구니 이동
-                  </Link>
-                </ChakraLink>
-              </DrawerFooter>
-            </DrawerContent>
-          </DrawerRoot>
+          <CartDrawer />
         </HStack>
       </HStack>
       <HStack justify="flex-end" mb={3}>
-        <InputGroup
-          flex="1"
-          endElement={<LuSearch />}
-          maxWidth="300px"
-          w="100%"
-        >
-          <Input placeholder="Search" />
-        </InputGroup>
+        <Search />
       </HStack>
       <VStack justify="center" mb={3}>
-        <Link
-          to="/"
-          _focus={{ outline: "none" }}
-          fontSize="4xl"
-        >
+        <Link to="/" _focus={{ outline: "none" }} fontSize="4xl">
           LOGO
         </Link>
       </VStack>
       <HStack justify="center" mb={3}>
-
-        {categories.map((category, index) => (
+        {categories
+        .filter(category => category.parentId === null)
+        .map((category, index) => (
           <ChakraLink
             key={index}
             asChild
@@ -191,10 +87,7 @@ function Header() {
             fontWeight="medium"
             margin="5"
           >
-            <Link
-              key={index}
-              to={`/products?categoryId=${category.categoryId}`}
-            >
+            <Link key={index} to={`/products?categoryId=${category.categoryId}`} >
               {category.categoryName}
             </Link>
           </ChakraLink>

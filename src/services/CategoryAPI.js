@@ -11,14 +11,14 @@ async function handleResponse(response) {
     return await response.json();
 }
 
-async function createCategory(categoryName) {
+async function createCategoryAPI(categoryName, parentId) {
     try {
         const response = await fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ categoryName: categoryName }),
+            body: JSON.stringify({ categoryName, parentId }),
         });
         return await handleResponse(response);
     } catch (error) {
@@ -26,7 +26,7 @@ async function createCategory(categoryName) {
     }
 }
 
-async function getCategories() {
+async function getCategoriesAPI() {
     try {
         const response = await fetch(url);
         return await handleResponse(response);
@@ -35,7 +35,7 @@ async function getCategories() {
     }
 }
 
-async function getCategory(categoryId) {
+async function getCategoryAPI(categoryId) {
     try {
         const response = await fetch(`${url}/${categoryId}`);
         return await handleResponse(response);
@@ -44,14 +44,14 @@ async function getCategory(categoryId) {
     }
 }
 
-async function updateCategory(categoryId, categoryName) {
+async function updateCategoryAPI(category) {
     try {
-        const response = await fetch(`${url}/${categoryId}`, {
+        const response = await fetch(`${url}/${category.categoryId}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ categoryName: categoryName }),
+            body: JSON.stringify(category),
         });
         return await handleResponse(response); 
     } catch (error) {
@@ -59,7 +59,7 @@ async function updateCategory(categoryId, categoryName) {
     }
 }
 
-async function deleteCategory(categoryId) {
+async function deleteCategoryAPI(categoryId) {
     try {
         const response = await fetch(`${url}/${categoryId}`, {
             method: "DELETE",
@@ -70,4 +70,4 @@ async function deleteCategory(categoryId) {
     }
 }
 
-export { createCategory, getCategories, getCategory, updateCategory, deleteCategory };
+export { createCategoryAPI, getCategoriesAPI, getCategoryAPI, updateCategoryAPI, deleteCategoryAPI };
