@@ -1,19 +1,12 @@
-const url = 'http://localhost:8080/api/user/';
+const url = 'http://localhost:8080/api/user';
 
-export const signUpProcess = (email, password, userName, nickname, contact) => {
-  const payload = {
-    email,
-    userPassword: password,
-    userName,
-    nickname,
-    contact
-  };
-  return fetch(`${url}sign-up`, {
+export const signUpProcess = (newAccount) => {
+  return fetch(`${url}/sign-up`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(newAccount),
   })
     .then(response => {
       if (!response.ok) {
@@ -29,7 +22,7 @@ export const signUpProcess = (email, password, userName, nickname, contact) => {
 }
 
 export const UserInfo = () => {
-    return fetch(`${url}my-page`, {
+    return fetch(`${url}/my-page`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -40,20 +33,13 @@ export const UserInfo = () => {
     });
 }
 
-export const updateLocal = (email, password, userName, nickname, contact) => {
-  const payload = {
-    email,
-    userPassword: password,
-    userName,
-    nickname,
-    contact
-  };
-  return fetch(`${url}local/${email}`, {
+export const updateLocal = (userData) => {
+  return fetch(`${url}/local/${userData.email}`, {
       method: 'PUT',
       headers: {
           'Content-Type': 'application/json',
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(userData),
   })
   .then(response => {
       if (!response.ok) {
@@ -68,19 +54,13 @@ export const updateLocal = (email, password, userName, nickname, contact) => {
   });
 }
 
-export const updateSocial = (email, userName, nickname, contact) => {
-  const payload = {
-    email,
-    userName,
-    nickname,
-    contact
-  };
-  return fetch(`${url}social/${email}`, {
+export const updateSocial = (userData) => {
+  return fetch(`${url}/social/${userData.email}`, {
       method: 'PUT',
       headers: {
           'Content-Type': 'application/json',
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(userData),
   })
   .then(response => {
       if (!response.ok) {
@@ -96,7 +76,7 @@ export const updateSocial = (email, userName, nickname, contact) => {
 }
 
 export const deleteUser = (email) => {
-    return fetch(`${url}${email}`, {
+    return fetch(`${url}/${email}`, {
         method: 'DELETE',
         credentials: 'include',
     })
