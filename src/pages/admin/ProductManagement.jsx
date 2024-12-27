@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Heading, Button, Input, HStack, Table } from "@chakra-ui/react";
+import { Box, Heading, Button, Input, HStack, Table, Image, } from "@chakra-ui/react";
 import { Checkbox } from '@/components/ui/checkbox';
 import { useNavigate } from "react-router-dom";
 import { Toaster, toaster } from "@/components/ui/toaster";
@@ -141,7 +141,13 @@ function ProductManagement() {
                                 </Table.Cell>
                                 <Table.Cell>{product.categoryName}</Table.Cell>
                                 <Table.Cell>{product.productName}</Table.Cell>
-                                <Table.Cell>{product.productName}</Table.Cell>
+                                <Table.Cell>
+                                    <Image
+                                    src={`http://localhost:8080${product.thumbnailPath}`} // 썸네일 경로 사용
+                                    alt={product.productName}
+                                    boxSize="50px"
+                                    />
+                                </Table.Cell>
                                 <Table.Cell>{product.productAmount}</Table.Cell>
                                 <Table.Cell>{product.productCount}</Table.Cell>
                                 <Table.Cell>
