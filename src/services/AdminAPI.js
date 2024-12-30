@@ -3,9 +3,10 @@ const url = 'http://localhost:8080/api/admin';
 export const getUserList = (page, size, type, keyword) => {
   return fetch(`${url}/user-management?page=${page}&size=${size}&type=${type}&keyword=${keyword}`, {
     method: 'GET',
-    headers: { 
+    headers: {
       'Content-Type': 'application/json',
-    },
+      'Authorization': `Bearer ${localStorage.getItem('access')}`,
+  },
   })
     .then((response) => {
       if (!response.ok) {
