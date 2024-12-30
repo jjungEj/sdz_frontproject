@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { getAllOrders, updateOrderStatus } from "../../services/OrderAPI";
+import { getAllOrders } from "../../services/OrderAPI";
 import { Box, Heading, Table, } from '@chakra-ui/react';
-import { Toaster, toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/toaster";
 
 function OrderManagement() {
     const [orders, setOrders] = useState([]);
-    const [value, setValue] = useState([]);
 
     useEffect(() => {
         loadOrders();
@@ -14,7 +13,11 @@ function OrderManagement() {
     function loadOrders() {
         getAllOrders()
             .then(data => {
+                console.log("Fetched orders:", data); // 데이터 확인
                 setOrders(data);
+            })
+            .catch(error => {
+                console.error('Failed to fetch orders:', error);
             });
     }
 

@@ -1,36 +1,46 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Image, Text, Flex, Button, HStack } from '@chakra-ui/react';
+import { Box, Image, Text, Flex, Button, HStack, VStack } from '@chakra-ui/react';
 import { getUserOrders } from '../../services/OrderAPI';
 
 function OrderHistory() {
     const [orders, setOrders] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
-    const itemsPerPage = 3; // 페이지당 보여줄 주문 수
+    const itemsPerPage = 10;
 
     useEffect(() => {
-        // 실제 구현시 로그인된 사용자의 ID를 사용
-        const userId = "qwer1234@gmail.com"; 
-        fetchOrders(userId);
+        const email = "mayy24th"; 
+        fetchOrders(email);
     }, [currentPage]);
 
-    const fetchOrders = async (userId) => {
+    const fetchOrders = async (email) => {
         try {
-            const response = await getUserOrders(userId);
-            setOrders(response);
-            setTotalPages(Math.ceil(response.length / itemsPerPage));
+            const response = await getUserOrders(email);
+            if (Array.isArray(response)) {
+                setOrders(response); // 데이터가 배열 형식인 경우만 설정
+                setTotalPages(Math.ceil(response.length / itemsPerPage)); // 전체 페이지 수 계산
+            } else {
+                console.error('Invalid data format');
+            }
         } catch (error) {
-            //console.error('주문 내역을 불러오는데 실패했습니다:', error);
+            console.error('Failed to fetch orders:', error);
         }
     };
 
-    // 현재 페이지에 해당하는 주문만 표시
     const getCurrentPageOrders = () => {
-        if (!orders || orders.length === 0) {
-            //return [];
-        }
+        if (!orders || orders.length === 0) return [];
         const startIndex = (currentPage - 1) * itemsPerPage;
         return orders.slice(startIndex, startIndex + itemsPerPage);
+    };
+
+    const getOrderStatus = (status) => {
+        const statusMap = {
+            'PENDING': '주문 대기',
+            'PAYMENTPROCESSED': '결제 완료',
+            'DELIVERYPROCESSED': '배송 완료',
+            'REFUNDPROCESSED': '환불 완료'
+        };
+        return statusMap[status] || status;
     };
 
     return (
@@ -46,53 +56,34 @@ function OrderHistory() {
                     mb={4}
                     shadow="md"
                 >
-                    <Flex alignItems="center">
-                        <Image 
-                            src={order.imageUrl || 'default-image.jpg'} 
-                            boxSize="100px"
-                            objectFit="cover"
-                            mr={4}
-                        />
-                        <Box>
-                            <Text>주문번호: {order.orderId}</Text>
-                            <Text>주문 수량: {order.orderCount}</Text>
-                            <Text>주문 금액: {order.orderAmount}원</Text>
-                            <Text>상태: {order.refundStatus ? '환불됨' : '주문완료'}</Text>
-                        </Box>
-                    </Flex>
+                    <Text fontSize="lg" fontWeight="bold" mb={3}>
+                        주문번호: {order.order_Id}
+                    </Text>
+                    
+                    {order.orderDetails && order.orderDetails.map((detail, index) => (
+                        <Flex key={detail.orderDetailId} alignItems="center" mb={3}>
+                            <Image 
+                                src={detail.product?.imageUrl || 'default-image.jpg'} 
+                                boxSize="100px"
+                                objectFit="cover"
+                                mr={4}
+                            />
+                            <VStack align="start" spacing={1}>
+                                <Text>상품 수량: {detail.orderCount}개</Text>
+                                <Text>상품 금액: {detail.orderAmount}원</Text>
+                            </VStack>
+                        </Flex>
+                    ))}
+                    
+                    <Box mt={3} p={3} bg="gray.50" borderRadius="md">
+                        <Text>배송지: {order.deliveryAddress?.address}</Text>
+                        <Text>총 주문금액: {order.totalPrice}원</Text>
+                        <Text>주문상태: {getOrderStatus(order.orderStatus)}</Text>
+                        <Text>환불가능여부: {order.refundStatus ? '가능' : '불가능'}</Text>
+                    </Box>
                 </Box>
             ))}
 
-            {/* 페이지네이션 
-            <Flex justify="center" mt={5}>
-                <HStack spacing={2}>
-                    <Button 
-                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                        isDisabled={currentPage === 1}
-                    >
-                        이전
-                    </Button>
-                    
-                    {[...Array(totalPages)].map((_, index) => (
-                        <Button
-                            key={index + 1}
-                            onClick={() => setCurrentPage(index + 1)}
-                            colorScheme={currentPage === index + 1 ? "blue" : "gray"}
-                        >
-                            {index + 1}
-                        </Button>
-                    ))}
-                    
-                    <Button 
-                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                        isDisabled={currentPage === totalPages}
-                    >
-                        다음
-                    </Button>
-                </HStack>
-                
-            </Flex>
-            */}
         </Box>
     );
 }
