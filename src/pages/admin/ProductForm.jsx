@@ -205,13 +205,6 @@ const ProductForm = () => {
             </GridItem>
             <GridItem colSpan={5} border="1px solid #ccc" padding="5px">
               <Box display="flex" flexDirection="column" gap={3}>
-                <Input
-                    id="ProductImage"
-                    type="file"
-                    multiple
-                    onChange={handleFileChange}
-                    accept="image/*"
-                />
                 <Box
                     display="flex"
                     flexWrap="wrap"
@@ -257,6 +250,13 @@ const ProductForm = () => {
                   ))}
                 </Box>
               </Box>
+              <Input
+                    id="ProductImage"
+                    type="file"
+                    multiple
+                    onChange={handleFileChange}
+                    accept="image/*"
+                />
             </GridItem>
 
             {/* 상품 소개 */}
