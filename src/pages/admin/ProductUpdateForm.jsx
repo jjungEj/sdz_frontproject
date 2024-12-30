@@ -164,10 +164,15 @@ const ProductUpdateForm = () => {
           borderRadius="5px"
           p={4}
         >
-          <GridItem colSpan={1}>
+          <GridItem colSpan={1}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              border="1px solid #ccc"
+              padding="5px">
             <label htmlFor="productName">상품명</label>
           </GridItem>
-          <GridItem colSpan={5}>
+          <GridItem colSpan={5} border="1px solid #ccc" padding="5px">
             <Input
               id="productName"
               type="text"
@@ -177,23 +182,36 @@ const ProductUpdateForm = () => {
             />
           </GridItem>
 
-          <GridItem colSpan={1}>
+          <GridItem colSpan={1}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              border="1px solid #ccc"
+              padding="5px"
+          >
             <label htmlFor="productAmount">상품 가격</label>
           </GridItem>
-          <GridItem colSpan={5}>
+          <GridItem colSpan={2} border="1px solid #ccc" padding="5px">
             <Input
               id="productAmount"
-              type="number"
+              type="text"
+              pattern="\d*"
               value={productAmount}
               onChange={(e) => setProductAmount(Number(e.target.value))}
               required
             />
           </GridItem>
 
-          <GridItem colSpan={1}>
+          <GridItem colSpan={1}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              border="1px solid #ccc"
+              padding="5px"
+          >
             <label htmlFor="productCount">상품 수량</label>
           </GridItem>
-          <GridItem colSpan={5}>
+          <GridItem colSpan={2} border="1px solid #ccc" padding="5px">
             <Input
               id="productCount"
               type="number"
@@ -203,15 +221,22 @@ const ProductUpdateForm = () => {
             />
           </GridItem>
 
-          <GridItem colSpan={1}>
+          <GridItem colSpan={1}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              border="1px solid #ccc"
+              padding="5px"
+          >
             <label htmlFor="category">카테고리</label>
           </GridItem>
-          <GridItem colSpan={5}>
+          <GridItem colSpan={5} border="1px solid #ccc" padding="5px">
             <select
               id="category"
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
               required
+              style={{ width: "100%", padding: "8px" }}
             >
               <option value="" disabled>
                 선택하세요
@@ -224,10 +249,16 @@ const ProductUpdateForm = () => {
             </select>
           </GridItem>
 
-          <GridItem colSpan={1}>
+          <GridItem colSpan={1}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              border="1px solid #ccc"
+              padding="5px"
+          >
             <label>이미지</label>
           </GridItem>
-          <GridItem colSpan={5}>
+          <GridItem colSpan={5} border="1px solid #ccc" padding="5px">
             <Flex wrap="wrap" gap="10px">
               {images.map((image, index) => (
                 <Box
@@ -265,15 +296,22 @@ const ProductUpdateForm = () => {
             <Input type="file" multiple onChange={handleFileChange} />
           </GridItem>
 
-          <GridItem colSpan={1}>
+          <GridItem colSpan={1}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              border="1px solid #ccc"
+              padding="5px"
+          >
             <label htmlFor="productContent">상품 설명</label>
           </GridItem>
-          <GridItem colSpan={5}>
+          <GridItem colSpan={5} border="1px solid #ccc" padding="5px">
             <Textarea
               id="productContent"
               value={productContent}
               onChange={(e) => setProductContent(e.target.value)}
               required
+              rows="4"
             />
           </GridItem>
         </Grid>

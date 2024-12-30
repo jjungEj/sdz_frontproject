@@ -1,12 +1,14 @@
-const url = 'http://localhost:8080/api/check/';
+const url = 'http://localhost:8080/api/check';
 
 export const checkEmailExists = (email) => {
   const payload = { 
     email
   };
-  return fetch(`${url}email`, {
+  return fetch(`${url}/email`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', },
+    headers: { 
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(payload),
   })
     .then((response) => {
@@ -22,14 +24,13 @@ export const checkEmailExists = (email) => {
     });
 };
 
-export const checkNickname = (nickname) => {
-  const payload = { 
-    nickname
-  };
-  return fetch(`${url}nickname`, {
+export const checkNickname = (userData) => {
+  return fetch(`${url}/nickname`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', },
-    body: JSON.stringify(payload),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(userData),
   })
     .then((response) => {
       if (!response.ok) {
@@ -49,9 +50,11 @@ export const checkAccountLimit = (userName, contact) => {
     userName,
     contact
   };
-  return fetch(`${url}userLimit`, {
+  return fetch(`${url}/userLimit`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', },
+    headers: { 
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(payload),
   })
     .then((response) => {
@@ -67,15 +70,13 @@ export const checkAccountLimit = (userName, contact) => {
     });
 };
 
-export const validateEmailExists = (userName, email) => {
-  const payload = { 
-    userName, 
-    email 
-  };
-  return fetch(`${url}userInfo`, {
+export const validateEmailExists = (account) => {
+  return fetch(`${url}/userInfo`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', },
-    body: JSON.stringify(payload),
+    headers: { 
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(account),
   })
     .then((response) => {
       if (!response.ok) {
@@ -95,9 +96,11 @@ export const checkPassword = (email, userPassword) => {
     email, 
     userPassword 
   };
-  return fetch(`${url}password`, {
+  return fetch(`${url}/password`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', },
+    headers: { 
+      'Content-Type': 'application/json', 
+    },
     body: JSON.stringify(payload),
   })
     .then((response) => {

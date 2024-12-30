@@ -5,6 +5,7 @@ import { Box, Text, Heading, Spinner, Grid, GridItem, Highlight, Card, Image, Bu
 import useSearchStore from "@/store/SearchStore";
 import { getCategoryAPI } from "@/services/CategoryAPI";
 import { fetchProductsByCategory, fetchProducts } from "@/services/ProductAPI";
+import { modifyOrderItem } from "@/services/OrderItemAPI"; // 장바구니 API 추가
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -69,6 +70,17 @@ const ProductList = () => {
     fetchCategoryName();
   }, [categoryId]);
 
+  // 장바구니에 상품 추가
+  const handleAddToCart = async (productId) => {
+    try {
+      await modifyOrderItem(productId, 1); // 수량 1로 추가
+      alert("장바구니에 상품이 추가되었습니다!");
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      alert("장바구니에 상품을 추가하는 데 실패했습니다.");
+    }
+  };
+
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -93,11 +105,11 @@ const ProductList = () => {
         </Highlight>
       </Heading>
       <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={6} />
-      <HStack wrap="wrap" justify="flex-start" margin="5">
+      <HStack wrap="wrap" justify="flex-start" margin="5" ml="20">
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product) => (
             <Box key={product.productId} width="calc(33.33% - 20px)" mb="5">
-              <Card.Root borderRadius="2xl" maxW="xs" overflow="hidden" cursor="pointer">
+              <Card.Root borderRadius="2xl" maxW="300px" overflow="hidden" cursor="pointer">
                 <Link to={`/product/${product.productId}`}>
                   <Image
                     src={`http://localhost:8080${product.thumbnailPath}`}
@@ -114,7 +126,12 @@ const ProductList = () => {
                 </Link>
                 <Card.Footer gap="2">
                   <Button variant="solid">Buy now</Button>
-                  <Button variant="ghost">Add to cart</Button>
+                  <Button
+                      variant="ghost"
+                      onClick={() => handleAddToCart(product.productId)} // 장바구니 추가 버튼 동작
+                  >
+                    Add to cart
+                  </Button>
                 </Card.Footer>
               </Card.Root>
             </Box>

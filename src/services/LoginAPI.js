@@ -1,15 +1,11 @@
-export const loginProcess = (email, password, rememberId, rememberMe) => {
+export const loginProcess = (LoginAcount) => {
   const url = 'http://localhost:8080/api/user/loginProcess';
-  const payload = { 
-    email, 
-    password, 
-    rememberId, 
-    rememberMe
-  };
   return fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', },
-      body: JSON.stringify(payload),
+      headers: { 
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(LoginAcount),
       credentials: 'include'
   })
     .then(response => {
