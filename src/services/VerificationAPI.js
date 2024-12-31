@@ -1,5 +1,9 @@
+const apiUrl = import.meta.env.VITE_API_URL;
+const endpoint = "/check";
+
+const url = `${apiUrl}${endpoint}`;
+
 const fetchData = async (endpoint, method, payload) => {
-  const url = 'http://localhost:8080/api/check';
   try {
     const response = await fetch(`${url}${endpoint}`, {
       method,

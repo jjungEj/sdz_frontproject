@@ -7,17 +7,17 @@ export const SocialLoginButtons = () => {
     useEffect(() => {
         const buttons = [
             {
-                imgSrc: 'src/assets/login_contents_google.png',
+                imgSrc: 'assets/login_contents_google.png',
                 altText: 'Google',
                 url: 'http://34.64.176.77:3000/oauth2/authorization/google',
             },
             {
-                imgSrc: 'src/assets/login_contents_kakao.png',
+                imgSrc: 'assets/login_contents_kakao.png',
                 altText: 'Kakao',
                 url: 'http://34.64.176.77:3000/oauth2/authorization/kakao',
             },
             {
-                imgSrc: 'src/assets/login_contents_naver.png',
+                imgSrc: 'assets/login_contents_naver.png',
                 altText: 'Naver',
                 url: 'http://34.64.176.77:3000/oauth2/authorization/naver',
             },

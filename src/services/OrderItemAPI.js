@@ -1,4 +1,7 @@
-const url = "http://localhost:8080/api/order-item";
+const apiUrl = import.meta.env.VITE_API_URL;
+const endpoint = "/order-items";
+
+const url = `${apiUrl}${endpoint}`;
 
 async function fetchOrderItemData() {
     try {

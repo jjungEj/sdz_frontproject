@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getAllOrders } from "../../services/OrderAPI";
+import { getAllOrders } from "@/services/OrderAPI";
 import { Box, Heading, Table, } from '@chakra-ui/react';
 import { Toaster } from "@/components/ui/toaster";
 
@@ -47,7 +47,7 @@ function OrderManagement() {
                                 <Table.Cell>{order.email}</Table.Cell>
                                 {/* <Table.Cell>{order.user.userName}</Table.Cell> */}
                                 {/* <Table.Cell>{order.user.contact}</Table.Cell> */}
-                                <Table.Cell>{order.deliveryAddress}</Table.Cell>
+                                <Table.Cell>{order.deliveryAddress1} {order.deliveryAddress2} {order.deliveryAddress3}</Table.Cell>
                                 <Table.Cell>{order.orderAmount}</Table.Cell>
                                 <Table.Cell>{order.regDate}</Table.Cell>
                                 <Table.Cell>{order.orderStatus}</Table.Cell>

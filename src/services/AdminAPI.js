@@ -1,4 +1,7 @@
-const url = 'http://localhost:8080/api/admin';
+const apiUrl = import.meta.env.VITE_API_URL;
+const endpoint = "/admin";
+
+const url = `${apiUrl}${endpoint}`;
 
 const fetchWithAuth = async (endpoint, method) => {
   try {
