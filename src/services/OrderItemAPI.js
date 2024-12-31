@@ -1,5 +1,5 @@
 const apiUrl = import.meta.env.VITE_API_URL;
-const endpoint = "/order-items";
+const endpoint = "/order-item";
 
 const url = `${apiUrl}${endpoint}`;
 
