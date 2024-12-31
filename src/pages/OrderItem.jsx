@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { fetchOrderItemData, modifyOrderItem, clearOrderItem } from "@/services/OrderItemAPI";
+import {fetchOrderItemData, modifyOrderItem, clearOrderItem, mergeGuestOrderItem} from "@/services/OrderItemAPI";
 import { Box, HStack, VStack, Heading, Table, Button, Text } from '@chakra-ui/react';
 import { Toaster, toaster } from "@/components/ui/toaster";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -14,7 +14,20 @@ function OrderItem() {
     const indeterminate = hasSelection && selectedItems.length < OrderItemData?.orderItemDetails.length;
 
     useEffect(() => {
-        fetchData();
+        const initializeCart = async () => {
+            try {
+                const isLoggedIn = !!localStorage.getItem("access");
+                if (isLoggedIn) {
+                    // 로그인된 사용자: 게스트 장바구니 병합
+                    await mergeGuestOrderItem();
+                }
+                await fetchData();
+            } catch (error) {
+                console.error("Error initializing cart:", error);
+            }
+        };
+
+        initializeCart();
     }, []);
 
     const fetchData = async () => {
