@@ -1,5 +1,9 @@
+const apiUrl = import.meta.env.VITE_API_URL;
+const endpoint = "/logout";
+
+const url = `${apiUrl}${endpoint}`;
+
 export const logout = async (navigate) => {
-  const url = 'http://localhost:8080/api/logout';
   try {
     const response = await fetch(url, {
       method: 'POST',

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Image, Text, Flex, Button, HStack, VStack } from '@chakra-ui/react';
-import { getUserOrders } from '../../services/OrderAPI';
+import { getUserOrders } from '@/services/OrderAPI';
 
 function OrderHistory() {
     const [orders, setOrders] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);S
     const [totalPages, setTotalPages] = useState(0);
     const itemsPerPage = 10;
 

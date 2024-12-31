@@ -1,6 +1,11 @@
 import { jwtDecode } from 'jwt-decode';
 import { assignAuth } from './AuthUtil';
 
+const apiUrl = import.meta.env.VITE_API_URL;
+const endpoint = "/user/reissue";
+
+const url = `${apiUrl}${endpoint}`;
+
 const isAccessTokenExist = (token) => {
   if (!token || typeof token !== 'string') {
     console.log('유효하지 않은 토큰입니다.');
@@ -50,7 +55,6 @@ const hasCookie = (name) => {
 }
 
 const reissueToken = () => {
-  const url = 'http://localhost:8080/api/user/reissue';
   return fetch(url, {
     method: 'POST',
     headers: {

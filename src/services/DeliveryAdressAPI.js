@@ -1,4 +1,7 @@
-const url = 'http://localhost:8080/api/deliveryAddress';
+const apiUrl = import.meta.env.VITE_API_URL;
+const endpoint = "/deliveryAddress";
+
+const url = `${apiUrl}${endpoint}`;
 
 export const getDeliveryAddressList = async (page, size) => {
   try {

@@ -3,7 +3,7 @@ import { Box, Heading, Button, Input, HStack, Table, Image, } from "@chakra-ui/r
 import { Checkbox } from '@/components/ui/checkbox';
 import { useNavigate } from "react-router-dom";
 import { Toaster, toaster } from "@/components/ui/toaster";
-import { fetchProducts, deleteProduct, deleteSelectedProducts } from '../../services/ProductAPI'; // API 함수 임포트
+import { fetchProducts, deleteProduct, deleteSelectedProducts } from '@/services/ProductAPI'; // API 함수 임포트
 
 function ProductManagement() {
     const navigate = useNavigate();

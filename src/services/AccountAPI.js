@@ -1,5 +1,9 @@
+const apiUrl = import.meta.env.VITE_API_URL;
+const endpoint = "/account";
+
+const url = `${apiUrl}${endpoint}`;
+
 const fetchAccountData = async (endpoint, account, actionName) => {
-  const url = 'http://localhost:8080/api/account';
   try {
     const response = await fetch(`${url}/${endpoint}`, {
       method: 'POST',
