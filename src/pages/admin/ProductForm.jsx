@@ -56,7 +56,7 @@ const ProductForm = () => {
         productAmount,
         productCount,
         productContent,
-        userId: "admin@example.com",
+        userId: "",
         categoryId: selectedCategory,
       })
     );
