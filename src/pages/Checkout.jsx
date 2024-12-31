@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Box, VStack, HStack, Grid, GridItem, Text, Input, Button, Image } from '@chakra-ui/react';
-
 import { useToast } from '@chakra-ui/toast';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Checkbox } from "@/components/ui/checkbox";

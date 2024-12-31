@@ -43,11 +43,11 @@ function OrderManagement() {
                     <Table.Body>
                         {orders.map((order) => ( 
                             <Table.Row >
-                                <Table.Cell>{order.orderId}</Table.Cell>
+                                <Table.Cell >{order.orderId}</Table.Cell>
                                 <Table.Cell>{order.email}</Table.Cell>
                                 {/* <Table.Cell>{order.user.userName}</Table.Cell> */}
                                 {/* <Table.Cell>{order.user.contact}</Table.Cell> */}
-                                <Table.Cell>{order.deliveryAdrres.deliveryAddress1} {order.deliveryAdrres.deliveryAddress2} {order.deliveryAdrres.deliveryAddress3}</Table.Cell>
+                                <Table.Cell>{order.deliveryAddress ? order.deliveryAddress.deliveryAddress1+" "+order.deliveryAddress.deliveryAddress2+" "+order.deliveryAddress.deliveryAddress3 :" "}</Table.Cell>
                                 <Table.Cell>{order.totalPrice}</Table.Cell>
                                 <Table.Cell>{order.regDate}</Table.Cell>
                                 <Table.Cell>{order.orderStatus}</Table.Cell>
