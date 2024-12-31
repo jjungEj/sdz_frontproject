@@ -28,7 +28,7 @@ function AdminRouter() {
                 <Route path="categories" element={<CategoryManagement />} />
                 <Route path="products" element={<ProductManagement />} />
                 <Route path="products/create" element={<ProductForm />} />
-                <Route path="products/update/:productId" element={<ProductUpdateForm />} />
+                <Route path="products/update/:productId" element={<ProductUpdateForm />} /> 
             </Route>
             {/* <Route path="*" element={<NotFoundPage />} /> */}
         </Routes>
