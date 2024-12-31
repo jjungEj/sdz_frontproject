@@ -4,12 +4,12 @@ import { Field } from '@/components/ui/field';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PasswordInput } from '@/components/ui/password-input'
 import { useNavigate } from 'react-router-dom';
-import { SocialLoginButtons } from '../components/SocialLoginButtons';
+import { SocialLoginButtons } from '@/components/SocialLoginButtons';
 import { NativeSelectField, NativeSelectRoot } from '@/components/ui/native-select'
 import { useForm } from 'react-hook-form'
 import { VscChromeMinimize } from 'react-icons/vsc';
-import { signUpProcess } from '../services/UserAPI';
-import { checkEmailExists, checkNickname, checkAccountLimit } from '../services/VerificationAPI';
+import { signUpProcess } from '@/services/UserAPI';
+import { checkEmailExists, checkNickname, checkAccountLimit } from '@/services/VerificationAPI';
 
 function SignUp() {
     const [email, setEmail] = useState('');
@@ -99,9 +99,13 @@ function SignUp() {
                 };
                 console.log('newAccountData',newAccount);
                 signUpProcess(newAccount)
-                    .then(() => {
-                        alert('회원 가입이 완료되었습니다.');
-                        navigate('/');
+                    .then((response) => {
+                        if(response.success){
+                            alert(response.userName+"님 환영합니다!\n"+response.message);
+                            navigate('/');
+                        } else {
+                            alert(response.message);
+                        }
                     })
                     .catch((error) => {
                         console.error('회원 가입 과정에서 오류가 발생하였습니다.:', error);

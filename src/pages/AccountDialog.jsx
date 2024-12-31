@@ -4,8 +4,8 @@ import { Field } from '@/components/ui/field';
 import { DialogActionTrigger, DialogBody, DialogCloseTrigger,
   DialogContent, DialogFooter, DialogHeader, DialogRoot,
   DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { findId, findPw } from '../services/AccountAPI';
-import { validateEmailExists} from '../services/VerificationAPI';
+import { findId, findPw } from '@/services/AccountAPI';
+import { validateEmailExists} from '@/services/VerificationAPI';
 
 export const FindId = () => {
   const [userName, setUserName] = useState('');
@@ -34,12 +34,13 @@ export const FindId = () => {
     };
     console.log(account);
     findId(account)
-    .then((data) => {
-      if (Array.isArray(data) && data.length > 0) {
-        const emails = data.map((item) => item.email);
-        setFoundIds(emails);
-      } else {
+    .then((response) => {
+      if (!response.emails || response.emails.length === 0) {
         setFoundIds([]);
+        alert(response.message || '일치하는 회원정보가 존재하지 않습니다.');
+      } else {
+        const emails = response.emails.map((item) => item.email);
+        setFoundIds(emails);
       }
       setIsResultVisible(true)
     })

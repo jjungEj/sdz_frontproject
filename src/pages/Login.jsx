@@ -4,10 +4,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Field } from '@/components/ui/field';
 import { useNavigate } from 'react-router-dom';
 import { PasswordInput } from '@/components/ui/password-input'
-import { loginProcess } from '../services/LoginAPI';
+import { loginProcess } from '@/services/LoginAPI';
 import { FindId, FindPassword } from './AccountDialog';
-import { useAuth } from '../services/AuthContext';
-import { SocialLoginButtons } from '../components/SocialLoginButtons';
+import { useAuth } from '@/services/AuthContext';
+import { SocialLoginButtons } from '@/components/SocialLoginButtons';
 
 function getCookie(name) {
     const cookies = document.cookie.split('; ');
@@ -48,8 +48,19 @@ function Login() {
         };
         loginProcess(LoginAcount)
             .then((response) => {
-                handleContextLogin();
-                navigate('/');
+                if (response.httpStatus === 'OK') {
+                    handleContextLogin();
+                    navigate('/');
+                } else if (response.httpStatus === 'FORBIDDEN') {
+                    alert(response.message + "\n비밀번호 찾기를 통해 임시 비밀번호를 발급하세요.");
+                    return;
+                } else if (response.httpStatus === 'UNAUTHORIZED') {
+                    alert(response.message + "\n아이디 또는 비밀번호를 확인하세요.");
+                    return;
+                } else if (response.httpStatus === 'NOT_FOUND') {
+                    alert("아이디 또는 비밀번호를 확인하세요.");
+                    return;
+                }
             })
             .catch((error) => {
             });
