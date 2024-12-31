@@ -137,7 +137,7 @@ function OrderItem() {
             <Table.Cell>
                 <HStack spacing={3}>
                     <img
-                        src={`http://localhost:8080${item.thumbnailPath}`}
+                        src={`http://34.64.176.77${item.thumbnailPath}`}
                         alt={item.productName}
                         style={{
                             width: "75px",
