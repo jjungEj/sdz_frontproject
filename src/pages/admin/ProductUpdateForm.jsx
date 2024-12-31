@@ -113,6 +113,7 @@ const ProductUpdateForm = () => {
         productAmount,
         productCount,
         productContent,
+        userId: "",
         categoryId: selectedCategory,
       })
     );

@@ -71,6 +71,10 @@ export const fetchProductAPI = async (productId) => {
 export const createProductAPI = async (formData) => {
     const response = await fetch(`${BASE_URL}`, {
       method: "POST",
+      headers: {
+        
+        'Authorization': `Bearer ${localStorage.getItem('access')}`,
+      },
       body: formData,
     });
   
@@ -92,6 +96,10 @@ export const createProductAPI = async (formData) => {
   export const updateProductAPI = async (productId, formData) => {
     const response = await fetch(`${BASE_URL}/${productId}`, {
       method: "PUT",
+      headers: {
+        
+        'Authorization': `Bearer ${localStorage.getItem('access')}`,
+      },
       body: formData,
     });
     if (!response.ok) {
