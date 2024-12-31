@@ -69,6 +69,8 @@ function UserDashboard() {
     };
     
     const handleDeleteAddress = () => {
+        const confirmed = window.confirm('삭제하시겠습니까?');
+        if (confirmed) {
         console.log(selectedAddressId);
         deleteAddress(selectedAddressId)
             .then(() => {
@@ -76,6 +78,9 @@ function UserDashboard() {
             })
             .catch((error) => {
             });
+        } else {
+            alert('취소되었습니다.');
+        }
     };
 
     const handleClick = (link) => {

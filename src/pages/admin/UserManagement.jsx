@@ -71,12 +71,17 @@ function UserManagement() {
     };
 
     const handleDeleteUser = (email) => {
-        deleteUser(email)
-            .then(() => {
-                loadUsers();
-            })
-            .catch((error) => {
-            });
+        const confirmed = window.confirm('삭제하시겠습니까?');
+        if (confirmed) {
+            deleteUser(email)
+                .then(() => {
+                    loadUsers();
+                })
+                .catch((error) => {
+                });
+        } else {
+            alert('취소되었습니다.');
+        }
     };
 
     const handleDeleteUsers = () => {
@@ -84,13 +89,17 @@ function UserManagement() {
             alert('삭제할 사용자를 선택하세요.');
             return;
         }
-        
-        deleteUsers(selection)
-            .then(() => {
-                loadUsers();
-            })
-            .catch((error) => {
-            });
+        const confirmed = window.confirm('삭제하시겠습니까?');
+        if (confirmed) {
+            deleteUsers(selection)
+                .then(() => {
+                    loadUsers();
+                })
+                .catch((error) => {
+                });
+        } else {
+            alert('취소되었습니다.');
+        }
     };
 
     const formatDate = (dateString) => {

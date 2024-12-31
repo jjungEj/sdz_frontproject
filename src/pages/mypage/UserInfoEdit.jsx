@@ -306,7 +306,7 @@ const UpdateLocal = ({email, handleContextLogout}) => {
             userName,
             nickname,
             contact,
-            userPassword: data.existingPassword,
+            userPassword,
         }
         console.log('userData',userData);
         updateLocal(userData)

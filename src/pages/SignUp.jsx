@@ -99,9 +99,13 @@ function SignUp() {
                 };
                 console.log('newAccountData',newAccount);
                 signUpProcess(newAccount)
-                    .then(() => {
-                        alert('회원 가입이 완료되었습니다.');
-                        navigate('/');
+                    .then((response) => {
+                        if(response.success){
+                            alert(response.userName+"님 환영합니다!\n"+response.message);
+                            navigate('/');
+                        } else {
+                            alert(response.message);
+                        }
                     })
                     .catch((error) => {
                         console.error('회원 가입 과정에서 오류가 발생하였습니다.:', error);
