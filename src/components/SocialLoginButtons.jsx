@@ -7,19 +7,19 @@ export const SocialLoginButtons = () => {
     useEffect(() => {
         const buttons = [
             {
-                imgSrc: 'src/assets/login_contents_google.png',
+                imgSrc: 'assets/login_contents_google.png',
                 altText: 'Google',
-                url: 'http://localhost:8080/oauth2/authorization/google',
+                url: 'http://34.64.176.77:3000/oauth2/authorization/google',
             },
             {
-                imgSrc: 'src/assets/login_contents_kakao.png',
+                imgSrc: 'assets/login_contents_kakao.png',
                 altText: 'Kakao',
-                url: 'http://localhost:8080/oauth2/authorization/kakao',
+                url: 'http://34.64.176.77:3000/oauth2/authorization/kakao',
             },
             {
-                imgSrc: 'src/assets/login_contents_naver.png',
+                imgSrc: 'assets/login_contents_naver.png',
                 altText: 'Naver',
-                url: 'http://localhost:8080/oauth2/authorization/naver',
+                url: 'http://34.64.176.77:3000/oauth2/authorization/naver',
             },
         ];
         setSnsButtons(buttons);

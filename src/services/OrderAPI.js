@@ -1,4 +1,7 @@
-const url = "http://localhost:8080/api/orders";
+const apiUrl = import.meta.env.VITE_API_URL;
+const endpoint = "/orders";
+
+const url = `${apiUrl}${endpoint}`;
 
 // 사용자 인증 토큰을 가져오는 함수
 function getAuthToken() {

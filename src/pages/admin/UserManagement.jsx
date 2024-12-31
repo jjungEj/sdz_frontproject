@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getUserList } from '../../services/AdminAPI';
+import { getUserList } from '@/services/AdminAPI';
 import { Box, Heading, Table, Button, HStack, Stack, Input, createListCollection } from '@chakra-ui/react';
 import { Toaster, toaster } from '@/components/ui/toaster';
 import { Checkbox } from '@/components/ui/checkbox'
@@ -10,7 +10,7 @@ import { ToggleTip } from '@/components/ui/toggle-tip'
 import { LuInfo } from 'react-icons/lu'
 import { Switch } from '@/components/ui/switch'
 import { HiCheck, HiX } from 'react-icons/hi'
-import { updateLoginLock, updateAuth, deleteUser, deleteUsers } from '../../services/AdminAPI';
+import { updateLoginLock, updateAuth, deleteUser, deleteUsers } from '@/services/AdminAPI';
 
 function UserManagement() {
     const [users, setUsers] = useState([]);
@@ -71,12 +71,17 @@ function UserManagement() {
     };
 
     const handleDeleteUser = (email) => {
-        deleteUser(email)
-            .then(() => {
-                loadUsers();
-            })
-            .catch((error) => {
-            });
+        const confirmed = window.confirm('삭제하시겠습니까?');
+        if (confirmed) {
+            deleteUser(email)
+                .then(() => {
+                    loadUsers();
+                })
+                .catch((error) => {
+                });
+        } else {
+            alert('취소되었습니다.');
+        }
     };
 
     const handleDeleteUsers = () => {
@@ -84,13 +89,17 @@ function UserManagement() {
             alert('삭제할 사용자를 선택하세요.');
             return;
         }
-        
-        deleteUsers(selection)
-            .then(() => {
-                loadUsers();
-            })
-            .catch((error) => {
-            });
+        const confirmed = window.confirm('삭제하시겠습니까?');
+        if (confirmed) {
+            deleteUsers(selection)
+                .then(() => {
+                    loadUsers();
+                })
+                .catch((error) => {
+                });
+        } else {
+            alert('취소되었습니다.');
+        }
     };
 
     const formatDate = (dateString) => {

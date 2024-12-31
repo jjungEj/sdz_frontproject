@@ -13,7 +13,7 @@ const subCategoryImage = {
 
     "IBLE": "https://cdn.sidiz.com/_upload/contents/2104/F1617756191546TYNFNCOJSQK.jpg",
 
-    "TREVO": "src/assets/trevo.png",
+    "TREVO": "assets/trevo.png",
 
     "MOLTI": "https://cdn.sidiz.com/_upload/contents/2310/F1698710743489VVEPHVGSBNI.jpg",
 
@@ -21,9 +21,9 @@ const subCategoryImage = {
 
     "RINGO": "https://cdn.sidiz.com/_upload/contents/2310/F1698710802979EEOKQOEBUKH.jpg",
 
-    "GC PRO": "src/assets/gc_pro.png",
+    "GC PRO": "assets/gc_pro.png",
 
-    "GX": "src/assets/gx.png"
+    "GX": "assets/gx.png"
 
 }
 

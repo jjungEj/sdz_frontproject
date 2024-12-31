@@ -7,10 +7,10 @@ import { RadioCardItem, RadioCardRoot } from '@/components/ui/radio-card'
 import { PaginationItems, PaginationNextTrigger, PaginationPrevTrigger,
 PaginationRoot } from '@/components/ui/pagination'
 import { LuCheck, LuPackage, LuShip } from 'react-icons/lu'
-import { useAuth } from '../../services/AuthContext';
+import { useAuth } from '@/services/AuthContext';
 import { VscPinned, VscPinnedDirty, VscTrash } from 'react-icons/vsc';
-import { UserInfo } from '../../services/UserAPI';
-import { getDeliveryAddressList, updateDefaultAddress, deleteAddress } from '../../services/DeliveryAdressAPI';
+import { UserInfo } from '@/services/UserAPI';
+import { getDeliveryAddressList, updateDefaultAddress, deleteAddress } from '@/services/DeliveryAdressAPI';
 import { DeliveryAddressDialog, DeliveryAddressUpdateDialog } from './DeliveryAddressDialog';
 
 function UserDashboard() {
@@ -69,6 +69,8 @@ function UserDashboard() {
     };
     
     const handleDeleteAddress = () => {
+        const confirmed = window.confirm('삭제하시겠습니까?');
+        if (confirmed) {
         console.log(selectedAddressId);
         deleteAddress(selectedAddressId)
             .then(() => {
@@ -76,6 +78,9 @@ function UserDashboard() {
             })
             .catch((error) => {
             });
+        } else {
+            alert('취소되었습니다.');
+        }
     };
 
     const handleClick = (link) => {

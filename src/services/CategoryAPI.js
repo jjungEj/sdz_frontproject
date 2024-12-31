@@ -1,4 +1,7 @@
-const url = "http://localhost:8080/api/categories";
+const apiUrl = import.meta.env.VITE_API_URL;
+const endpoint = "/categories";
+
+const url = `${apiUrl}${endpoint}`;
 
 async function handleResponse(response) {
     if (!response.ok) {

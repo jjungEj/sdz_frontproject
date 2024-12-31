@@ -5,9 +5,9 @@ import { Field } from '@/components/ui/field'
 import { PasswordInput } from '@/components/ui/password-input'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../services/AuthContext';
-import { UserInfo, updateLocal, updateSocial } from '../../services/UserAPI';
-import { checkPassword, checkNickname } from '../../services/VerificationAPI';
+import { useAuth } from '@/services/AuthContext';
+import { UserInfo, updateLocal, updateSocial } from '@/services/UserAPI';
+import { checkPassword, checkNickname } from '@/services/VerificationAPI';
 
 const  UserInfoEdit = () => {
     const { email, loginType, handleContextLogout } = useAuth();
@@ -306,7 +306,7 @@ const UpdateLocal = ({email, handleContextLogout}) => {
             userName,
             nickname,
             contact,
-            userPassword: data.existingPassword,
+            userPassword,
         }
         console.log('userData',userData);
         updateLocal(userData)

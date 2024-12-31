@@ -5,8 +5,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Field } from '@/components/ui/field'
 import { NativeSelectField, NativeSelectRoot } from '@/components/ui/native-select'
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../services/AuthContext';
-import { deleteUser } from '../../services/UserAPI';
+import { useAuth } from '@/services/AuthContext';
+import { deleteUser } from '@/services/UserAPI';
 
 
 function DeleteAccount() {
@@ -19,9 +19,14 @@ function DeleteAccount() {
             alert('회원탈퇴에 동의하셔야 탈퇴할 수 있습니다.');
             return;
         }
-        deleteUser(email);
-        handleContextLogout();
-        navigate('/');
+        const confirmed = window.confirm('정말 탈퇴하시겠습니까?');
+        if (confirmed) {
+            deleteUser(email);
+            handleContextLogout();
+            navigate('/');
+        } else {
+            alert('취소되었습니다.');
+        }
     };
     
     return (

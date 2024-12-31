@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Box, Heading, Grid, GridItem, Input, Button, Textarea, Text, Flex, } from "@chakra-ui/react";
-import { getProductByIdAPI, updateProductAPI } from "../../services/ProductAPI";
-import { getCategoriesAPI } from "../../services/CategoryAPI";
+import { getProductByIdAPI, updateProductAPI } from "@/services/ProductAPI";
+import { getCategoriesAPI } from "@/services/CategoryAPI";
 
 const ProductUpdateForm = () => {
   const { productId } = useParams();
@@ -113,6 +113,7 @@ const ProductUpdateForm = () => {
         productAmount,
         productCount,
         productContent,
+        userId: "",
         categoryId: selectedCategory,
       })
     );
