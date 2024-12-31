@@ -4,12 +4,12 @@ import { Field } from '@/components/ui/field';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PasswordInput } from '@/components/ui/password-input'
 import { useNavigate } from 'react-router-dom';
-import { SocialLoginButtons } from '../components/SocialLoginButtons';
+import { SocialLoginButtons } from '@/components/SocialLoginButtons';
 import { NativeSelectField, NativeSelectRoot } from '@/components/ui/native-select'
 import { useForm } from 'react-hook-form'
 import { VscChromeMinimize } from 'react-icons/vsc';
-import { signUpProcess } from '../services/UserAPI';
-import { checkEmailExists, checkNickname, checkAccountLimit } from '../services/VerificationAPI';
+import { signUpProcess } from '@/services/UserAPI';
+import { checkEmailExists, checkNickname, checkAccountLimit } from '@/services/VerificationAPI';
 
 function SignUp() {
     const [email, setEmail] = useState('');

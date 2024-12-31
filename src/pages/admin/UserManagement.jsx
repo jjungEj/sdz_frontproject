@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getUserList } from '../../services/AdminAPI';
+import { getUserList } from '@/services/AdminAPI';
 import { Box, Heading, Table, Button, HStack, Stack, Input, createListCollection } from '@chakra-ui/react';
 import { Toaster, toaster } from '@/components/ui/toaster';
 import { Checkbox } from '@/components/ui/checkbox'
@@ -10,7 +10,7 @@ import { ToggleTip } from '@/components/ui/toggle-tip'
 import { LuInfo } from 'react-icons/lu'
 import { Switch } from '@/components/ui/switch'
 import { HiCheck, HiX } from 'react-icons/hi'
-import { updateLoginLock, updateAuth, deleteUser, deleteUsers } from '../../services/AdminAPI';
+import { updateLoginLock, updateAuth, deleteUser, deleteUsers } from '@/services/AdminAPI';
 
 function UserManagement() {
     const [users, setUsers] = useState([]);

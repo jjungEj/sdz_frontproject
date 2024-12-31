@@ -5,8 +5,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Field } from '@/components/ui/field'
 import { NativeSelectField, NativeSelectRoot } from '@/components/ui/native-select'
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../services/AuthContext';
-import { deleteUser } from '../../services/UserAPI';
+import { useAuth } from '@/services/AuthContext';
+import { deleteUser } from '@/services/UserAPI';
 
 
 function DeleteAccount() {

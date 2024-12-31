@@ -7,7 +7,7 @@ import { DialogActionTrigger, DialogBody, DialogCloseTrigger,
   DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { VscAdd, VscSymbolProperty } from 'react-icons/vsc';
 import DaumPostcode from 'react-daum-postcode';
-import { createNewAddress, AddressInfo, updateAddress } from '../../services/DeliveryAdressAPI';
+import { createNewAddress, AddressInfo, updateAddress } from '@/services/DeliveryAdressAPI';
 
 export const DeliveryAddressDialog = ({ fetchDeliveryAddresses }) => {
   const [deliveryAddress1, setDeliveryAddress1] = useState('');

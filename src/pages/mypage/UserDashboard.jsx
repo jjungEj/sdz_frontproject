@@ -7,10 +7,10 @@ import { RadioCardItem, RadioCardRoot } from '@/components/ui/radio-card'
 import { PaginationItems, PaginationNextTrigger, PaginationPrevTrigger,
 PaginationRoot } from '@/components/ui/pagination'
 import { LuCheck, LuPackage, LuShip } from 'react-icons/lu'
-import { useAuth } from '../../services/AuthContext';
+import { useAuth } from '@/services/AuthContext';
 import { VscPinned, VscPinnedDirty, VscTrash } from 'react-icons/vsc';
-import { UserInfo } from '../../services/UserAPI';
-import { getDeliveryAddressList, updateDefaultAddress, deleteAddress } from '../../services/DeliveryAdressAPI';
+import { UserInfo } from '@/services/UserAPI';
+import { getDeliveryAddressList, updateDefaultAddress, deleteAddress } from '@/services/DeliveryAdressAPI';
 import { DeliveryAddressDialog, DeliveryAddressUpdateDialog } from './DeliveryAddressDialog';
 
 function UserDashboard() {

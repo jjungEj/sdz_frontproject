@@ -4,10 +4,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Field } from '@/components/ui/field';
 import { useNavigate } from 'react-router-dom';
 import { PasswordInput } from '@/components/ui/password-input'
-import { loginProcess } from '../services/LoginAPI';
+import { loginProcess } from '@/services/LoginAPI';
 import { FindId, FindPassword } from './AccountDialog';
-import { useAuth } from '../services/AuthContext';
-import { SocialLoginButtons } from '../components/SocialLoginButtons';
+import { useAuth } from '@/services/AuthContext';
+import { SocialLoginButtons } from '@/components/SocialLoginButtons';
 
 function getCookie(name) {
     const cookies = document.cookie.split('; ');

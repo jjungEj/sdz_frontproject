@@ -4,8 +4,8 @@ import { Field } from '@/components/ui/field';
 import { DialogActionTrigger, DialogBody, DialogCloseTrigger,
   DialogContent, DialogFooter, DialogHeader, DialogRoot,
   DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { findId, findPw } from '../services/AccountAPI';
-import { validateEmailExists} from '../services/VerificationAPI';
+import { findId, findPw } from '@/services/AccountAPI';
+import { validateEmailExists} from '@/services/VerificationAPI';
 
 export const FindId = () => {
   const [userName, setUserName] = useState('');
