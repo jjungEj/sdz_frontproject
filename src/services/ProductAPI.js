@@ -1,10 +1,11 @@
 // ProductAPI.js
+const apiUrl = import.meta.env.VITE_API_URL;
+const endpoint = "/products";
 
-const BASE_URL = "http://localhost:8080/api/products";
-
+const url = `${apiUrl}${endpoint}`;
 
 export const fetchProductsByCategory = async (categoryId) => {
-  const response = await fetch(`${BASE_URL}/category/${categoryId}`);
+  const response = await fetch(`${url}/category/${categoryId}`);
   if (!response.ok) {
     throw new Error("상품 데이터를 가져오는 데 실패했습니다.");
   }
@@ -13,7 +14,7 @@ export const fetchProductsByCategory = async (categoryId) => {
 
 export const fetchProducts = async () => {
     try {
-        const response = await fetch(`${BASE_URL}`);
+        const response = await fetch(`${url}`);
         if (!response.ok) {
             throw new Error("상품 목록을 불러오는 데 오류가 발생했습니다.");
         }
@@ -25,7 +26,7 @@ export const fetchProducts = async () => {
 
 export const deleteProduct = async (productId) => {
     try {
-        const response = await fetch(`${BASE_URL}/${productId}`, {
+        const response = await fetch(`${url}/${productId}`, {
             method: "DELETE",
         });
         if (!response.ok) {
@@ -39,7 +40,7 @@ export const deleteProduct = async (productId) => {
 export const deleteSelectedProducts = async (productIds) => {
     try {
         for (const productId of productIds) {
-            const response = await fetch(`${BASE_URL}/${productId}`, {
+            const response = await fetch(`${url}/${productId}`, {
                 method: "DELETE",
             });
             if (!response.ok) {
@@ -53,7 +54,7 @@ export const deleteSelectedProducts = async (productIds) => {
 
 export const fetchProductAPI = async (productId) => {
     try {
-      const response = await fetch(`${BASE_URL}/${productId}`);
+      const response = await fetch(`${url}/${productId}`);
   
       if (!response.ok) {
         throw new Error("상품 데이터를 가져오는 데 실패했습니다.");
@@ -69,7 +70,7 @@ export const fetchProductAPI = async (productId) => {
   
   // services/ProductAPI.js
 export const createProductAPI = async (formData) => {
-    const response = await fetch(`${BASE_URL}`, {
+    const response = await fetch(`${url}`, {
       method: "POST",
       headers: {
         
@@ -86,7 +87,7 @@ export const createProductAPI = async (formData) => {
   };
 
   export const getProductByIdAPI = async (productId) => {
-    const response = await fetch(`${BASE_URL}/${productId}`);
+    const response = await fetch(`${url}/${productId}`);
     if (!response.ok) {
       throw new Error(`Failed to fetch product with ID: ${productId}`);
     }
@@ -94,7 +95,7 @@ export const createProductAPI = async (formData) => {
   };
   
   export const updateProductAPI = async (productId, formData) => {
-    const response = await fetch(`${BASE_URL}/${productId}`, {
+    const response = await fetch(`${url}/${productId}`, {
       method: "PUT",
       headers: {
         

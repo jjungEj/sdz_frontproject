@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getAllOrders } from "../../services/OrderAPI";
+import { getAllOrders } from "@/services/OrderAPI";
 import { Box, Heading, Table, } from '@chakra-ui/react';
 import { Toaster } from "@/components/ui/toaster";
 

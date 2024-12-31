@@ -1,5 +1,9 @@
+const apiUrl = import.meta.env.VITE_API_URL;
+const endpoint = "/user/loginProcess";
+
+const url = `${apiUrl}${endpoint}`;
+
 export const loginProcess = async (LoginAcount) => {
-  const url = 'http://localhost:8080/api/user/loginProcess';
   try {
     const response = await fetch(url, {
       method: 'POST',
