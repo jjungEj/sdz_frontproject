@@ -6,7 +6,7 @@ function OrderConfirmation() {
     const location = useLocation();
     const navigate = useNavigate();
     const [orderData, setOrderData] = useState(null);
-
+    console.log(orderData);
     useEffect(() => {
         const orderInfo = location.state?.orderData;
         if (orderInfo) {

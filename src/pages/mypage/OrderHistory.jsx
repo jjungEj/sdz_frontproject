@@ -43,7 +43,7 @@ function OrderHistory() {
     }, [currentPage]);
     return (
         <Box p={5}>
-            <Text fontSize="2xl" mb={5}>주문 내역</Text>
+            <Text fontSize="2xl" mb={5} fontWeight="bold">주문내역 조회</Text>
             
             {getCurrentPageOrders().map((order) => (
                 <Box 
@@ -74,7 +74,7 @@ function OrderHistory() {
                     ))}
                     
                     <Box mt={3} p={3} bg="gray.50" borderRadius="md">
-                        <Text>배송지:  {order.deliveryAddress?.deliveryAddress1} 
+                        <Text>배송지: {order.deliveryAddress?.deliveryAddress1} 
                             {order.deliveryAddress?.deliveryAddress2} {order.deliveryAddress?.deliveryAddress3}</Text>
                         <Text>총 주문금액: {order.totalPrice}원</Text>
                         <Text>주문상태: {getOrderStatus(order.orderStatus)}</Text>
