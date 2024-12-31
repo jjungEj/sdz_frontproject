@@ -136,7 +136,17 @@ function Checkout() {
                             <Grid key={item.productId} templateColumns="2fr 1fr 1fr 1fr" bg="gray.10" p={4} gap={4} borderBottomWidth="1px" alignItems="center">
                                 <HStack>
                                     <Box w="60px" h="60px" bg="gray.100" borderWidth="1px">
-                                        <Image src={item.productImage} alt="상품이미지" fallbackSrc="placeholder.jpg" objectFit="cover" w="100%" h="100%"/>
+                                    <img
+                                        src={`http://localhost:8080${item.thumbnailPath}`}
+                                        alt={item.productName}
+                                        style={{
+                                            width: "75px",
+                                            height: "100px",
+                                            objectFit: "cover",
+                                            borderRadius: "5px",
+                                            border: "1px solid #ccc",
+                                        }}
+                                    />
                                     </Box>
                                     <Text>{item.productName}</Text>
                                 </HStack>
