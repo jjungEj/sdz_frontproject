@@ -8,14 +8,10 @@ function OrderHistory() {
     const [totalPages, setTotalPages] = useState(0);
     const itemsPerPage = 10;
 
-    useEffect(() => {
-        const email = "mayy24th"; 
-        fetchOrders(email);
-    }, [currentPage]);
-
-    const fetchOrders = async (email) => {
+    // 주문 데이터 가져오기
+    const fetchOrders = async () => {
         try {
-            const response = await getUserOrders(email);
+            const response = await getUserOrders();
             if (Array.isArray(response)) {
                 setOrders(response); // 데이터가 배열 형식인 경우만 설정
                 setTotalPages(Math.ceil(response.length / itemsPerPage)); // 전체 페이지 수 계산
@@ -42,7 +38,9 @@ function OrderHistory() {
         };
         return statusMap[status] || status;
     };
-
+    useEffect(() => {
+        fetchOrders();
+    }, [currentPage]);
     return (
         <Box p={5}>
             <Text fontSize="2xl" mb={5}>주문 내역</Text>
@@ -57,7 +55,7 @@ function OrderHistory() {
                     shadow="md"
                 >
                     <Text fontSize="lg" fontWeight="bold" mb={3}>
-                        주문번호: {order.order_Id}
+                        주문번호: {order.orderId}
                     </Text>
                     
                     {order.orderDetails && order.orderDetails.map((detail, index) => (
@@ -76,7 +74,8 @@ function OrderHistory() {
                     ))}
                     
                     <Box mt={3} p={3} bg="gray.50" borderRadius="md">
-                        <Text>배송지: {order.deliveryAddress?.address}</Text>
+                        <Text>배송지:  {order.deliveryAddress?.deliveryAddress1} 
+                            {order.deliveryAddress?.deliveryAddress2} {order.deliveryAddress?.deliveryAddress3}</Text>
                         <Text>총 주문금액: {order.totalPrice}원</Text>
                         <Text>주문상태: {getOrderStatus(order.orderStatus)}</Text>
                         <Text>환불가능여부: {order.refundStatus ? '가능' : '불가능'}</Text>

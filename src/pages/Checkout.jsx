@@ -4,6 +4,17 @@ import { useToast } from '@chakra-ui/toast';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field } from "@/components/ui/field";
+import {
+    DialogActionTrigger,
+    DialogBody,
+    DialogCloseTrigger,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogRoot,
+    DialogTitle,
+    DialogTrigger,
+  } from "@/components/ui/dialog"
 import { createOrder } from '../services/OrderAPI.js';
 
 function Checkout() {
@@ -12,7 +23,7 @@ function Checkout() {
     const toast = useToast();
     const orderData = location.state?.orderData || [];
     const [paymentMethod, setPaymentMethod] = useState('');
-    const [existingAddressId, setExistingAddressId] = useState(null);
+    const [orderId, setOrderId] = useState(null);
     const [userInfo, setUserInfo] = useState({
         email: '',
         name: '',
@@ -79,33 +90,19 @@ function Checkout() {
             };
     
             console.log("주문 데이터:", orderPayload);
-            
+        
             // 주문 생성 API 호출
             const response = await createOrder(orderPayload);
             console.log("주문 생성 성공:", response);
-    
-            // API 응답에서 orderId 확인
-            if (response && response.orderId) {
-                // 주문 완료 메시지와 확인 버튼을 가진 팝업창 생성
-                toast({
-                    title: "주문이 완료되었습니다.",
-                    status: "success",
-                    duration: 3000,
-                    onCloseComplete: () => {
-                        // 팝업이 닫힌 후 주문 완료 화면으로 이동
-                        navigate(`/order/44`, { state: { orderId: 44 } });
-                    }
-                });
-            } else {
-                console.error("주문 ID가 없습니다:", response);
-                toast({
-                    title: "주문 생성 실패",
-                    description: "주문 ID를 찾을 수 없습니다.",
-                    status: "error",
-                    duration: 3000,
-                });
+
+            const orderId = response.orderId;
+            console.log("주문 ID:", orderId); // 추가된 로그
+
+            if (!orderId) {
+                throw new Error("주문 ID를 가져올 수 없습니다.");
             }
-    
+
+            setOrderId(orderId);
         } catch (error) {
             console.error('주문 생성 실패:', error);
             
@@ -118,14 +115,17 @@ function Checkout() {
             });
         }
     };
-    
+    const handleConfirm = () => {
+        navigate(`/order/${orderId}`, { 
+            state: { orderData } }); // 주문 상세 페이지로 이동
+      };
 
     return (
         <Box maxW="800px" mx="auto" p={8}>
-            <Text fontSize="2xl" fontWeight="bold" mb={8}>주문 결제</Text>
+            <Text fontSize="2xl" fontWeight="bold" >주문 결제</Text>
             <VStack spacing={8} align="stretch">
                 <Box>
-                    <Box borderWidth="1px" borderRadius="lg">
+                    <Box borderWidth="1px" borderRadius="2g">
                         <Grid templateColumns="2fr 1fr 1fr 1fr" bg="gray.50" p={4} gap={4} borderBottomWidth="1px">
                             <Text textAlign="center">제품정보</Text>
                             <Text textAlign="center">판매가격</Text>
@@ -133,12 +133,12 @@ function Checkout() {
                             <Text textAlign="center">주문금액</Text>
                         </Grid>
                         {orderData.map((item) => (
-                            <Grid key={item.productId} templateColumns="2fr 1fr 1fr 1fr" bg="gray.50" p={4} gap={4} borderBottomWidth="1px" alignItems="center">
+                            <Grid key={item.productId} templateColumns="2fr 1fr 1fr 1fr" bg="gray.10" p={4} gap={4} borderBottomWidth="1px" alignItems="center">
                                 <HStack>
                                     <Box w="60px" h="60px" bg="gray.100" borderWidth="1px">
                                         <Image src={item.productImage} alt="상품이미지" fallbackSrc="placeholder.jpg" objectFit="cover" w="100%" h="100%"/>
                                     </Box>
-                                    <Text>{item.productName || item.productId}</Text>
+                                    <Text>{item.productName}</Text>
                                 </HStack>
                                 <Text textAlign="center">{item.productAmount.toLocaleString()}원</Text>
                                 <Text textAlign="center">{item.quantity}</Text>
@@ -208,9 +208,27 @@ function Checkout() {
                     </HStack>
                 </Box>
                 <Box>
-                    <Button w="100%" colorScheme="blue" size="sm" onClick={handlePayment}>
-                        결제하기
-                    </Button>
+                    <DialogRoot>
+                        <DialogTrigger asChild>
+                            <Button variant="outline" size="sm" onClick={handlePayment}>
+                                결제하기
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>결제가 완료되었습니다.</DialogTitle>
+                            </DialogHeader>
+                            <DialogBody>
+                                <p>
+                                    확인 버튼을 누를 시 주문 목록으로 이동합니다.
+                                </p>
+                            </DialogBody>
+                            <DialogFooter>
+                                <Button onClick={handleConfirm} >확인</Button>
+                            </DialogFooter>
+                                <DialogCloseTrigger />
+                        </DialogContent>
+                    </DialogRoot>
                 </Box>
             </VStack>
         </Box>
