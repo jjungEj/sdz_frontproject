@@ -54,7 +54,7 @@ function OrderConfirmation() {
             <HStack>
                 <Box w="60px" h="60px" bg="gray.100" borderWidth="1px">
                 <img
-                        src={`http://localhost:8080${item.thumbnailPath}`}
+                        src={`${item.thumbnailPath}`}
                         alt={item.productName}
                         style={{
                             width: "75px",
