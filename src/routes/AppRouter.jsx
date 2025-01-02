@@ -1,7 +1,8 @@
 import React from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
+import useAuthStore from '@/store/AuthStore';
+import { useShallow } from 'zustand/react/shallow'
 
-import { useAuth } from '@/services/AuthContext';
 
 import {
     Home,
@@ -18,7 +19,12 @@ import AdminRouter from './AdminRouter';
 import UserRouter from './UserRouter';
 
 function AppRouter() {
-    const { isLoggedIn, auth } = useAuth();
+    const { isLoggedIn, auth } = useAuthStore(
+        useShallow((state) => ({ 
+            isLoggedIn: state.isLoggedIn,
+            auth: state.auth
+        })),
+    )
 
     return (
         <Routes>

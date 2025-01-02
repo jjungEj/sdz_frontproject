@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, Input, Stack, HStack, VStack } from '@chakra-ui/react';
+import { Box, Button, Input, Stack, HStack } from '@chakra-ui/react';
 import { VscChromeMinimize } from 'react-icons/vsc';
 import { Field } from '@/components/ui/field'
 import { PasswordInput } from '@/components/ui/password-input'
 import { useForm } from 'react-hook-form'
+import { logout } from '@/services/LogoutAPI';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/services/AuthContext';
+import useAuthStore from '@/store/AuthStore'
+import { useShallow } from 'zustand/react/shallow'
 import { UserInfo, updateLocal, updateSocial } from '@/services/UserAPI';
 import { checkPassword, checkNickname } from '@/services/VerificationAPI';
 
 const  UserInfoEdit = () => {
-    const { email, loginType, handleContextLogout } = useAuth();
-
+    const { email, loginType, handleLogout } = useAuthStore(
+        useShallow((state) => ({ 
+            email: state.email,
+            loginType: state.loginType,
+            handleLogout: state.handleLogout
+        })),
+    )
     return (
             <Box
                 maxWidth='450px'
@@ -22,14 +29,14 @@ const  UserInfoEdit = () => {
                     <>
                         <UpdateSocial
                             email={email}
-                            handleContextLogout={handleContextLogout}
+                            handleLogout={handleLogout}
                         />
                     </>
                 ) : loginType === 'local' ? (
                     <>
                         <UpdateLocal
                             email={email}
-                            handleContextLogout={handleContextLogout}
+                            handleLogout={handleLogout}
                         />
                     </>
                 ) : null }
@@ -38,7 +45,7 @@ const  UserInfoEdit = () => {
 }
 export default UserInfoEdit;
 
-const UpdateSocial = ({email, handleContextLogout}) => {
+const UpdateSocial = ({email, handleLogout}) => {
     const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState({});
     const [userName, setUserName] = useState('');
@@ -72,41 +79,39 @@ const UpdateSocial = ({email, handleContextLogout}) => {
             email,
             nickname: nicknameValue,
         }
-        console.log(userData);
         checkNickname(userData)
-        .then((response)=>{
-            if (response.exists) {
-                setError('nickname', { message: response.message });
-            } else {
-                setError('nickname', { message: '' });
-            }
-        })
-        .catch((error) => {
-            console.error('닉네임 확인 과정에서 오류가 발생하였습니다.:', error);
-        });
+            .then((response)=>{
+                if (response.exists) {
+                    setError('nickname', { message: response.message });
+                } else {
+                    setError('nickname', { message: '' });
+                }
+            })
+            .catch((error) => {
+                console.error('닉네임 확인 과정에서 오류가 발생하였습니다.:', error);
+            });
     }
 
-    const handleUpdateSocialUser = (data) => {
-        console.log('data',data);
-        const contact = `${contactPrefix}${contactMid}${contactLast}`;
-        const userData = {
-            email,
-            userName,
-            nickname,
-            contact,
-        }
-        console.log('userData',userData);
-        updateSocial(userData, email)
-        .then((response) => {
-            if(response.success){
+    const handleUpdateSocialUser = async(data) => {
+        try {
+            const contact = `${contactPrefix}${contactMid}${contactLast}`;
+            const userData = {
+                email,
+                userName,
+                nickname,
+                contact,
+            };
+    
+            const response = await updateSocial(userData, email);
+            if (response.success) {
                 alert(response.message);
-                handleContextLogout();
+                await logout();
+                handleLogout();
                 navigate('/');
             }
-        })
-        .catch((error) => {
+        } catch (error) {
             console.error('회원정보 수정 과정에서 오류가 발생하였습니다.:', error);
-        });
+        }
     };
 
     return (
@@ -115,6 +120,7 @@ const UpdateSocial = ({email, handleContextLogout}) => {
                     gap='10'
                     align='center' 
                     width='100%'
+                    padding='30px'
                 >
                     <form onSubmit={handleSubmit(handleUpdateSocialUser)}>
                         <Field>
@@ -125,7 +131,7 @@ const UpdateSocial = ({email, handleContextLogout}) => {
                             />
                         </Field>
 
-                        <Field label='Username'>
+                        <Field label='이름' gap='1' mt='2'>
                             <Input
                                 value={userName}
                                 readOnly 
@@ -133,9 +139,10 @@ const UpdateSocial = ({email, handleContextLogout}) => {
                         </Field>
 
                         <Field
-                            label='Nickname'
+                            label='닉네임'
                             invalid={!!errors.nickname}
                             errorText={errors.nickname?.message}
+                            gap='1' mt='2'
                         >
                             <Input
                                 {...register('nickname', {
@@ -144,19 +151,21 @@ const UpdateSocial = ({email, handleContextLogout}) => {
                                         setNickname(value);
                                     }
                                 })}
-                                value={nickname}
+                                value={nickname|| ''}
                                 onBlur={ e => handleCheckNickname(e) }
                                 maxLength='10'
                             />
                         </Field>
 
                         <Field
-                            label='Contact'
-                            invalid={!!errors.contact}
+                            label='연락처'
+                            invalid={!!errors.contact|| ''}
                             errorText={errors.contact?.message}
+                            gap='1' mt='2'
                         >
                             <HStack>
                                 <Input
+                                    width='110px'
                                     id='contactPrefix'
                                     {...register('contactPrefix', { 
                                         required: '연락처는 필수 입력 사항입니다.',
@@ -168,8 +177,9 @@ const UpdateSocial = ({email, handleContextLogout}) => {
                                     value={contactPrefix}
                                     maxLength='3'
                                 />
-                                <VscChromeMinimize />
+                                <VscChromeMinimize style={{ fontSize: '15px', fontWeight: 'bold' }}/>
                                 <Input
+                                    width='110px'
                                     id='contactMid'
                                     {...register('contactMid', {
                                         required: '연락처는 필수 입력 사항입니다.',
@@ -181,8 +191,9 @@ const UpdateSocial = ({email, handleContextLogout}) => {
                                     value={contactMid}
                                     maxLength='4'
                                 />
-                                <VscChromeMinimize />
+                                <VscChromeMinimize style={{ fontSize: '15px', fontWeight: 'bold' }}/>
                                 <Input
+                                    width='110px'
                                     id='contactLast'
                                     {...register('contactLast', {
                                         required: '연락처는 필수 입력 사항입니다.',
@@ -198,8 +209,8 @@ const UpdateSocial = ({email, handleContextLogout}) => {
                         </Field>
                         <HStack
                             justifySelf='center'
-                            gap='20px'
-                            mt='20px'
+                            gap='30px'
+                            mt='30px'
                         >
                             <Button
                                 type='submit'
@@ -223,7 +234,7 @@ const UpdateSocial = ({email, handleContextLogout}) => {
     )
 }
 
-const UpdateLocal = ({email, handleContextLogout}) => {
+const UpdateLocal = ({email, handleLogout}) => {
     const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState({});
     const [userName, setUserName] = useState('');
@@ -237,22 +248,19 @@ const UpdateLocal = ({email, handleContextLogout}) => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const { register, handleSubmit, formState: { errors }, setError  } = useForm();
 
-    console.log('user in useEffect:', email);
     useEffect(() => {
         if (email) {
             UserInfo(email)
-            .then((data) => {
-                console.log('UserInfo data:', data);
-                setUserName(data.userName);
-                setNickname(data.nickname);
-                setContact(data.contact);
-                setContactPrefix(data.contact.slice(0, 3));
-                setContactMid(data.contact.slice(3, 7));
-                setContactLast(data.contact.slice(7));
-                console.log('UserInfo Set data:', data);
-            })
-            .catch((error) => {
-            });
+                .then((data) => {
+                    setUserName(data.userName);
+                    setNickname(data.nickname);
+                    setContact(data.contact);
+                    setContactPrefix(data.contact.slice(0, 3));
+                    setContactMid(data.contact.slice(3, 7));
+                    setContactLast(data.contact.slice(7));
+                })
+                .catch((error) => {
+                });
         }
     }, [email]);
 
@@ -260,16 +268,16 @@ const UpdateLocal = ({email, handleContextLogout}) => {
         const passwordValue = e.target.value;
         setExistingPassword(passwordValue)
         checkPassword(email, existingPassword)
-        .then((response)=>{
-            if (response.valid) {
-                setError('existingPassword', { message: '' });
-            } else {
-                setError('existingPassword', { message: response.message });
-            }
-        })
-        .catch((error) => {
-            console.error('패스워드 확인 과정에서 오류가 발생하였습니다.:', error);
-        });
+            .then((response)=>{
+                if (response.valid) {
+                    setError('existingPassword', { message: '' });
+                } else {
+                    setError('existingPassword', { message: response.message });
+                }
+            })
+            .catch((error) => {
+                console.error('비밀번호 확인 과정에서 오류가 발생하였습니다.:', error);
+            });
         
     }
 
@@ -280,26 +288,24 @@ const UpdateLocal = ({email, handleContextLogout}) => {
             email,
             nickname: nicknameValue,
         }
-        console.log(userData);
         checkNickname(userData)
-        .then((response)=>{
-            if (response.exists) {
-                setError('nickname', { message: response.message });
-            } else {
-                setError('nickname', { message: '' });
-            }
-        })
-        .catch((error) => {
-            console.error('닉네임 확인 과정에서 오류가 발생하였습니다.:', error);
-        });
+            .then((response)=>{
+                if (response.exists) {
+                    setError('nickname', { message: response.message });
+                } else {
+                    setError('nickname', { message: '' });
+                }
+            })
+            .catch((error) => {
+                console.error('닉네임 확인 과정에서 오류가 발생하였습니다.:', error);
+            });
     }
 
-    const handleUpdateLocalUser = (data) => {
+    const handleUpdateLocalUser = async(data) => {
         if (userPassword !== confirmPassword) {
-            setError('confirmPassword', { message: '패스워드가 일치하지 않습니다.' });
+            setError('confirmPassword', { message: '비밀번호가 일치하지 않습니다.' });
             return;
         }
-        console.log('data',data);
         const contact = `${contactPrefix}${contactMid}${contactLast}`;
         const userData = {
             email,
@@ -308,18 +314,17 @@ const UpdateLocal = ({email, handleContextLogout}) => {
             contact,
             userPassword,
         }
-        console.log('userData',userData);
-        updateLocal(userData)
-        .then((response) => {
-            if(response.success){
+        try {
+            const response = await updateLocal(userData);
+            if (response.success) {
                 alert(response.message);
-                handleContextLogout();
+                await logout();
+                handleLogout();
                 navigate('/');
             }
-        })
-        .catch((error) => {
+        } catch (error) {
             console.error('회원정보 수정 과정에서 오류가 발생하였습니다.:', error);
-        });
+        }
     };
 
     return (
@@ -328,16 +333,17 @@ const UpdateLocal = ({email, handleContextLogout}) => {
                     gap='10'
                     align='center' 
                     width='100%'
+                    padding='30px'
                 >
                     <form onSubmit={handleSubmit(handleUpdateLocalUser)}>
-                        <Field label='Email'>
+                        <Field label='아이디' gap='1'>
                             <Input
                                 value={email}
                                 readOnly 
                             />
                         </Field>
 
-                        <Field label='Username'>
+                        <Field label='이름' gap='1' mt='2'>
                             <Input
                                 value={userName}
                                 readOnly 
@@ -345,9 +351,10 @@ const UpdateLocal = ({email, handleContextLogout}) => {
                         </Field>
 
                         <Field
-                            label='Nickname'
+                            label='닉네임'
                             invalid={!!errors.nickname}
                             errorText={errors.nickname?.message}
+                            gap='1' mt='2'
                         >
                             <Input
                                 {...register('nickname', {
@@ -363,12 +370,14 @@ const UpdateLocal = ({email, handleContextLogout}) => {
                         </Field>
 
                         <Field
-                            label='Contact'
+                            label='연락처'
                             invalid={!!errors.contact}
                             errorText={errors.contact?.message}
+                            gap='1' mt='2'
                         >
                             <HStack>
                                 <Input
+                                    width='110px'
                                     id='contactPrefix'
                                     {...register('contactPrefix', { 
                                         required: '연락처는 필수 입력 사항입니다.',
@@ -380,8 +389,9 @@ const UpdateLocal = ({email, handleContextLogout}) => {
                                     value={contactPrefix}
                                     maxLength='3'
                                 />
-                                <VscChromeMinimize />
+                                <VscChromeMinimize style={{ fontSize: '15px', fontWeight: 'bold' }}/>
                                 <Input
+                                    width='110px'
                                     id='contactMid'
                                     {...register('contactMid', {
                                         required: '연락처는 필수 입력 사항입니다.',
@@ -393,8 +403,9 @@ const UpdateLocal = ({email, handleContextLogout}) => {
                                     value={contactMid}
                                     maxLength='4'
                                 />
-                                <VscChromeMinimize />
+                                <VscChromeMinimize style={{ fontSize: '15px', fontWeight: 'bold' }}/>
                                 <Input
+                                    width='110px'
                                     id='contactLast'
                                     {...register('contactLast', {
                                         required: '연락처는 필수 입력 사항입니다.',
@@ -410,9 +421,10 @@ const UpdateLocal = ({email, handleContextLogout}) => {
                         </Field>
 
                         <Field
-                            label='Existing Password'
+                            label='기존 비밀번호'
                             invalid={!!errors.existingPassword}
                             errorText={errors.existingPassword?.message}
+                            gap='1' mt='2'
                         >
                         <PasswordInput
                             {...register('existingPassword', {
@@ -423,9 +435,10 @@ const UpdateLocal = ({email, handleContextLogout}) => {
                         </Field>
 
                         <Field
-                            label='New Password'
+                            label='새로운 비밀번호'
                             invalid={!!errors.userPassword}
                             errorText={errors.userPassword?.message}
+                            gap='1' mt='2'
                         >
                         <PasswordInput
                             {...register('userPassword', {
@@ -441,13 +454,14 @@ const UpdateLocal = ({email, handleContextLogout}) => {
                         </Field>
 
                         <Field
-                            label='Confirm Password'
+                            label='비밀번호 확인'
                             invalid={!!errors.confirmPassword}
                             errorText={errors.confirmPassword?.message}
+                            gap='1' mt='2'
                         >
                         <PasswordInput
                             {...register('confirmPassword', {
-                            validate: value => value === userPassword || '패스워드가 일치하지 않습니다.'
+                            validate: value => value === userPassword || '비밀번호가 일치하지 않습니다.'
                             })}
                             onChange={e => setConfirmPassword(e.target.value)}
                             maxLength='15'
@@ -455,8 +469,8 @@ const UpdateLocal = ({email, handleContextLogout}) => {
                         </Field>
                         <HStack
                             justifySelf='center'
-                            gap='20px'
-                            mt='20px'
+                            gap='30px'
+                            mt='30px'
                         >
                             <Button
                                 type='submit'

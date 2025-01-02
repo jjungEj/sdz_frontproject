@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Box, HStack, VStack, Text, Input, Button } from '@chakra-ui/react';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Field } from '@/components/ui/field';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react'
+import { Box, HStack, VStack, Text, Input, Button } from '@chakra-ui/react'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Field } from '@/components/ui/field'
+import { useNavigate } from 'react-router-dom'
 import { PasswordInput } from '@/components/ui/password-input'
-import { loginProcess } from '@/services/LoginAPI';
-import { FindId, FindPassword } from './AccountDialog';
-import { useAuth } from '@/services/AuthContext';
-import { SocialLoginButtons } from '@/components/SocialLoginButtons';
+import { loginProcess } from '@/services/LoginAPI'
+import { FindId, FindPassword } from './AccountDialog'
+import useAuthStore from '@/store/AuthStore';
+import { SocialLoginButtons } from '@/components/SocialLoginButtons'
 
 function getCookie(name) {
     const cookies = document.cookie.split('; ');
@@ -23,10 +23,10 @@ function getCookie(name) {
 function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const navigate = useNavigate();
-    const { handleContextLogin } = useAuth();
     const [rememberId, setRememberId] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
+    const navigate = useNavigate();
+    const { handleLogin } = useAuthStore();
 
     useEffect(() => {
         const encodedUserId = getCookie('remember-id');
@@ -39,7 +39,7 @@ function Login() {
 
     const isLoginButtonDisabled = !email || !password;
 
-    const handleLogin = () => {
+    const handleLoginSubmit = () => {
         const LoginAcount = {
             email, 
             password, 
@@ -49,7 +49,7 @@ function Login() {
         loginProcess(LoginAcount)
             .then((response) => {
                 if (response.httpStatus === 'OK') {
-                    handleContextLogin();
+                    handleLogin();
                     navigate('/');
                 } else if (response.httpStatus === 'FORBIDDEN') {
                     alert(response.message + "\n비밀번호 찾기를 통해 임시 비밀번호를 발급하세요.");
@@ -71,12 +71,12 @@ function Login() {
             <VStack
                 maxWidth='600px'
                 margin='0 auto'
+                padding='30px'
                 align='center'
                 gap='20px'
             >
-                <Text>로고가 들어갈 자리</Text>
                 <Field
-                    label='Email'
+                    label='아이디'
                 >
                     <Input
                         value= {email}
@@ -84,15 +84,20 @@ function Login() {
                     />
                 </Field>
                 <Field
-                    label='Password'
+                    label='비밀번호'
                 >
                     <PasswordInput 
                         value= {password} 
                         onChange={e => setPassword(e.target.value)}
                     />
                 </Field>
-                <HStack width='100%' align='start'>
-                    <HStack gap={5}>
+                <HStack
+                    width='100%'
+                    align='start'
+                    alignItems='center'
+                    justifyContent= 'space-between'
+                >
+                    <HStack gap='5'>
                         <Checkbox 
                             checked={rememberMe}
                             onCheckedChange={(e) => setRememberMe(!!e.checked)}>
@@ -104,14 +109,14 @@ function Login() {
                             아이디 기억하기
                         </Checkbox>
                     </HStack>
-                </HStack>
-                <HStack>
-                    <FindId />
-                    <FindPassword />
+                    <HStack gap='0'>
+                        <FindId />
+                        <FindPassword />
+                    </HStack>
                 </HStack>
                 <Button 
-                    onClick={ handleLogin }
-                    style={{ width: '100%', height: '50px' }}
+                    onClick={ handleLoginSubmit }
+                    style={{ width: '100%', height: '60px' }}
                     disabled={isLoginButtonDisabled}
                 >
                     로그인
@@ -119,7 +124,7 @@ function Login() {
                 <Button 
                     onClick={() => navigate('/signUp')}
                     style={{ width: '100%',
-                            height: '50px',
+                            height: '60px',
                             border: '1px solid black', background: 'none',
                             cursor: 'pointer',
                             color: 'black'

@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { Box, HStack, VStack, Stack, Text, Input, Link, Button, Heading } from '@chakra-ui/react';
-import { Field } from '@/components/ui/field';
-import { Checkbox } from '@/components/ui/checkbox';
+import React, { useState, useEffect } from 'react'
+import { Box, HStack, VStack, Stack, Text, Input, Link, Button, Heading } from '@chakra-ui/react'
+import { Field } from '@/components/ui/field'
+import { Checkbox } from '@/components/ui/checkbox'
 import { PasswordInput } from '@/components/ui/password-input'
-import { useNavigate } from 'react-router-dom';
-import { SocialLoginButtons } from '@/components/SocialLoginButtons';
+import { useNavigate } from 'react-router-dom'
+import { SocialLoginButtons } from '@/components/SocialLoginButtons'
 import { NativeSelectField, NativeSelectRoot } from '@/components/ui/native-select'
 import { useForm } from 'react-hook-form'
-import { VscChromeMinimize } from 'react-icons/vsc';
-import { signUpProcess } from '@/services/UserAPI';
-import { checkEmailExists, checkNickname, checkAccountLimit } from '@/services/VerificationAPI';
+import { VscChromeMinimize } from 'react-icons/vsc'
+import { signUpProcess } from '@/services/UserAPI'
+import { checkEmailExists, checkNickname, checkAccountLimit } from '@/services/VerificationAPI'
 
 function SignUp() {
     const [email, setEmail] = useState('');
@@ -34,7 +34,6 @@ function SignUp() {
     useEffect(() => {
         if (userId && domain) {
             const email = `${userId}@${domain}`;
-            console.log(email);
             checkEmailExists(email)
                 .then((response) => {
                 if (response.exists) {
@@ -44,7 +43,7 @@ function SignUp() {
                 }
             })
             .catch((error) => {
-                console.error('이메일 확인 과정에서 오류가 발생하였습니다.:', error);
+                console.error('아이디 확인 과정에서 오류가 발생하였습니다.:', error);
             });
         }
     }, [userId, domain, setError])
@@ -55,18 +54,17 @@ function SignUp() {
         const userData = {
             nickname: nicknameValue,
         }
-        console.log(userData);
         checkNickname(userData)
-        .then((response)=>{
-            if (response.exists) {
-                setError('nickname', { message: response.message });
-            } else {
-                setError('nickname', { message: '' });
-            }
-        })
-        .catch((error) => {
-            console.error('닉네임 확인 과정에서 오류가 발생하였습니다.:', error);
-        });
+            .then((response)=>{
+                if (response.exists) {
+                    setError('nickname', { message: response.message });
+                } else {
+                    setError('nickname', { message: '' });
+                }
+            })
+            .catch((error) => {
+                console.error('닉네임 확인 과정에서 오류가 발생하였습니다.:', error);
+            });
     }
 
     const handleConsent = (e) => {
@@ -83,40 +81,36 @@ function SignUp() {
             return;
         }
         const email = `${userId}@${domain}`;
-        console.log('data',data);
-        console.log('email',email);
         const contact = `${contactPrefix}${contactMid}${contactLast}`;
         checkAccountLimit(userName, contact)
-        .then((response) => {
-            console.log('response:', response);
-            if(response.userLimit < 3){
-                const newAccount = {
-                    email,
-                    userPassword,
-                    userName,
-                    nickname,
-                    contact,
-                };
-                console.log('newAccountData',newAccount);
-                signUpProcess(newAccount)
-                    .then((response) => {
-                        if(response.success){
-                            alert(response.userName+"님 환영합니다!\n"+response.message);
-                            navigate('/');
-                        } else {
-                            alert(response.message);
-                        }
-                    })
-                    .catch((error) => {
-                        console.error('회원 가입 과정에서 오류가 발생하였습니다.:', error);
-                    });
-            } else {
-                alert(response.message);
-            }
-        })
-        .catch((error) => {
-            console.error('이메일 확인 과정에서 오류가 발생하였습니다.:', error);
-        });
+            .then((response) => {
+                if(response.userLimit < 3){
+                    const newAccount = {
+                        email,
+                        userPassword,
+                        userName,
+                        nickname,
+                        contact,
+                    };
+                    signUpProcess(newAccount)
+                        .then((response) => {
+                            if(response.success){
+                                alert(response.userName+"님 환영합니다!\n"+response.message);
+                                navigate('/');
+                            } else {
+                                alert(response.message);
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('회원 가입 과정에서 오류가 발생하였습니다.:', error);
+                        });
+                } else {
+                    alert(response.message);
+                }
+            })
+            .catch((error) => {
+                console.error('아이디 확인 과정에서 오류가 발생하였습니다.:', error);
+            });
     };
 
     return (
@@ -126,42 +120,42 @@ function SignUp() {
                 margin='0 auto'
                 align='center'
             >
-                <Heading alignSelf='flex-start'>
+                <Heading alignSelf='flex-start' fontSize='25px' mb='5'>
                     회원가입
                 </Heading>
-                <Text>SNS 계정으로 간단하게 회원가입</Text>
+                <Text mb='3'>SNS 계정으로 간단하게 회원가입</Text>
                 <SocialLoginButtons />
                 <hr></hr>
                 <form onSubmit={handleSubmit(handleSignUp)}>
                     <Stack
                     align='center' 
                     width='100%'
+                    gap='2'
                     >
                     <Text
                         alignSelf='start'
                     >
-                    이메일
+                    아이디
                     </Text>
                         <HStack>
                             <Input
                                 width='400px'
                                 id='userId'
                                 {...register('userId', {
-                                    required: '이메일은 필수 입력 사항입니다.',
+                                    required: '아이디는 필수 입력 사항입니다.',
                                     onChange: (e) => {
                                         const value = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
                                         setUserId(value);
                                     }
                                 })}
                                 value={userId}
-                                // onChange={ e => setUserId(e.target.value)}
                                 maxLength='25'
                             />
                             <Text>@</Text>
                             <NativeSelectRoot>
                                 <NativeSelectField 
                                         {...register('domain', { 
-                                            required: '이메일은 필수 입력 사항입니다.'
+                                            required: '아이디는 필수 입력 사항입니다.'
                                         })}
                                         value={domain}
                                         onChange={ e => setDomain(e.target.value)}
@@ -190,7 +184,7 @@ function SignUp() {
                         >
                             <PasswordInput 
                                 {...register('userPassword', {
-                                    required: '패스워드는 필수 입력 사항입니다.',
+                                    required: '비밀번호는 필수 입력 사항입니다.',
                                     validate: value => {
                                         const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,13}$/;
                                         return passwordPattern.test(value) || '비밀번호는 알파벳과 숫자를 포함하여 8자 이상 13자 이하로 입력해야 합니다.';
@@ -205,6 +199,7 @@ function SignUp() {
                             label='이름' 
                             invalid={!!errors.userName} 
                             errorText={errors.userName?.message}
+                            gap='0'
                         >
                             <Input
                                 {...register('userName', {
@@ -221,6 +216,7 @@ function SignUp() {
                             label='닉네임'
                             invalid={!!errors.nickname}
                             errorText={errors.nickname?.message}
+                            gap='0'
                         >
                             <Input
                                 {...register('nickname', {
@@ -238,9 +234,11 @@ function SignUp() {
                             label='연락처'
                             invalid={!!errors.contact}
                             errorText={errors.contact?.message}
+                            gap='0'
                         >
                             <HStack>
                                 <Input
+                                    width='160px'
                                     id='contactPrefix'
                                     {...register('contactPrefix', { 
                                         required: '연락처는 필수 입력 사항입니다.',
@@ -252,8 +250,9 @@ function SignUp() {
                                     value={contactPrefix}
                                     maxLength='3'
                                 />
-                                <VscChromeMinimize />
+                                <VscChromeMinimize style={{ fontSize: '15px', fontWeight: 'bold' }}/>
                                 <Input
+                                    width='160px'
                                     id='contactMid'
                                     {...register('contactMid', {
                                         required: '연락처는 필수 입력 사항입니다.',
@@ -265,8 +264,9 @@ function SignUp() {
                                     value={contactMid}
                                     maxLength='4'
                                 />
-                                <VscChromeMinimize />
+                                <VscChromeMinimize style={{ fontSize: '15px', fontWeight: 'bold' }}/>
                                 <Input
+                                    width='160px'
                                     id='contactLast'
                                     {...register('contactLast', {
                                         required: '연락처는 필수 입력 사항입니다.',
@@ -284,6 +284,7 @@ function SignUp() {
                             width='100%'
                             align='justify-start'
                             gap='20px'
+                            mt='30px'
                         >
                             <Checkbox
                                 checked={selection}
@@ -296,30 +297,32 @@ function SignUp() {
                                 checked={consent1}
                                 onChange={e => setConsent1(e.target.checked)}
                             >
-                                만 14세 이상입니다 (필수)
+                                만 14세 이상입니다
                             </Checkbox>
                             <Checkbox
                                 checked={consent2} 
                                 onChange={e => setConsent2(e.target.checked)}
                             >
-                                이용약관 (필수)
+                                이용약관
                             </Checkbox>
                             <Checkbox
                                 checked={consent3}
                                 onChange={e => setConsent3(e.target.checked)}
                             >
-                                개인정보수집 및 이용동의 (필수)
+                                개인정보수집 및 이용동의
                             </Checkbox>
                         </VStack>
                         <Button
                             type='submit'
                             disabled={!isFormValid}
+                            mt='20px'
+                            mb='20px'
                         >
                             회원가입하기
                         </Button>
                         <Text>
                             이미 아이디가 있으신가요?
-                            <Link href='/login'>로그인</Link>
+                            <Link href='/login' ml='3'>로그인</Link>
                         </Text>
                         </Stack>
                     </form>

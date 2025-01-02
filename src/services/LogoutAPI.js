@@ -3,7 +3,7 @@ const endpoint = "/logout";
 
 const url = `${apiUrl}${endpoint}`;
 
-export const logout = async (navigate) => {
+export const logout = async () => {
   try {
     const response = await fetch(url, {
       method: 'POST',
@@ -18,7 +18,6 @@ export const logout = async (navigate) => {
       throw new Error(errorData.message);
     }
 
-    navigate('/');
   } catch (error) {
     console.error('로그아웃에 실패하였습니다.:', error.message);
     throw error;
