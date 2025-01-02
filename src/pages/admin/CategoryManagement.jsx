@@ -76,8 +76,8 @@ return (
     <Box>
         <Toaster />
         <HStack justify="space-between">
-            <Heading as="h1" size="xl" mb={3}>카테고리 관리</Heading>
-            <HStack mb={3}>
+            <Heading as="h1" size="xl" mb="3">카테고리 관리</Heading>
+            <HStack mb="3">
                 <Input
                     type="text"
                     value={newCategoryName}
@@ -95,7 +95,7 @@ return (
                 </Button>
             </HStack>
         </HStack>
-        <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
+        <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb="3" />
         <Box display="flex" justifyContent="center" margin="5">
             <AccordionRoot spaceY="4" variant="subtle" collapsible onChange={(newValue) => setOpenCategory(newValue)}>
                 {categories
@@ -175,7 +175,6 @@ return (
                                         w="100%"
                                     />
                                     <Button
-                                        colorScheme="blue"
                                         onClick={() => handleCreateSubCategory(category.categoryId)}
                                         size="sm"
                                     >
