@@ -27,7 +27,7 @@ function Header() {
   };
 
   const handleMouseEnter = (categoryId) => {
-      setOpenMenu(categoryId);
+    setOpenMenu(categoryId);
   };
 
   const handleMouseLeave = () => {
@@ -97,15 +97,18 @@ function Header() {
                     to={`/products?categoryId=${category.categoryId}`}
                     variant="link"
                     fontSize="2xl"
-                    margin="3"
                     padding="0"
                     onMouseEnter={() => handleMouseEnter(category.categoryId)}
+                    onMouseLeave={handleMouseLeave}
                   >
                     {category.categoryName}
                   </Button>
                 </ChakraLink>
               </MenuTrigger>
-              <MenuContent onMouseLeave={handleMouseLeave}>
+              <MenuContent
+                onMouseEnter={() => handleMouseEnter(category.categoryId)}
+                onMouseLeave={handleMouseLeave}
+              >
                 {category.subCategories.length > 0 ? (
                   category.subCategories.map((subCategory) => (
                     <MenuItem key={subCategory.categoryId}>
