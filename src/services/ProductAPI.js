@@ -11,17 +11,26 @@ export const fetchProductsByCategory = async (categoryId) => {
   return response.json();
 };
 
-export const fetchProducts = async () => {
-    try {
-        const response = await fetch(`${BASE_URL}`);
-        if (!response.ok) {
-            throw new Error("상품 목록을 불러오는 데 오류가 발생했습니다.");
-        }
-        return await response.json();
-    } catch (error) {
-        throw new Error("상품 목록을 불러오는 데 오류가 발생했습니다.");
-    }
+export const fetchProducts = async (page, pageSize, keyword = "") => {
+  try {
+      const response = await fetch(
+          `${BASE_URL}?page=${page}&size=${pageSize}&keyword=${encodeURIComponent(keyword)}`,
+          { method: "GET" }
+      );
+
+      if (!response.ok) {
+          throw new Error("상품 목록을 불러오는 데 오류가 발생했습니다.");
+      }
+
+      return await response.json();
+  } catch (error) {
+      console.error(error);
+      throw new Error("상품 목록을 불러오는 데 오류가 발생했습니다.");
+  }
 };
+
+
+
 
 export const deleteProduct = async (productId) => {
     try {
