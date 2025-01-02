@@ -35,8 +35,37 @@ const ProductDetail = () => {
 
     const handleAddToCart = async () => {
         try {
-            console.log("장바구니 추가 수량:", quantity); // Debug 로그
-            await modifyOrderItem(productId, quantity); // 선택한 수량만큼 장바구니에 추가
+            const isLoggedIn = localStorage.getItem("access") !== null;
+
+            if (isLoggedIn) {
+                // 로그인된 사용자 처리
+                await modifyOrderItem(productId, quantity); // 서버 API 호출
+            } else {
+                // 비로그인 사용자 처리
+                const guestOrderItem = JSON.parse(localStorage.getItem('guestOrderItem')) || { orderItemDetails: [] };
+                const existingItem = guestOrderItem.orderItemDetails.find(item => String(item.productId) === productId);
+                const currentQuantity = existingItem ? existingItem.quantity : 0;
+
+                if (currentQuantity + quantity > product.productCount) {
+                    alert("재고 수량을 초과하여 상품을 추가할 수 없습니다.");
+                    return;
+                }
+
+                if (existingItem) {
+                    existingItem.quantity += quantity;
+                } else {
+                    guestOrderItem.orderItemDetails.push({
+                        productId: product.productId,
+                        productName: product.productName,
+                        productAmount: product.productAmount,
+                        thumbnailPath: product.thumbnailPath,
+                        quantity: quantity,
+                    });
+                }
+
+                localStorage.setItem('guestOrderItem', JSON.stringify(guestOrderItem));
+            }
+
             alert(`${quantity}개의 상품이 장바구니에 추가되었습니다!`);
         } catch (error) {
             console.error("Error adding to cart:", error);
@@ -67,7 +96,7 @@ const ProductDetail = () => {
                     <Image
                         objectFit="cover"
                         maxW="500px"
-                        src={`http://localhost:8080${product.thumbnailPath}`}
+                        src={`${product.thumbnailPath}`}
                         alt={product.productName}
                         margin="20"
                     />

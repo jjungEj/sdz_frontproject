@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Image, Text, Flex, Button, HStack, VStack } from '@chakra-ui/react';
 import { getUserOrders } from '@/services/OrderAPI';
+import { useNavigate } from 'react-router-dom';
 
 function OrderHistory() {
     const [orders, setOrders] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);S
+    const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const itemsPerPage = 10;
-
+    const navigate = useNavigate();
     // 주문 데이터 가져오기
     const fetchOrders = async () => {
         try {
@@ -43,7 +44,7 @@ function OrderHistory() {
     }, [currentPage]);
     return (
         <Box p={5}>
-            <Text fontSize="2xl" mb={5}>주문 내역</Text>
+            <Text fontSize="2xl" mb={5} fontWeight="bold">주문내역 조회</Text>
             
             {getCurrentPageOrders().map((order) => (
                 <Box 
@@ -53,6 +54,9 @@ function OrderHistory() {
                     p={4}
                     mb={4}
                     shadow="md"
+                    cursor="pointer" // 클릭 가능하다는 UI 표시
+                    _hover={{ bg: "gray.100" }} // 마우스 오버 시 배경 색상 변경
+                    onClick={() => navigate(`/order/${order.orderId}`)} // 클릭 시 주문 상세 페이지로 이동
                 >
                     <Text fontSize="lg" fontWeight="bold" mb={3}>
                         주문번호: {order.orderId}
@@ -74,7 +78,7 @@ function OrderHistory() {
                     ))}
                     
                     <Box mt={3} p={3} bg="gray.50" borderRadius="md">
-                        <Text>배송지:  {order.deliveryAddress?.deliveryAddress1} 
+                        <Text>배송지: {order.deliveryAddress?.deliveryAddress1} 
                             {order.deliveryAddress?.deliveryAddress2} {order.deliveryAddress?.deliveryAddress3}</Text>
                         <Text>총 주문금액: {order.totalPrice}원</Text>
                         <Text>주문상태: {getOrderStatus(order.orderStatus)}</Text>

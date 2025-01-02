@@ -1,21 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { fetchOrderItemData, modifyOrderItem, clearOrderItem } from "@/services/OrderItemAPI";
-import { Box, Stack, HStack, VStack, Link, Heading, Table, Button, Text, } from '@chakra-ui/react';
-import { Toaster, toaster } from "@/components/ui/toaster"
-import { Checkbox } from "@/components/ui/checkbox"
-// import { Button } from "@/components/ui/button"
+import {fetchOrderItemData, modifyOrderItem, clearOrderItem, mergeGuestOrderItem} from "@/services/OrderItemAPI";
+import { Box, HStack, VStack, Heading, Table, Button, Text } from '@chakra-ui/react';
+import { Toaster, toaster } from "@/components/ui/toaster";
+import { Checkbox } from "@/components/ui/checkbox";
 
 function OrderItem() {
-    const [OrderItemData, setOrderItemData] = useState(null); // 장바구니 데이터 상태
-    const [error, setError] = useState(null); // 에러 상태
-    const [selectedItems, setSelectedItems] = useState([]); // 선택된 상품 ID 상태
+    const [OrderItemData, setOrderItemData] = useState(null);
+    const [error, setError] = useState(null);
+    const [selectedItems, setSelectedItems] = useState([]);
     const navigate = useNavigate();
     const hasSelection = selectedItems.length > 0;
-    const indeterminate = hasSelection && selectedItems.length < OrderItemData.orderItemDetails.length;
+    const indeterminate = hasSelection && selectedItems.length < OrderItemData?.orderItemDetails.length;
 
     useEffect(() => {
-        fetchData();
+        const initializeCart = async () => {
+            try {
+                const isLoggedIn = !!localStorage.getItem("access");
+                if (isLoggedIn) {
+                    // 로그인된 사용자: 게스트 장바구니 병합
+                    await mergeGuestOrderItem();
+                }
+                await fetchData();
+            } catch (error) {
+                console.error("Error initializing cart:", error);
+            }
+        };
+
+        initializeCart();
     }, []);
 
     const fetchData = async () => {
@@ -24,17 +36,12 @@ function OrderItem() {
             setOrderItemData(data);
             setError(null);
 
-            // 기존 체크 상태와 데이터 비교
             const newProductIds = data.orderItemDetails.map((item) => item.productId);
-
-            // 새 데이터에도 존재하는 기존 선택 항목 유지
             const preservedSelection = selectedItems.filter((id) => newProductIds.includes(id));
-
-            // 첫 로딩 시에는 전체 선택, 이후에는 유지된 선택 항목만 유지
             setSelectedItems(preservedSelection.length === 0 ? newProductIds : preservedSelection);
         } catch (err) {
             toaster.create({
-                title: error.message,
+                title: err.message,
                 type: "error",
                 isClosable: true,
                 duration: 3000,
@@ -53,7 +60,7 @@ function OrderItem() {
             fetchData();
         } catch (err) {
             toaster.create({
-                title: error.message,
+                title: err.message,
                 type: "error",
                 isClosable: true,
                 duration: 3000,
@@ -63,8 +70,7 @@ function OrderItem() {
 
     const handleAddItem = async (productId) => {
         try {
-            await modifyOrderItem(
-                productId, 1);
+            await modifyOrderItem(productId, 1);
             fetchData();
         } catch (error) {
             toaster.create({
@@ -82,7 +88,7 @@ function OrderItem() {
             fetchData();
         } catch (err) {
             toaster.create({
-                title: error.message,
+                title: err.message,
                 type: "error",
                 isClosable: true,
                 duration: 3000,
@@ -96,13 +102,14 @@ function OrderItem() {
             fetchData();
         } catch (err) {
             toaster.create({
-                title: error.message,
+                title: err.message,
                 type: "error",
                 isClosable: true,
                 duration: 3000,
             });
         }
     };
+
     const handleCheckout = () => {
         if (!OrderItemData || !OrderItemData.orderItemDetails) {
             console.error("OrderItemData is not available");
@@ -113,13 +120,9 @@ function OrderItem() {
     };
 
     const rows = (OrderItemData?.orderItemDetails ?? []).map((item) =>
-        <Table.Row
-            key={item.productId}
-            data-selected={selectedItems.includes(item.productId) ? "" : undefined}
-        >
+        <Table.Row key={item.productId}>
             <Table.Cell>
                 <Checkbox
-                    top="1"
                     aria-label="Select row"
                     checked={selectedItems.includes(item.productId)}
                     onCheckedChange={(changes) => {
@@ -133,9 +136,8 @@ function OrderItem() {
             </Table.Cell>
             <Table.Cell>
                 <HStack spacing={3}>
-                    {/* 추가: 썸네일 이미지 표시 */}
                     <img
-                        src={`http://localhost:8080${item.thumbnailPath}`} // 썸네일 경로 사용
+                        src={`${item.thumbnailPath}`}
                         alt={item.productName}
                         style={{
                             width: "75px",
@@ -145,7 +147,6 @@ function OrderItem() {
                             border: "1px solid #ccc",
                         }}
                     />
-                    {/* 상품명 클릭 시 상세 페이지로 이동 */}
                     <VStack align="flex-start" spacing={1}>
                         <Text as={RouterLink} to={`/product/${item.productId}`} fontWeight="bold" color="teal.500">
                             {item.productName}
@@ -156,33 +157,23 @@ function OrderItem() {
                     </VStack>
                 </HStack>
             </Table.Cell>
+            <Table.Cell>{item.productAmount.toLocaleString()} 원</Table.Cell>
             <Table.Cell>
-                {item.productAmount.toLocaleString()} 원
-            </Table.Cell>
-            <Table.Cell >
                 <HStack spacing={3} align="center" justify="center" minW="100px">
-                    <Button onClick={() => handleRemoveItem(item.productId)} variant="plain" size="xs" w="30px">
-                        -
-                    </Button>
-                    <Text textAlign="center" w="40px" fontSize="sm">
-                        {item.quantity}
-                    </Text>
-                    <Button onClick={() => handleAddItem(item.productId)} variant="plain" size="xs" w="30px">
-                        +
-                    </Button>
+                    <Button onClick={() => handleRemoveItem(item.productId)} variant="plain" size="xs" w="30px">-</Button>
+                    <Text textAlign="center" w="40px" fontSize="sm">{item.quantity}</Text>
+                    <Button onClick={() => handleAddItem(item.productId)} variant="plain" size="xs" w="30px">+</Button>
                 </HStack>
             </Table.Cell>
-            <Table.Cell>
-                {(item.productAmount * item.quantity).toLocaleString()} 원
-            </Table.Cell>
+            <Table.Cell>{(item.productAmount * item.quantity).toLocaleString()} 원</Table.Cell>
         </Table.Row>
-    )
+    );
 
     return (
         <Box>
             <Toaster />
             <Heading as="h1" size="xl" mb={3}>장바구니</Heading>
-                                <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
+            <Box borderBottom="1px solid black" mb={3} />
             {OrderItemData?.orderItemDetails.length > 0 ? (
                 <>
                     <Table.Root style={{ width: "100%", marginBottom: "20px" }}>
@@ -190,7 +181,6 @@ function OrderItem() {
                             <Table.Row>
                                 <Table.ColumnHeader>
                                     <Checkbox
-                                        top="1"
                                         aria-label="Select all rows"
                                         checked={indeterminate ? "indeterminate" : selectedItems.length > 0}
                                         onCheckedChange={(changes) => {
@@ -202,48 +192,34 @@ function OrderItem() {
                                 </Table.ColumnHeader>
                                 <Table.ColumnHeader>제품정보</Table.ColumnHeader>
                                 <Table.ColumnHeader>판매가격</Table.ColumnHeader>
-                                <Table.ColumnHeader textAlign="center" w="100px">
-                                    수량
-                                </Table.ColumnHeader>
+                                <Table.ColumnHeader textAlign="center" w="100px">수량</Table.ColumnHeader>
                                 <Table.ColumnHeader>주문금액</Table.ColumnHeader>
                             </Table.Row>
                         </Table.Header>
-                        <Table.Body>
-                            {rows}
-                            {}
-                        </Table.Body>
+                        <Table.Body>{rows}</Table.Body>
                     </Table.Root>
                     <HStack justify="space-between" mb={5}>
                         <HStack mt={-10}>
-                            <Button onClick={handleDeleteSelectedItems} variant="plain" size="xs">
-                                선택삭제
-                            </Button>
-                            <Button onClick={handleClearOrderItem} variant="plain" size="xs" ml={-3}>
-                                전체삭제
-                            </Button>
+                            <Button onClick={handleDeleteSelectedItems} variant="plain" size="xs">선택삭제</Button>
+                            <Button onClick={handleClearOrderItem} variant="plain" size="xs" ml={-3}>전체삭제</Button>
                         </HStack>
                         <Heading mr={1}>
-                            총 결제금액 : {OrderItemData.orderItemDetails.reduce((total, item) => {
+                            총 결제금액: {OrderItemData.orderItemDetails.reduce((total, item) => {
                             return selectedItems.includes(item.productId)
                                 ? total + item.productAmount * item.quantity
                                 : total;
                         }, 0).toLocaleString()} 원
                         </Heading>
                     </HStack>
-                    <Button w="100%" onClick={handleCheckout}>
-                        {selectedItems.length}개 상품 구매하기
-                    </Button>
+                    <Button w="100%" onClick={handleCheckout}>{selectedItems.length}개 상품 구매하기</Button>
                 </>
             ) : (
-                <>
-                    <VStack h="100%" justify="center" align="center">
-                        <Heading>장바구니에 담긴 상품이 없습니다.</Heading>
-                    </VStack>
-                </>
-            )
-            }
-        </Box >
-    )
+                <VStack h="100%" justify="center" align="center">
+                    <Heading>장바구니에 담긴 상품이 없습니다.</Heading>
+                </VStack>
+            )}
+        </Box>
+    );
 }
 
 export default OrderItem;

@@ -70,16 +70,53 @@ const ProductList = () => {
     fetchCategoryName();
   }, [categoryId]);
 
-  // 장바구니에 상품 추가
+  // 장바구니 상품 추가
   const handleAddToCart = async (productId) => {
     try {
-      await modifyOrderItem(productId, 1); // 수량 1로 추가
-      alert("장바구니에 상품이 추가되었습니다!");
+      const isLoggedIn = localStorage.getItem("access") !== null;
+
+      if (isLoggedIn) {
+        // 로그인된 사용자 처리
+        await modifyOrderItem(productId, 1); // 서버 API 호출
+      } else {
+        // 비로그인 사용자 처리
+        const product = products.find(p => p.productId === productId);
+        if (!product) {
+          alert("상품 정보를 찾을 수 없습니다.");
+          return;
+        }
+
+        const guestOrderItem = JSON.parse(localStorage.getItem('guestOrderItem')) || { orderItemDetails: [] };
+        const existingItem = guestOrderItem.orderItemDetails.find(item => item.productId === productId);
+        const currentQuantity = existingItem ? existingItem.quantity : 0;
+
+        if (currentQuantity + 1 > product.productCount) {
+          alert("재고 수량을 초과하여 상품을 추가할 수 없습니다.");
+          return;
+        }
+
+        if (existingItem) {
+          existingItem.quantity += 1;
+        } else {
+          guestOrderItem.orderItemDetails.push({
+            productId: product.productId,
+            productName: product.productName,
+            productAmount: product.productAmount,
+            thumbnailPath: product.thumbnailPath,
+            quantity: 1,
+          });
+        }
+
+        localStorage.setItem('guestOrderItem', JSON.stringify(guestOrderItem));
+      }
+
+      alert("상품이 장바구니에 추가되었습니다!");
     } catch (error) {
       console.error("Error adding to cart:", error);
       alert("장바구니에 상품을 추가하는 데 실패했습니다.");
     }
   };
+
 
   if (loading) {
     return (
@@ -112,7 +149,7 @@ const ProductList = () => {
               <Card.Root borderRadius="2xl" maxW="300px" overflow="hidden" cursor="pointer">
                 <Link to={`/product/${product.productId}`}>
                   <Image
-                    src={`http://localhost:8080${product.thumbnailPath}`}
+                    src={`${product.thumbnailPath}`}
                     alt={product.productName}
                     style={{ width: '100%', height: '300px', objectFit: 'cover' }}
                     bgColor="gray.100"
