@@ -175,7 +175,7 @@ function ProductManagement() {
                                 <Table.Cell>{product.productName}</Table.Cell>
                                 <Table.Cell>
                                     <Image
-                                        src={`http://localhost:8080${product.thumbnailPath}`}
+                                        src={`${product.thumbnailPath}`}
                                         alt={product.productName}
                                         boxSize="50px"
                                     />

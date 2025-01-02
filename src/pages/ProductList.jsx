@@ -149,7 +149,7 @@ const ProductList = () => {
               <Card.Root borderRadius="2xl" maxW="300px" overflow="hidden" cursor="pointer">
                 <Link to={`/product/${product.productId}`}>
                   <Image
-                    src={`http://localhost:8080${product.thumbnailPath}`}
+                    src={`${product.thumbnailPath}`}
                     alt={product.productName}
                     style={{ width: '100%', height: '300px', objectFit: 'cover' }}
                     bgColor="gray.100"

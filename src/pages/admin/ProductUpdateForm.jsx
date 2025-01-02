@@ -30,14 +30,14 @@ const ProductUpdateForm = () => {
 
         const fetchedImages = product.imagePaths || [];
         const imageObjects = fetchedImages.map((path) => ({
-          path: `http://localhost:8080${path}`,
+          path: `${path}`,
           isNew: false,
           markedForDeletion: false,
         }));
         setImages(imageObjects);
 
         const thumbnailImage = imageObjects.find(
-          (img) => img.path === `http://localhost:8080${product.thumbnailPath}`
+          (img) => img.path === `${product.thumbnailPath}`
         );
         setThumbnail(thumbnailImage);
       } catch (error) {
@@ -126,12 +126,12 @@ const ProductUpdateForm = () => {
 
     const deletedPaths = images
       .filter((image) => image.markedForDeletion && !image.isNew)
-      .map((image) => image.path.replace("http://localhost:8080", ""));
+      .map((image) => image.path.replace("", ""));
 
     formData.append("deletedImagePaths", JSON.stringify(deletedPaths));
 
     if (thumbnail) {
-      formData.append("newThumbnail", thumbnail.path.replace("http://localhost:8080", ""));
+      formData.append("newThumbnail", thumbnail.path.replace("", ""));
     }
 
     try {

@@ -96,7 +96,7 @@ const ProductDetail = () => {
                     <Image
                         objectFit="cover"
                         maxW="500px"
-                        src={`http://localhost:8080${product.thumbnailPath}`}
+                        src={`${product.thumbnailPath}`}
                         alt={product.productName}
                         margin="20"
                     />
