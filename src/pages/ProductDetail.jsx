@@ -1,137 +1,152 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Box, Text, Heading, Spinner, Image, VStack, Button, HStack, Card } from "@chakra-ui/react";
-import { NumberInputField, NumberInputRoot } from "@/components/ui/number-input"
+import { NumberInputField, NumberInputRoot } from "@/components/ui/number-input";
 import { fetchProductAPI } from "@/services/ProductAPI";
+import { modifyOrderItem } from "@/services/OrderItemAPI"; // 장바구니 API 추가
 
 const ProductDetail = () => {
-  const { productId } = useParams();
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+    const { productId } = useParams();
+    const [product, setProduct] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [quantity, setQuantity] = useState(1); // 선택한 수량 상태
 
-  useEffect(() => {
-    if (!productId) {
-      setError("유효하지 않은 상품 ID입니다.");
-      setLoading(false);
-      return;
-    }
+    useEffect(() => {
+        if (!productId) {
+            setError("유효하지 않은 상품 ID입니다.");
+            setLoading(false);
+            return;
+        }
 
-    const fetchProduct = async () => {
-      try {
-        const data = await fetchProductAPI(productId);
-        setProduct(data);
-      } catch (err) {
-        setError("상품 데이터를 불러오는 데 실패했습니다.");
-      } finally {
-        setLoading(false);
-      }
+        const fetchProduct = async () => {
+            try {
+                const data = await fetchProductAPI(productId);
+                setProduct(data);
+            } catch (err) {
+                setError("상품 데이터를 불러오는 데 실패했습니다.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProduct();
+    }, [productId]);
+
+    const handleAddToCart = async () => {
+        try {
+            const isLoggedIn = localStorage.getItem("access") !== null;
+
+            if (isLoggedIn) {
+                // 로그인된 사용자 처리
+                await modifyOrderItem(productId, quantity); // 서버 API 호출
+            } else {
+                // 비로그인 사용자 처리
+                const guestOrderItem = JSON.parse(localStorage.getItem('guestOrderItem')) || { orderItemDetails: [] };
+                const existingItem = guestOrderItem.orderItemDetails.find(item => String(item.productId) === productId);
+                const currentQuantity = existingItem ? existingItem.quantity : 0;
+
+                if (currentQuantity + quantity > product.productCount) {
+                    alert("재고 수량을 초과하여 상품을 추가할 수 없습니다.");
+                    return;
+                }
+
+                if (existingItem) {
+                    existingItem.quantity += quantity;
+                } else {
+                    guestOrderItem.orderItemDetails.push({
+                        productId: product.productId,
+                        productName: product.productName,
+                        productAmount: product.productAmount,
+                        thumbnailPath: product.thumbnailPath,
+                        quantity: quantity,
+                    });
+                }
+
+                localStorage.setItem('guestOrderItem', JSON.stringify(guestOrderItem));
+            }
+
+            alert(`${quantity}개의 상품이 장바구니에 추가되었습니다!`);
+        } catch (error) {
+            console.error("Error adding to cart:", error);
+            alert("장바구니에 상품을 추가하는 데 실패했습니다.");
+        }
     };
 
-    fetchProduct();
-  }, [productId]);
+    if (loading) {
+        return (
+            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+                <Spinner size="xl" />
+            </Box>
+        );
+    }
 
-  if (loading) {
+    if (error) {
+        return (
+            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+                <Text color="red.500">{error}</Text>
+            </Box>
+        );
+    }
+
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-        <Spinner size="xl" />
-      </Box>
+        <Box>
+            {product ? (
+                <Card.Root flexDirection="row" overflow="hidden" margin="5" bgColor="gray.100" borderRadius="2xl" height="600px">
+                    <Image
+                        objectFit="cover"
+                        maxW="500px"
+                        src={`http://localhost:8080${product.thumbnailPath}`}
+                        alt={product.productName}
+                        margin="20"
+                    />
+                    <Box display="flex" flexDirection="column" justifyContent="space-between" flex="1" margin="20">
+                        <Card.Body>
+                            <Card.Title fontSize="4xl" mb="2">{product.productName}</Card.Title>
+                            <Heading fontSize="md" fontWeight="semibold" marginBottom="5" color="GrayText">CODE : {product.productId}</Heading>
+                            <Heading fontSize="3xl" fontWeight="bold" marginBottom="5">&#8361;{product.productAmount}</Heading>
+                        </Card.Body>
+                        <Card.Footer>
+                            <VStack align="flex-start">
+                                <Heading fontSize="sm" fontWeight="semibold" color="GrayText" mb="-2">QUANTITY</Heading>
+                                <NumberInputRoot
+                                    defaultValue={1}
+                                    min={1} // 최소값
+                                    max={product.productCount} // 최대값 (재고)
+                                    value={quantity}
+                                    onValueChange={(e) => {
+                                        setQuantity(e.valueAsNumber)
+                                    }} // 수량 상태 업데이트
+                                    width="205px"
+                                    mb="3"
+                                >
+                                    <NumberInputField fontWeight="semibold" />
+                                </NumberInputRoot>
+                                <HStack>
+                                    <Button variant="solid">Buy now</Button>
+                                    <Button
+                                        variant="solid"
+                                        onClick={handleAddToCart} // 장바구니 추가 버튼 동작
+                                    >
+                                        Add to cart
+                                    </Button>
+                                </HStack>
+                            </VStack>
+                        </Card.Footer>
+                    </Box>
+                </Card.Root>
+            ) : (
+                <Text>상품 데이터를 찾을 수 없습니다.</Text>
+            )}
+            <Box>
+                <Text>{product.productContent}</Text>
+            </Box>
+            <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} my={6} />
+            <Box>
+                <Text>특징</Text>
+            </Box>
+        </Box>
     );
-  }
-
-  if (error) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-        <Text color="red.500">{error}</Text>
-      </Box>
-    );
-  }
-
-  return (
-    <Box>
-      {/* <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} /> */}
-      {product ? (
-        <Card.Root flexDirection="row" overflow="hidden" margin="5" bgColor="gray.100" borderRadius="2xl" height="600px">
-          <Image
-            objectFit="cover"
-            maxW="500px"
-            src={`http://localhost:8080${product.thumbnailPath}`}
-            alt={product.productName}
-            margin="20"
-          />
-          <Box display="flex" flexDirection="column" justifyContent="space-between" flex="1" margin="20">
-            <Card.Body>
-              <Card.Title fontSize="4xl" mb="2">{product.productName}</Card.Title>
-              <Heading fontSize="md" fontWeight="semibold" marginBottom="5" color="GrayText">CODE : {product.productId}</Heading>
-              <Heading fontSize="3xl" fontWeight="bold" marginBottom="5">&#8361;{product.productAmount}</Heading>
-
-            </Card.Body>
-            <Card.Footer>
-              <VStack align="flex-start">
-              <Heading fontSize="sm" fontWeight="semibold" color="GrayText" mb="-2">QUANTITY</Heading>
-                <NumberInputRoot defaultValue="1" width="205px" mb="3">
-                  <NumberInputField fontWeight="semibold" />
-                </NumberInputRoot>
-                <HStack>
-                  <Button variant="solid">Buy now</Button>
-                  <Button variant="solid">Add to cart</Button>
-                </HStack>
-              </VStack>
-            </Card.Footer>
-          </Box>
-        </Card.Root>
-        // <Flex gap={8} alignItems="flex-start">
-        //   {/* 상품 이미지 */}
-        //   <Box flex="2">
-        //     <Image
-        //       src={product.productImage || "/placeholder-image.png"} // 이미지가 없을 경우 기본 이미지 표시
-        //       alt={product.productName}
-        //       borderRadius="md"
-        //       objectFit="cover"
-        //       width="100%"
-        //       height="500px"
-        //       boxShadow="lg"
-        //     />
-        //   </Box>
-
-        //   {/* 상품 정보 */}
-        //   <VStack flex="1" align="flex-start" spacing={4}>
-        //     <Text fontWeight="bold" fontSize="xl">
-        //       상품명: {product.productName}
-        //     </Text>
-        //     <Text fontSize="lg">상품 ID: {product.productId}</Text>
-        //     <Text fontSize="lg" color="teal.500" fontWeight="bold">
-        //       가격: {product.productAmount} 원
-        //     </Text>
-        //     <Text fontSize="lg">재고: {product.productCount} 개</Text>
-        //     <Box>
-        //       <Button>장바구니</Button>
-        //       <Button ml={4}>구매하기</Button>
-        //     </Box>
-        //   </VStack>
-        // </Flex>
-      ) : (
-        <Text>상품 데이터를 찾을 수 없습니다.</Text>
-      )}
-      <Box>
-        네모 박스들 둘곳
-      </Box>
-      <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} my={6} />
-
-      {/* 추가 컨텐츠 영역 */}
-      <Box>
-        <Text>{product.productContent}</Text>
-      </Box>
-
-      <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} my={6} />
-      <Box>
-        <Text>특징</Text>
-      </Box>
-    </Box>
-  );
 };
 
 export default ProductDetail;
-
-
-

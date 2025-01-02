@@ -1,76 +1,329 @@
 import React, { useState, useEffect } from 'react';
-import { Box, HStack, VStack, Text, Input, Link, Button } from '@chakra-ui/react';
+import { Box, HStack, VStack, Stack, Text, Input, Link, Button, Heading } from '@chakra-ui/react';
 import { Field } from '@/components/ui/field';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-    PasswordInput,
-    PasswordStrengthMeter,
-} from "@/components/ui/password-input"
+import { PasswordInput } from '@/components/ui/password-input'
 import { useNavigate } from 'react-router-dom';
-import { signUpProcess } from '../services/UserAPI';
+import { SocialLoginButtons } from '@/components/SocialLoginButtons';
+import { NativeSelectField, NativeSelectRoot } from '@/components/ui/native-select'
+import { useForm } from 'react-hook-form'
+import { VscChromeMinimize } from 'react-icons/vsc';
+import { signUpProcess } from '@/services/UserAPI';
+import { checkEmailExists, checkNickname, checkAccountLimit } from '@/services/VerificationAPI';
 
 function SignUp() {
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [userId, setUserId] = useState('');
+    const [domain, setDomain] = useState('naver.com');
+    const [userPassword, setPassword] = useState('');
     const [userName, setUserName] = useState('');
     const [nickname, setNickname] = useState('');
     const [contact, setContact] = useState('');
+    const [contactPrefix, setContactPrefix] = useState('');
+    const [contactMid, setContactMid] = useState('');
+    const [contactLast, setContactLast] = useState('');
+    const [selection, setSelection] = useState([]);
+    const [consent1, setConsent1] = useState(true);
+    const [consent2, setConsent2] = useState(true);
+    const [consent3, setConsent3] = useState(true);
     const navigate = useNavigate();
+    const { register, handleSubmit, formState: { errors }, setError  } = useForm();
 
-    const handleSignUp = (event) => {
-        event.preventDefault();
-        signUpProcess(email, password, userName, nickname, contact)
-            .then(() => {
-                navigate('/');
+    const isFormValid = userId && domain && userPassword && userName && nickname && contactPrefix && contactMid && contactLast;
+
+    useEffect(() => {
+        if (userId && domain) {
+            const email = `${userId}@${domain}`;
+            console.log(email);
+            checkEmailExists(email)
+                .then((response) => {
+                if (response.exists) {
+                    setError('email', { message: response.message });
+                } else {
+                    setError('email', { message: '' });
+                }
             })
             .catch((error) => {
-                console.error(error);
+                console.error('이메일 확인 과정에서 오류가 발생하였습니다.:', error);
             });
+        }
+    }, [userId, domain, setError])
+
+    const handleCheckNickname = (e) => {
+        const nicknameValue  = e.target.value;
+        setNickname(nicknameValue)
+        const userData = {
+            nickname: nicknameValue,
+        }
+        console.log(userData);
+        checkNickname(userData)
+        .then((response)=>{
+            if (response.exists) {
+                setError('nickname', { message: response.message });
+            } else {
+                setError('nickname', { message: '' });
+            }
+        })
+        .catch((error) => {
+            console.error('닉네임 확인 과정에서 오류가 발생하였습니다.:', error);
+        });
+    }
+
+    const handleConsent = (e) => {
+        const isChecked = e.target.checked;
+        setSelection(isChecked);
+        setConsent1(isChecked);
+        setConsent2(isChecked);
+        setConsent3(isChecked);
+    }
+
+    const handleSignUp = (data) => {
+        if (!consent1 || !consent2 || !consent3) {
+            alert('모든 동의를 완료해야 회원가입이 가능합니다.');
+            return;
+        }
+        const email = `${userId}@${domain}`;
+        console.log('data',data);
+        console.log('email',email);
+        const contact = `${contactPrefix}${contactMid}${contactLast}`;
+        checkAccountLimit(userName, contact)
+        .then((response) => {
+            console.log('response:', response);
+            if(response.userLimit < 3){
+                const newAccount = {
+                    email,
+                    userPassword,
+                    userName,
+                    nickname,
+                    contact,
+                };
+                console.log('newAccountData',newAccount);
+                signUpProcess(newAccount)
+                    .then((response) => {
+                        if(response.success){
+                            alert(response.userName+"님 환영합니다!\n"+response.message);
+                            navigate('/');
+                        } else {
+                            alert(response.message);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('회원 가입 과정에서 오류가 발생하였습니다.:', error);
+                    });
+            } else {
+                alert(response.message);
+            }
+        })
+        .catch((error) => {
+            console.error('이메일 확인 과정에서 오류가 발생하였습니다.:', error);
+        });
     };
 
     return (
         <Box>
-            <Text>회원가입</Text>
-            <Text>SNS 계정으로 간단하게 회원가입</Text>
-            <div>로고가 들어갈 자리</div>
-            <hr></hr>
-            <Field label='Email' invalid errorText='This is an error text'>
-                <Input value= {email} onChange={e => setEmail(e.target.value)}
-                placeholder='이메일을 입력하세요' />
-            </Field>
-            <Field label='Password' invalid errorText='This is an error text'>
-                <PasswordInput value= {password} onChange={e => setPassword(e.target.value)}
-                placeholder='비밀번호를 입력하세요' />
-            </Field>
-            <Field label='이름' invalid errorText='This is an error text'>
-                <Input value= {userName} onChange={e => setUserName(e.target.value)}
-                placeholder='이름을 입력하세요' />
-            </Field>
-            <Field label='닉네임' invalid errorText='This is an error text'>
-                <Input value= {nickname} onChange={e => setNickname(e.target.value)}
-                placeholder='비밀번호를 입력하세요' />
-            </Field>
-            <Field label='연락처' invalid errorText='This is an error text'>
-                <Input value= {contact} onChange={e => setContact(e.target.value)}
-                placeholder='연락처를 입력하세요' />
-            </Field>
-            <Box>
-                <Checkbox>
-                    전체 동의
-                </Checkbox>
+            <VStack
+                maxWidth='450px'
+                margin='0 auto'
+                align='center'
+            >
+                <Heading alignSelf='flex-start'>
+                    회원가입
+                </Heading>
+                <Text>SNS 계정으로 간단하게 회원가입</Text>
+                <SocialLoginButtons />
                 <hr></hr>
-                <Checkbox>
-                    만 14세 이상입니다 (필수)
-                </Checkbox>
-                <Checkbox>
-                    이용약관 (필수)
-                </Checkbox>
-                <Checkbox>
-                    개인정보수집 및 이용동의 (필수)
-                </Checkbox>
-            </Box>
-            <Button onClick={ handleSignUp }>회원가입하기</Button>
-            <Text>이미 아이디가 있으신가요? <Link href="/login">로그인</Link></Text>
+                <form onSubmit={handleSubmit(handleSignUp)}>
+                    <Stack
+                    align='center' 
+                    width='100%'
+                    >
+                    <Text
+                        alignSelf='start'
+                    >
+                    이메일
+                    </Text>
+                        <HStack>
+                            <Input
+                                width='400px'
+                                id='userId'
+                                {...register('userId', {
+                                    required: '이메일은 필수 입력 사항입니다.',
+                                    onChange: (e) => {
+                                        const value = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
+                                        setUserId(value);
+                                    }
+                                })}
+                                value={userId}
+                                // onChange={ e => setUserId(e.target.value)}
+                                maxLength='25'
+                            />
+                            <Text>@</Text>
+                            <NativeSelectRoot>
+                                <NativeSelectField 
+                                        {...register('domain', { 
+                                            required: '이메일은 필수 입력 사항입니다.'
+                                        })}
+                                        value={domain}
+                                        onChange={ e => setDomain(e.target.value)}
+                                >
+                                        <option value='naver.com'>naver.com</option>
+                                        <option value='google.com'>google.com</option>
+                                        <option value='daum.net'>daum.net</option>
+                                        <option value='nate.com'>nate.com</option>
+                                    </NativeSelectField>
+                            </NativeSelectRoot>
+                        </HStack>
+                        <Field 
+                            invalid={!!errors.email} 
+                            errorText={errors.email?.message}
+                        >
+                            <Input
+                                {...register('email')}
+                                value={email}
+                                hidden
+                            />
+                        </Field>
+                        <Field 
+                            label='비밀번호' 
+                            invalid={!!errors.userPassword}
+                            errorText={errors.userPassword?.message}
+                        >
+                            <PasswordInput 
+                                {...register('userPassword', {
+                                    required: '패스워드는 필수 입력 사항입니다.',
+                                    validate: value => {
+                                        const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,13}$/;
+                                        return passwordPattern.test(value) || '비밀번호는 알파벳과 숫자를 포함하여 8자 이상 13자 이하로 입력해야 합니다.';
+                                    }
+                                })}
+                                defaultValue= {userPassword} 
+                                onChange={e => setPassword(e.target.value)}
+                                placeholder='비밀번호를 입력하세요' 
+                            />
+                        </Field>
+                        <Field 
+                            label='이름' 
+                            invalid={!!errors.userName} 
+                            errorText={errors.userName?.message}
+                        >
+                            <Input
+                                {...register('userName', {
+                                    onChange: (e) => {
+                                        const value = e.target.value.replace(/[^a-zA-Z가-힣ㄱ-ㅎㅏ-ㅣ]/g, '');
+                                        setUserName(value);
+                                    }
+                                })}
+                                value={userName}
+                                maxLength='30'
+                            />
+                        </Field>
+                        <Field
+                            label='닉네임'
+                            invalid={!!errors.nickname}
+                            errorText={errors.nickname?.message}
+                        >
+                            <Input
+                                {...register('nickname', {
+                                    onChange: (e) => {
+                                        const value = e.target.value.replace(/[^a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ]/g, '');
+                                        setNickname(value);
+                                    }
+                                })}
+                                value={nickname}
+                                onBlur={ e => handleCheckNickname(e) }
+                                maxLength='10'
+                            />
+                        </Field>
+                        <Field
+                            label='연락처'
+                            invalid={!!errors.contact}
+                            errorText={errors.contact?.message}
+                        >
+                            <HStack>
+                                <Input
+                                    id='contactPrefix'
+                                    {...register('contactPrefix', { 
+                                        required: '연락처는 필수 입력 사항입니다.',
+                                        onChange: (e) => {
+                                        const value = e.target.value.replace(/[^0-9]/g, '');
+                                        setContactPrefix(value);
+                                        },
+                                    })}
+                                    value={contactPrefix}
+                                    maxLength='3'
+                                />
+                                <VscChromeMinimize />
+                                <Input
+                                    id='contactMid'
+                                    {...register('contactMid', {
+                                        required: '연락처는 필수 입력 사항입니다.',
+                                        onChange: (e) => {
+                                        const value = e.target.value.replace(/[^0-9]/g, '');
+                                        setContactMid(value);
+                                        },
+                                    })}
+                                    value={contactMid}
+                                    maxLength='4'
+                                />
+                                <VscChromeMinimize />
+                                <Input
+                                    id='contactLast'
+                                    {...register('contactLast', {
+                                        required: '연락처는 필수 입력 사항입니다.',
+                                        onChange: (e) => {
+                                        const value = e.target.value.replace(/[^0-9]/g, '');
+                                        setContactLast(value);
+                                        },
+                                    })}
+                                    value={contactLast}
+                                    maxLength='4'
+                                />
+                            </HStack>
+                        </Field>
+                        <VStack
+                            width='100%'
+                            align='justify-start'
+                            gap='20px'
+                        >
+                            <Checkbox
+                                checked={selection}
+                                onChange={handleConsent}
+                            >
+                                전체 동의
+                            </Checkbox>
+                            <hr />
+                            <Checkbox
+                                checked={consent1}
+                                onChange={e => setConsent1(e.target.checked)}
+                            >
+                                만 14세 이상입니다 (필수)
+                            </Checkbox>
+                            <Checkbox
+                                checked={consent2} 
+                                onChange={e => setConsent2(e.target.checked)}
+                            >
+                                이용약관 (필수)
+                            </Checkbox>
+                            <Checkbox
+                                checked={consent3}
+                                onChange={e => setConsent3(e.target.checked)}
+                            >
+                                개인정보수집 및 이용동의 (필수)
+                            </Checkbox>
+                        </VStack>
+                        <Button
+                            type='submit'
+                            disabled={!isFormValid}
+                        >
+                            회원가입하기
+                        </Button>
+                        <Text>
+                            이미 아이디가 있으신가요?
+                            <Link href='/login'>로그인</Link>
+                        </Text>
+                        </Stack>
+                    </form>
+            </VStack>
         </Box>
     );
 }

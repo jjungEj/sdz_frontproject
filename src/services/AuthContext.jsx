@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { isAccessTokenValid, checkRefreshToken } from './TokenUtil';
 import { assignAuth } from './AuthUtil';
 
-const getAuth = () => {
+const getAuth = async () => {
   const token = localStorage.getItem('access');
   let auth = {
     isLoggedIn: false,
@@ -14,10 +14,10 @@ const getAuth = () => {
     if (isAccessTokenValid(token)) {
       auth = assignAuth(true, token);
     } else {
-      checkRefreshToken();
+      await checkRefreshToken();
     }
   } else {
-    checkRefreshToken();
+    await checkRefreshToken();
   }
   return auth;
 }
@@ -32,8 +32,8 @@ export const AuthProvider = ({ children }) => {
 
   console.log(initialState);
 
-  const updateAuthState = () => {
-    const newAuth = getAuth();
+  const updateAuthState = async () => {
+    const newAuth = await getAuth();
     setIsLoggedIn(newAuth.isLoggedIn);
     setEmail(newAuth.email);
     setAuth(newAuth.auth);

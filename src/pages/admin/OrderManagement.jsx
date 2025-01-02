@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { getAllOrders, updateOrderStatus } from "../../services/OrderAPI";
+import { getAllOrders } from "@/services/OrderAPI";
 import { Box, Heading, Table, } from '@chakra-ui/react';
-import { Toaster, toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/toaster";
 
 function OrderManagement() {
     const [orders, setOrders] = useState([]);
-    const [value, setValue] = useState([]);
 
     useEffect(() => {
         loadOrders();
@@ -14,7 +13,11 @@ function OrderManagement() {
     function loadOrders() {
         getAllOrders()
             .then(data => {
+                console.log("Fetched orders:", data); // 데이터 확인
                 setOrders(data);
+            })
+            .catch(error => {
+                console.error('Failed to fetch orders:', error);
             });
     }
 
@@ -27,7 +30,7 @@ function OrderManagement() {
                 <Table.Root width="100%" mt={3}>
                     <Table.Header>
                         <Table.Row>
-                            <Table.ColumnHeader fontSize="md">주문번호</Table.ColumnHeader>
+                            <Table.ColumnHeader fontSize="md">주문 번호</Table.ColumnHeader>
                             <Table.ColumnHeader fontSize="md">아이디</Table.ColumnHeader>
                             {/* <Table.ColumnHeader fontSize="md">이름</Table.ColumnHeader> */}
                             {/* <Table.ColumnHeader fontSize="md">연락처</Table.ColumnHeader> */}
@@ -38,14 +41,14 @@ function OrderManagement() {
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
-                        {orders.map(order => (
-                            <Table.Row>
-                                <Table.Cell>{order.orderId}</Table.Cell>
+                        {orders.map((order) => ( 
+                            <Table.Row >
+                                <Table.Cell >{order.orderId}</Table.Cell>
                                 <Table.Cell>{order.email}</Table.Cell>
                                 {/* <Table.Cell>{order.user.userName}</Table.Cell> */}
                                 {/* <Table.Cell>{order.user.contact}</Table.Cell> */}
-                                <Table.Cell>{order.deliveryAddress}</Table.Cell>
-                                <Table.Cell>{order.orderAmount}</Table.Cell>
+                                <Table.Cell>{order.deliveryAddress ? order.deliveryAddress.deliveryAddress1+" "+order.deliveryAddress.deliveryAddress2+" "+order.deliveryAddress.deliveryAddress3 :" "}</Table.Cell>
+                                <Table.Cell>{order.totalPrice}</Table.Cell>
                                 <Table.Cell>{order.regDate}</Table.Cell>
                                 <Table.Cell>{order.orderStatus}</Table.Cell>
                             </Table.Row>

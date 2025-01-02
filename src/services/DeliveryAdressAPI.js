@@ -1,95 +1,119 @@
-const url = 'http://localhost:8080/api/deliveryAddress/';
+const apiUrl = import.meta.env.VITE_API_URL;
+const endpoint = "/deliveryAddress";
 
-export const getDeliveryAddressList = (page, size) => {
-  return fetch(`${url}list?page=${page}&size=${size}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('access')}`,
-    },
-  }).then((response) => {
-      if (!response.ok) {
-        return response.json().then((errorData) => {
-          throw new Error(errorData.message);
-        });
-      }
-      return response.json();
-    })
-    .catch((error) => {
-      throw error;
+const url = `${apiUrl}${endpoint}`;
+
+export const getDeliveryAddressList = async (page, size) => {
+  try {
+    const response = await fetch(`${url}/list?page=${page}&size=${size}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('access')}`,
+      },
     });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message);
+    }
+
+    return response.json();
+  } catch (error) {
+    throw error;
+  }
 };
 
-export const createNewAddress = ( deliveryAddressId, email, deliveryAddress1, deliveryAddress2, deliveryAddress3, receiverName, receiverContact, deliveryRequest, defaultCheck ) => {
-  const payload = { deliveryAddressId, email, deliveryAddress1, deliveryAddress2, deliveryAddress3, receiverName, receiverContact, deliveryRequest, defaultCheck };
-  return fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', },
-    body: JSON.stringify(payload),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        return response.json().then((errorData) => {
-          throw new Error(errorData.message);
-        });
-      }
-    })
-    .catch((error) => {
-      throw error;
+
+export const AddressInfo = async (deliveryAddressId) => {
+  try {
+    const response = await fetch(`${url}/${deliveryAddressId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('access')}`,
+      },
     });
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
 };
 
-export const updateAddress = ( deliveryAddressId, email, deliveryAddress1, deliveryAddress2, deliveryAddress3, receiverName, receiverContact, deliveryRequest, defaultCheck ) => {
-  const payload = { deliveryAddressId, email, deliveryAddress1, deliveryAddress2, deliveryAddress3, receiverName, receiverContact, deliveryRequest, defaultCheck };
-  
-  return fetch(`${url}${deliveryAddressId}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', },
-    body: JSON.stringify(payload),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        return response.json().then((errorData) => {
-          throw new Error(errorData.message);
-        });
-      }
-    })
-    .catch((error) => {
-      throw error;
+export const createNewAddress = async (newAddress) => {
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('access')}`,
+      },
+      body: JSON.stringify(newAddress),
     });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message);
+    }
+  } catch (error) {
+    throw error;
+  }
 };
 
-export const updateDefaultAddress = (deliveryAddressId, email, defaultCheck) => {
-  const payload = { deliveryAddressId, email, defaultCheck };
-  return fetch(`${url}${deliveryAddressId}/default`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', },
-    body: JSON.stringify(payload),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        return response.json().then((errorData) => {
-          throw new Error(errorData.message);
-        });
-      }
-    })
-    .catch((error) => {
-      throw error;
+export const updateAddress = async ( address ) => {
+  try {
+    const response = await fetch(`${url}/${address.deliveryAddressId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('access')}`,
+      },
+      body: JSON.stringify(address),
     });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message);
+    }
+  } catch (error) {
+    throw error;
+  }
 };
 
-export const deleteAddress = (deliveryAddressId) => {
-  return fetch(`${url}${deliveryAddressId}`, {
-    method: 'DELETE',
-  })
-    .then((response) => {
-      if (!response.ok) {
-        return response.json().then((errorData) => {
-          throw new Error(errorData.message);
-        });
-      }
-    })
-    .catch((error) => {
-      throw error;
+export const updateDefaultAddress = async (deliveryAddressId) => {
+  try {
+    const response = await fetch(`${url}/${deliveryAddressId}/default`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('access')}`,
+      },
     });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message);
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteAddress = async (deliveryAddressId) => {
+  try {
+    const response = await fetch(`${url}/${deliveryAddressId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('access')}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message);
+    }
+  } catch (error) {
+    throw error;
+  }
 };
