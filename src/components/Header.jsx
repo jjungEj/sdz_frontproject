@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow'
 import useAuthStore from '@/store/AuthStore';
@@ -22,7 +22,7 @@ function Header() {
         updateAuthState: state.updateAuthState
       })),
   )
-
+  const [openMenu, setOpenMenu] = useState(null);
   const { categories, getCategories } = useCategoryStore();
 
   useEffect(() => {
