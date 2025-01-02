@@ -1,28 +1,34 @@
-import React,  { useState, useEffect } from 'react';
-import { Box } from '@chakra-ui/react';
-import { Button, Fieldset, Input, Stack } from '@chakra-ui/react'
-import { Checkbox } from '@/components/ui/checkbox';
+import React,  { useState } from 'react'
+import { Box } from '@chakra-ui/react'
+import { Button, Fieldset, Stack } from '@chakra-ui/react'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Field } from '@/components/ui/field'
 import { NativeSelectField, NativeSelectRoot } from '@/components/ui/native-select'
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/services/AuthContext';
-import { deleteUser } from '@/services/UserAPI';
+import { useNavigate } from 'react-router-dom'
+import useAuthStore from '@/store/AuthStore'
+import { useShallow } from 'zustand/react/shallow'
+import { deleteUser } from '@/services/UserAPI'
 
 
 function DeleteAccount() {
-    const { email, handleContextLogout } = useAuth();
+    const { email, handleLogout } = useAuthStore(
+        useShallow((state) => ({
+            email: state.email,
+            handleLogout: state.handleLogout
+        })),
+    )
     const [consent, setConsent] = useState(false);
     const navigate = useNavigate();
 
-    const handleDelete = () => {
+    const handleDelete = async() => {
         if (!consent) {
             alert('회원탈퇴에 동의하셔야 탈퇴할 수 있습니다.');
             return;
         }
         const confirmed = window.confirm('정말 탈퇴하시겠습니까?');
         if (confirmed) {
-            deleteUser(email);
-            handleContextLogout();
+            await deleteUser(email);
+            handleLogout();
             navigate('/');
         } else {
             alert('취소되었습니다.');
@@ -34,6 +40,7 @@ function DeleteAccount() {
             maxWidth='450px'
             align='center'
             margin='0 auto'
+            padding='30px'
         >
             <Fieldset.Root size='lg' maxW='md'>
             <Stack>
@@ -69,6 +76,7 @@ function DeleteAccount() {
             </Checkbox>
 
             <Button
+                variant='outline'
                 onClick={ handleDelete }
                 alignSelf='flex-end'
             >

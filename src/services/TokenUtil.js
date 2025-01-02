@@ -54,15 +54,16 @@ const hasCookie = (name) => {
   return null;
 }
 
-const reissueToken = () => {
-  return fetch(url, {
-    method: 'POST',
-    headers: {
+const reissueToken = async () => {
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
         'Content-Type': 'application/json',
-    },
-    credentials: 'include'
-  })
-  .then(response => {
+      },
+      credentials: 'include',
+    });
+
     if (response.ok) {
       const authorizationHeader = response.headers.get('Authorization');
       if (authorizationHeader) {
@@ -71,23 +72,21 @@ const reissueToken = () => {
         console.log('엑세스 토큰이 성공적으로 재발급되었습니다.');
       }
     } else {
-      return response.json().then(errorData => {
-        throw new Error(errorData.message);
-      });
+      const errorData = await response.json();
+      throw new Error(errorData.message);
     }
-  })
-  .catch(error => {
+  } catch (error) {
     console.error('엑세스 토큰 재발급 요청이 실패하였습니다.:', error);
     throw error;
-  });
-}
+  }
+};
 
-export async function checkRefreshToken() {
+export const checkRefreshToken = async() => {
   if (hasCookie('refresh')) {
     console.log('엑세스 토큰이 유효하지 않으므로 재발급을 요청합니다.');
     try {
       await reissueToken();
-      const newToken = localStorage.getItem('access'); // 새 토큰 확인
+      const newToken = localStorage.getItem('access');
       if (newToken) {
         assignAuth(true, newToken);
         return true;
