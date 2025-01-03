@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Box, Heading, Grid, GridItem, Input, Button, Textarea, Text, Flex } from "@chakra-ui/react";
+import { Box, Heading, Grid, GridItem, Input, Button, Text, Flex } from "@chakra-ui/react";
 import { getProductByIdAPI, updateProductAPI } from "@/services/ProductAPI";
 import { getCategoriesAPI } from "@/services/CategoryAPI";
 
@@ -9,15 +9,14 @@ const ProductUpdateForm = () => {
   const [productName, setProductName] = useState("");
   const [productAmount, setProductAmount] = useState(0);
   const [productCount, setProductCount] = useState(0);
-  const [productContent, setProductContent] = useState("");
+  const [productColor, setProductColor] = useState("");
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [images, setImages] = useState([]);
-  const [thumbnail, setThumbnail] = useState(null); // 썸네일 경로 저장
+  const [thumbnail, setThumbnail] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // 데이터 초기화
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -25,7 +24,7 @@ const ProductUpdateForm = () => {
         setProductName(product.productName);
         setProductAmount(product.productAmount);
         setProductCount(product.productCount);
-        setProductContent(product.productContent);
+        setProductColor(product.productContent || ""); // 컬러 필드
         setSelectedCategory(product.categoryId);
 
         const fetchedImages = product.imagePaths || [];
@@ -36,8 +35,7 @@ const ProductUpdateForm = () => {
         }));
         setImages(imageObjects);
 
-        // 썸네일 초기화
-        setThumbnail(product.thumbnailPath); // 썸네일 경로 설정
+        setThumbnail(product.thumbnailPath);
       } catch (error) {
         console.error("Failed to fetch product:", error);
         alert("상품 정보를 불러오는 데 실패했습니다.");
@@ -58,7 +56,6 @@ const ProductUpdateForm = () => {
     fetchCategories();
   }, [productId]);
 
-  // 파일 업로드 핸들러
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
     const newFiles = files.map((file) => ({
@@ -70,26 +67,20 @@ const ProductUpdateForm = () => {
     setImages((prev) => [...prev, ...newFiles]);
   };
 
-  // 썸네일 선택 핸들러
   const handleThumbnailSelect = (image) => {
     if (image.markedForDeletion) {
       alert("삭제 예정 이미지는 썸네일로 선택할 수 없습니다.");
       return;
     }
-
-    setThumbnail(thumbnail === image.path ? null : image.path); // 썸네일 토글
+    setThumbnail(thumbnail === image.path ? null : image.path);
   };
 
   const handleImageDelete = (image, e) => {
-    e.stopPropagation(); // 이벤트 전파 방지
-
-    // 썸네일로 설정된 이미지는 삭제 불가
+    e.stopPropagation();
     if (thumbnail === image.path) {
       alert("썸네일로 설정된 이미지는 삭제할 수 없습니다.");
       return;
     }
-
-    // 삭제 상태 토글
     setImages((prev) =>
         prev.map((img) =>
             img === image
@@ -99,7 +90,6 @@ const ProductUpdateForm = () => {
     );
   };
 
-  // 폼 제출 핸들러
   const handleSubmit = async () => {
     if (loading) return;
     setLoading(true);
@@ -117,7 +107,7 @@ const ProductUpdateForm = () => {
           productName,
           productAmount,
           productCount,
-          productContent,
+          productColor, // 컬러 필드 추가
           userId: "",
           categoryId: selectedCategory,
         })
@@ -149,7 +139,7 @@ const ProductUpdateForm = () => {
   };
 
   const handleCancel = () => {
-    navigate(-1); // 이전 페이지로 이동
+    navigate(-1);
   };
 
   return (
@@ -223,6 +213,27 @@ const ProductUpdateForm = () => {
             </GridItem>
 
             <GridItem colSpan={1}>
+              <label htmlFor="productColor">컬러</label>
+            </GridItem>
+            <GridItem colSpan={5}>
+              <select
+                  id="productColor"
+                  value={productColor}
+                  onChange={(e) => setProductColor(e.target.value)}
+                  required
+                  style={{ width: "100%", padding: "8px" }}
+              >
+                <option value="" disabled>
+                  선택하세요
+                </option>
+                <option value="웜그레이">웜그레이</option>
+                <option value="챠콜">챠콜</option>
+                <option value="딥그린">딥그린</option>
+                <option value="아이보리">아이보리</option>
+              </select>
+            </GridItem>
+
+            <GridItem colSpan={1}>
               <label>이미지</label>
             </GridItem>
             <GridItem colSpan={5}>
@@ -236,23 +247,19 @@ const ProductUpdateForm = () => {
                         borderRadius="5px"
                         padding="5px"
                         cursor="pointer"
-                        onClick={() => handleThumbnailSelect(image)} // 썸네일 선택
+                        onClick={() => handleThumbnailSelect(image)}
                     >
                       <img src={image.path} alt={`image-${index}`} style={{ maxWidth: "100px" }} />
-
-                      {/* 삭제 버튼 */}
                       <Button
                           position="absolute"
                           top="0"
                           right="0"
                           size="xs"
                           colorScheme={image.markedForDeletion ? "gray" : "red"}
-                          onClick={(e) => handleImageDelete(image, e)} // 이벤트 전파 방지
+                          onClick={(e) => handleImageDelete(image, e)}
                       >
                         {image.markedForDeletion ? "복원" : "삭제"}
                       </Button>
-
-                      {/* 썸네일 표시 */}
                       {thumbnail === image.path && (
                           <Text fontSize="xs" color="blue">
                             썸네일
@@ -261,21 +268,7 @@ const ProductUpdateForm = () => {
                     </Box>
                 ))}
               </Flex>
-
               <Input type="file" multiple onChange={handleFileChange} />
-            </GridItem>
-
-            <GridItem colSpan={1}>
-              <label htmlFor="productContent">상품 설명</label>
-            </GridItem>
-            <GridItem colSpan={5}>
-              <Textarea
-                  id="productContent"
-                  value={productContent}
-                  onChange={(e) => setProductContent(e.target.value)}
-                  required
-                  rows="4"
-              />
             </GridItem>
           </Grid>
 

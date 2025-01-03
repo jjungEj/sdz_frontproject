@@ -269,7 +269,7 @@ const ProductForm = () => {
               border="1px solid #ccc"
               padding="5px"
           >
-            <label htmlFor="ProductContent">상품 정보</label>
+            <label htmlFor="ProductContent">색상</label>
           </GridItem>
           <GridItem colSpan={5} border="1px solid #ccc" padding="5px">
             <select
