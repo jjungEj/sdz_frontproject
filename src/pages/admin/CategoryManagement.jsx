@@ -108,7 +108,7 @@ function CategoryManagement() {
             </HStack>
             <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb="3" />
             <Box display="flex" justifyContent="center" margin="5">
-                <AccordionRoot spaceY="4" variant="subtle" collapsible onChange={(newValue) => setOpenCategory(newValue)}>
+                <AccordionRoot spaceY="4" variant="enclosed" borderRadius="2xl" collapsible onChange={(newValue) => setOpenCategory(newValue)}>
                     {categories
                         .filter(category => category.parentId === null)
                         .map(category => (
