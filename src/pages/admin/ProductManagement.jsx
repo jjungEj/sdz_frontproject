@@ -1,51 +1,85 @@
-import React, { useState, useEffect } from "react";
-import { Box, Heading, Button, Input, HStack, Table, Image, } from "@chakra-ui/react";
-import { Checkbox } from '@/components/ui/checkbox';
+import React, { useState, useEffect, useRef } from "react";
+import {
+    Box,
+    Heading,
+    Button,
+    Input,
+    HStack,
+    Table,
+    Image,
+    Stack,
+} from "@chakra-ui/react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
 import { Toaster, toaster } from "@/components/ui/toaster";
-import { fetchProducts, deleteProduct, deleteSelectedProducts } from '@/services/ProductAPI'; // API 함수 임포트
+import { fetchProducts, deleteProduct, deleteSelectedProducts } from "../../services/ProductAPI";
+import {
+    PaginationRoot,
+    PaginationPrevTrigger,
+    PaginationItems,
+    PaginationNextTrigger,
+} from "@/components/ui/pagination";
+import { InputGroup } from "@/components/ui/input-group"
+import { LuSearch } from 'react-icons/lu';
 
 function ProductManagement() {
     const navigate = useNavigate();
-    const [allItems, setAllItems] = useState([]); // 모든 상품 목록 상태
-    const [filteredItems, setFilteredItems] = useState([]); // 검색된 상품 목록 상태
-    const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태
-    const [selection, setSelection] = useState([]); // 선택된 상품 목록 상태
-    const hasSelection = selection.length > 0;
-    const indeterminate = hasSelection && selection.length < filteredItems.length;
+    const [allItems, setAllItems] = useState([]);
+    const [filteredItems, setFilteredItems] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+    const [selection, setSelection] = useState([]);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [pageSize] = useState(10);
+    const abortControllerRef = useRef(null); // AbortController ref
 
-    // 상품 목록 불러오기
-    useEffect(() => {
-        const loadProducts = async () => {
-            try {
-                const data = await fetchProducts();
-                setAllItems(data);
-                setFilteredItems(data); // 초기에는 전체 목록을 표시
-            } catch (error) {
+    const hasSelection = selection.length > 0;
+    const indeterminate = hasSelection && selection.length < allItems.length;
+
+    const loadProducts = async (currentPage, currentPageSize, currentSearchTerm) => {
+        // 이전 API 요청 취소
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+        }
+        // 새로운 AbortController 생성
+        const abortController = new AbortController();
+        abortControllerRef.current = abortController;
+
+        try {
+            const data = await fetchProducts(currentPage, currentPageSize, currentSearchTerm, {
+                signal: abortController.signal, // Abort signal 전달
+            });
+            setAllItems(data.dtoList);
+            setFilteredItems(data.dtoList);
+            setTotalPages(data.total);
+        } catch (error) {
+            if (error.name === "AbortError") {
+                console.log("API 요청이 취소되었습니다.");
+            } else {
                 console.error(error);
                 toaster.error("상품 목록을 불러오는 데 오류가 발생했습니다.");
             }
-        };
-        loadProducts();
-    }, []);
-
-    // 검색 처리 함수
-    const handleSearch = () => {
-        if (searchTerm) {
-            const filtered = allItems.filter(item =>
-                item.productName.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-            setFilteredItems(filtered);
-        } else {
-            setFilteredItems(allItems); // 검색어가 없으면 전체 목록을 표시
         }
     };
 
-    // 상품 삭제 함수
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearchTerm(searchTerm);
+        }, 500); // 디바운스 딜레이 (500ms)
+        return () => clearTimeout(handler);
+    }, [searchTerm]);
+
+    useEffect(() => {
+        loadProducts(page, pageSize, debouncedSearchTerm);
+    }, [page, pageSize, debouncedSearchTerm]);
+
     const handleDelete = async (productId) => {
         try {
             await deleteProduct(productId);
-            setFilteredItems(filteredItems.filter(item => item.productId !== productId));
+            const updatedItems = allItems.filter((item) => item.productId !== productId);
+            setAllItems(updatedItems);
+            setFilteredItems(updatedItems);
             toaster.success("상품이 삭제되었습니다.");
         } catch (error) {
             console.error(error);
@@ -53,14 +87,15 @@ function ProductManagement() {
         }
     };
 
-    // 선택된 상품 삭제
     const handleSelectedDelete = async () => {
         if (selection.length > 0) {
             try {
                 await deleteSelectedProducts(selection);
-                setFilteredItems(filteredItems.filter(item => !selection.includes(item.productId))); // 삭제된 상품 제외
+                const updatedItems = allItems.filter((item) => !selection.includes(item.productId));
+                setAllItems(updatedItems);
+                setFilteredItems(updatedItems);
                 toaster.success("선택된 상품들이 삭제되었습니다.");
-                setSelection([]); // 삭제 후 선택 초기화
+                setSelection([]);
             } catch (error) {
                 console.error(error);
                 toaster.error("선택된 상품 삭제에 실패했습니다.");
@@ -68,25 +103,38 @@ function ProductManagement() {
         }
     };
 
+    const handlePageChange = (newPage) => {
+        const safePage = Math.max(1, Math.min(newPage, totalPages));
+        setPage(safePage);
+    };
+
     return (
         <Box>
             <Toaster />
-            <Heading as="h1" size="xl" mb={3}>상품 관리</Heading>
+            <Heading as="h1" size="xl" mb={3}>
+                상품 관리
+            </Heading>
             <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
                 <Box display="flex" alignItems="center">
+                <InputGroup
+                    flex="1"
+                    maxWidth="300px"
+                    w="100%"
+                    endElement={<LuSearch />}
+                >
                     <Input
-                        type="text"
                         placeholder="상품명 입력"
-                        size="sm"
-                        maxWidth="300px"
-                        w="100%"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                setDebouncedSearchTerm(searchTerm); // Enter 키를 눌렀을 때 검색어 적용
+                            }
+                        }}
                     />
-                    <Button size="sm" ml={2} onClick={handleSearch}>
-                        검색
-                    </Button>
+                </InputGroup>
+
                 </Box>
 
                 <HStack>
@@ -99,7 +147,7 @@ function ProductManagement() {
                 </HStack>
             </Box>
             <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
-            <Box display="flex" justifyContent="center" mb={4}>
+            <Box display="flex" justifyContent="center" mb={4} position="relative">
                 <Table.Root width="100%">
                     <Table.Header>
                         <Table.Row>
@@ -109,7 +157,9 @@ function ProductManagement() {
                                     aria-label="Select all rows"
                                     checked={indeterminate ? "indeterminate" : selection.length === filteredItems.length}
                                     onCheckedChange={(changes) => {
-                                        setSelection(changes.checked ? filteredItems.map((product) => product.productId) : []);
+                                        setSelection(
+                                            changes.checked ? filteredItems.map((product) => product.productId) : []
+                                        );
                                     }}
                                 />
                             </Table.ColumnHeader>
@@ -122,9 +172,9 @@ function ProductManagement() {
                             <Table.ColumnHeader>삭제</Table.ColumnHeader>
                         </Table.Row>
                     </Table.Header>
-                    <Table.Body>
+                    <Table.Body >
                         {filteredItems.map((product) => (
-                            <Table.Row key={product.productId} data-selected={selection.includes(product.productId) ? "" : undefined}>
+                            <Table.Row key={product.productId}>
                                 <Table.Cell>
                                     <Checkbox
                                         top="1"
@@ -143,15 +193,18 @@ function ProductManagement() {
                                 <Table.Cell>{product.productName}</Table.Cell>
                                 <Table.Cell>
                                     <Image
-                                    src={`http://localhost:8080${product.thumbnailPath}`} // 썸네일 경로 사용
-                                    alt={product.productName}
-                                    boxSize="50px"
+                                        src={`${product.thumbnailPath}`}
+                                        alt={product.productName}
+                                        boxSize="50px"
                                     />
                                 </Table.Cell>
                                 <Table.Cell>{product.productAmount}</Table.Cell>
                                 <Table.Cell>{product.productCount}</Table.Cell>
                                 <Table.Cell>
-                                    <Button size="sm" onClick={() => navigate(`/admin/products/update/${product.productId}`)}>
+                                    <Button
+                                        size="sm"
+                                        onClick={() => navigate(`/admin/products/update/${product.productId}`)}
+                                    >
                                         수정
                                     </Button>
                                 </Table.Cell>
@@ -165,10 +218,27 @@ function ProductManagement() {
                     </Table.Body>
                 </Table.Root>
             </Box>
+            <Stack gap="4" alignItems="center" mt="3" mb="3">
+                <PaginationRoot
+                    page={page}
+                    count={totalPages}
+                    pageSize={pageSize}
+                    onPageChange={(e) => handlePageChange(e.page)}
+                >
+                    <HStack>
+                        <PaginationPrevTrigger />
+                        <PaginationItems />
+                        <PaginationNextTrigger />
+                    </HStack>
+                </PaginationRoot>
+            </Stack>
             <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
         </Box>
     );
 }
 
 export default ProductManagement;
+
+
+
 

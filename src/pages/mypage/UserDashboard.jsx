@@ -1,21 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { Outlet, Link, useSearchParams } from 'react-router-dom';
-import { Box, Link as ChakraLink, HStack, VStack, Card, Button, Heading, Stack, Text, Group, Table, Badge } from '@chakra-ui/react';
+import React, { useState, useEffect } from 'react'
+import { Outlet, Link, useSearchParams } from 'react-router-dom'
+import { Box, Link as ChakraLink, HStack, VStack, Card, Button, Heading, Stack, Text, Group, Badge } from '@chakra-ui/react'
 import { Avatar } from '@/components/ui/avatar'
 import { TimelineConnector, TimelineContent, TimelineDescription, TimelineItem, TimelineRoot, TimelineTitle } from '@/components/ui/timeline'
 import { RadioCardItem, RadioCardRoot } from '@/components/ui/radio-card'
 import { PaginationItems, PaginationNextTrigger, PaginationPrevTrigger,
 PaginationRoot } from '@/components/ui/pagination'
 import { LuCheck, LuPackage, LuShip } from 'react-icons/lu'
-import { useAuth } from '@/services/AuthContext';
-import { VscPinned, VscPinnedDirty, VscTrash } from 'react-icons/vsc';
-import { UserInfo } from '@/services/UserAPI';
-import { getDeliveryAddressList, updateDefaultAddress, deleteAddress } from '@/services/DeliveryAdressAPI';
-import { DeliveryAddressDialog, DeliveryAddressUpdateDialog } from './DeliveryAddressDialog';
+import useAuthStore from '@/store/AuthStore'
+import { useShallow } from 'zustand/react/shallow'
+import { VscPinned, VscPinnedDirty, VscTrash } from 'react-icons/vsc'
+import { UserInfo } from '@/services/UserAPI'
+import { getDeliveryAddressList, updateDefaultAddress, deleteAddress } from '@/services/DeliveryAdressAPI'
+import { DeliveryAddressDialog, DeliveryAddressUpdateDialog } from './DeliveryAddressDialog'
 
 function UserDashboard() {
     const [selectLink, setSelectLink] = useState('');
-    const { email, loginType } = useAuth();
+    const { email, loginType } = useAuthStore(
+        useShallow((state) => ({ 
+            email: state.email,
+            loginType: state.loginType
+        })),
+    )
     const [userInfo, setUserInfo] = useState({});
     const [deliveryAddress, setDeliveryAddress] = useState([]);
     const [searchParams, setSearchParams] = useSearchParams();
@@ -41,12 +47,12 @@ function UserDashboard() {
 
     const fetchDeliveryAddresses = () => {
         getDeliveryAddressList(page, pageSize)
-        .then((data) => {
-            setDeliveryAddress(data.dtoList);
-            setTotalPages(data.total);
-        }).catch((error) => {
-            console.error('배송지 목록을 가져오는 중 오류가 발생했습니다:', error);
-        });
+            .then((data) => {
+                setDeliveryAddress(data.dtoList);
+                setTotalPages(data.total);
+            }).catch((error) => {
+                console.error('배송지 목록을 가져오는 중 오류가 발생했습니다:', error);
+            });
     };
 
     const handlePageChange = (newPage) => {
@@ -59,25 +65,28 @@ function UserDashboard() {
     };
 
     const handleDefaultAddress = () => {
-        console.log(selectedAddressId);
-        updateDefaultAddress(selectedAddressId)
-        .then(() => {
-            fetchDeliveryAddresses();
-        })
-        .catch((error) => {
-        });
+        const confirmed = window.confirm('기본 배송지를 변경하시겠습니까?');
+        if (confirmed) {
+            updateDefaultAddress(selectedAddressId)
+                .then(() => {
+                    fetchDeliveryAddresses();
+                })
+                .catch((error) => {
+                });
+        } else {
+            alert('취소되었습니다.');
+        }
     };
     
     const handleDeleteAddress = () => {
         const confirmed = window.confirm('삭제하시겠습니까?');
         if (confirmed) {
-        console.log(selectedAddressId);
-        deleteAddress(selectedAddressId)
-            .then(() => {
-                fetchDeliveryAddresses();
-            })
-            .catch((error) => {
-            });
+            deleteAddress(selectedAddressId)
+                .then(() => {
+                    fetchDeliveryAddresses();
+                })
+                .catch((error) => {
+                });
         } else {
             alert('취소되었습니다.');
         }
@@ -138,7 +147,7 @@ function UserDashboard() {
                                 <Card.Body gap='2'>
                                     <HStack>
                                         <Stack>
-                                            <Avatar size='2xl' shape='rounded' />
+                                            <Avatar size='2xl' shape='rounded' src={userInfo?.profileUrl}/>
                                             <Button>수정</Button>
                                         </Stack>
                                         <Stack gap='1' ml={10}>
@@ -152,7 +161,7 @@ function UserDashboard() {
                                     </HStack>
                                 </Card.Body>
                             </Card.Root>
-                            <Heading as='h3' size='lg' mt={10}>최근 주문 내역</Heading>
+                            {/* <Heading as='h3' size='lg' mt={10}>최근 주문 내역</Heading>
                             <Card.Root variant='subtle' width='100%'>
                                 <Card.Body gap='2'>
                                     <TimelineRoot maxW='400px'>
@@ -193,9 +202,9 @@ function UserDashboard() {
                                         </TimelineItem>
                                     </TimelineRoot>
                                 </Card.Body>
-                            </Card.Root>
+                            </Card.Root> */}
                         </VStack>
-                        <VStack width='100%' maxWidth='550px' height='600px' align='center'>
+                        <VStack width='100%' maxWidth='550px' height='600px' align='center' justify='space-between'>
                             <HStack justify='space-between' width='100%' align='center'>
                                 <Heading as='h3' size='lg'>배송지 관리</Heading>
                                 <HStack>
@@ -250,23 +259,32 @@ function UserDashboard() {
                                             value={item.deliveryAddressId}
                                             checked={selectedAddressId === item.defaultCheck==true}
                                             onChange={() => handleAddressSelect(item.deliveryAddressId)}
+                                            style={{ minHeight: '96px' }}
                                         />
                                     ))}
                                 </Group>
                             </RadioCardRoot>
-                            <Stack gap='4' mt='3'>
-                                <PaginationRoot
-                                    page={page}
-                                    count={totalPages}
-                                    pageSize={pageSize}
-                                    onPageChange={(e) => handlePageChange(e.page)}
-                                >
-                                    <HStack>
-                                        <PaginationPrevTrigger />
-                                        <   PaginationItems />
-                                        <PaginationNextTrigger />
-                                    </HStack>
-                                </PaginationRoot>
+                            <Stack
+                                mt='auto'
+                                width='100%'
+                                position='relative'
+                                alignItems='center'
+                                justifyContent='center'
+                            >
+                                {totalPages > 0 && (
+                                    <PaginationRoot
+                                        page={page}
+                                        count={totalPages}
+                                        pageSize={pageSize}
+                                        onPageChange={(e) => handlePageChange(e.page)}
+                                    >
+                                        <HStack>
+                                            <PaginationPrevTrigger />
+                                            <   PaginationItems />
+                                            <PaginationNextTrigger />
+                                        </HStack>
+                                    </PaginationRoot>
+                                )}
                             </Stack>
                         </VStack>
                     </HStack>

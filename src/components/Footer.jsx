@@ -26,14 +26,14 @@ function Footer() {
             <Text key={index} fontSize="xs">{category.categoryName}</Text>
           ))}
         </VStack>
-        <VStack align="flex-start" spacing={4}>
+        {/* <VStack align="flex-start" spacing={4}>
           <Text fontWeight="bold" fontSize="sm">문의</Text>
           <Text fontSize="xs">문의내용보기</Text>
           <Text fontSize="xs">문의하기</Text>
           <Text fontSize="xs">평일 | 09:30 ~ 17:30</Text>
           <Text fontSize="xs">점심시간 | 12:30 ~ 13:30</Text>
           <Text fontSize="xs">토요일, 일요일, 공휴일 휴무</Text>
-        </VStack>
+        </VStack> */}
       </HStack>
     </Box>
   );

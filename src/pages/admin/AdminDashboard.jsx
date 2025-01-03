@@ -48,18 +48,7 @@ function AdminDashboard() {
                 >
                     <Link to="/admin/products">상품 관리</Link>
                 </ChakraLink>
-                <ChakraLink
-                    onClick={() => handleClick("create")}
-                    asChild
-                    _focus={{ outline: "none" }}
-                    fontWeight={selectLink === "create" ? "bold" : "none"}
-                    margin="3"
-                >
-                    <Link to="/admin/products/create">상품 등록</Link>
-                </ChakraLink>
             </HStack>
-
-
             <Outlet />
         </Box>
     );

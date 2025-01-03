@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 
 import useCategoryStore from '@/store/CategoryStore';
+import AlertDialog from '@/components/AlertDialog';
 
 import { Box, Heading, Button, Input, HStack, AbsoluteCenter, IconButton } from '@chakra-ui/react';
 import { LuCheck, LuPencilLine, LuX, LuTrash2 } from "react-icons/lu"
@@ -16,6 +17,8 @@ function CategoryManagement() {
     const [editingCategory, setEditingCategory] = useState(null);
     const [newCategoryName, setNewCategoryName] = useState("");
     const [newSubCategoryName, setNewSubCategoryName] = useState("");
+    const [openCategory, setOpenCategory] = useState([]);
+    const [deleteCategoryId, setDeleteCategoryId] = useState(null);
     const { categories, getCategories, createCategory, createSubCategory, updateCategory, deleteCategory, error, setError } = useCategoryStore();
 
     useEffect(() => {
@@ -33,6 +36,20 @@ function CategoryManagement() {
             setError(null);
         }
     }, [error]);
+
+    const handleToggle = (categoryId) => {
+        setOpenCategory(prevState => {
+            if (!Array.isArray(prevState)) {
+                prevState = [];
+            }
+
+            if (prevState.includes(categoryId)) {
+                return prevState.filter((id) => id !== categoryId);
+            } else {
+                return [...prevState, categoryId];
+            }
+        });
+    };
 
     async function handleCreateCategory() {
         if (newCategoryName?.trim()) {
@@ -58,20 +75,25 @@ function CategoryManagement() {
     };
 
     async function handleDeleteCategory(categoryId) {
-        await deleteCategory(categoryId);
+        if (categoryId) {
+            await deleteCategory(categoryId);
+            getCategories();
+        }
+
     };
 
     return (
         <Box>
             <Toaster />
             <HStack justify="space-between">
-                <Heading as="h1" size="xl" mb={3}>카테고리 관리</Heading>
-                <HStack mb={3}>
+                <Heading as="h1" size="xl" mb="3">카테고리 관리</Heading>
+                <HStack mb="3">
                     <Input
                         type="text"
                         value={newCategoryName}
                         onChange={e => setNewCategoryName(e.target.value)}
                         placeholder="카테고리명 입력"
+                        maxLength={10}
                         size="sm"
                         maxWidth="300px"
                         w="100%"
@@ -84,13 +106,13 @@ function CategoryManagement() {
                     </Button>
                 </HStack>
             </HStack>
-            <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
+            <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb="3" />
             <Box display="flex" justifyContent="center" margin="5">
-                <AccordionRoot spaceY="4" variant="subtle" collapsible>
+                <AccordionRoot spaceY="4" variant="subtle" collapsible onChange={(newValue) => setOpenCategory(newValue)}>
                     {categories
                         .filter(category => category.parentId === null)
                         .map(category => (
-                            <AccordionItem key={category.categoryId}>
+                            <AccordionItem key={category.categoryId} value={category.categoryId.toString()}>
                                 <Box position="relative">
                                     {editingCategory?.categoryId === category.categoryId ? (
                                         <>
@@ -99,6 +121,7 @@ function CategoryManagement() {
                                                 value={editingCategory.categoryName}
                                                 onChange={e => setEditingCategory({ ...editingCategory, categoryName: e.target.value })}
                                                 placeholder="카테고리 이름"
+                                                maxLength={10}
                                                 size="md"
                                                 fontSize="md"
                                                 maxWidth="300px"
@@ -127,7 +150,7 @@ function CategoryManagement() {
                                         </>
                                     ) : (
                                         <>
-                                            <AccordionItemTrigger indicatorPlacement="start">
+                                            <AccordionItemTrigger indicatorPlacement="start" onClick={() => handleToggle(category.categoryId)}>
                                                 {category.categoryName}
                                             </AccordionItemTrigger>
                                             <AbsoluteCenter axis="vertical" insetEnd="0">
@@ -140,13 +163,7 @@ function CategoryManagement() {
                                                     >
                                                         <LuPencilLine />
                                                     </IconButton>
-                                                    <IconButton
-                                                        variant="ghost"
-                                                        size="xs"
-                                                        onClick={() => handleDeleteCategory(category.categoryId)}
-                                                    >
-                                                        <LuTrash2 />
-                                                    </IconButton>
+                                                    <AlertDialog onConfirm={() => handleDeleteCategory(category.categoryId)} />
                                                 </HStack>
                                             </AbsoluteCenter>
                                         </>
@@ -159,12 +176,12 @@ function CategoryManagement() {
                                             value={newSubCategoryName}
                                             onChange={e => setNewSubCategoryName(e.target.value)}
                                             placeholder="카테고리명 입력"
+                                            maxLength={10}
                                             size="sm"
                                             maxWidth="200px"
                                             w="100%"
                                         />
                                         <Button
-                                            colorScheme="blue"
                                             onClick={() => handleCreateSubCategory(category.categoryId)}
                                             size="sm"
                                         >
@@ -182,6 +199,7 @@ function CategoryManagement() {
                                                             value={editingCategory.categoryName}
                                                             onChange={e => setEditingCategory({ ...editingCategory, categoryName: e.target.value })}
                                                             placeholder="카테고리 이름"
+                                                            maxLength={10}
                                                             size="sm"
                                                             maxWidth="300px"
                                                             w="100%"
@@ -217,13 +235,7 @@ function CategoryManagement() {
                                                                         setEditingCategory({ categoryId: child.categoryId, categoryName: child.categoryName })}>
                                                                     <LuPencilLine />
                                                                 </IconButton>
-                                                                <IconButton
-                                                                    variant="ghost"
-                                                                    size="xs"
-                                                                    onClick={() => handleDeleteCategory(child.categoryId)}
-                                                                >
-                                                                    <LuTrash2 />
-                                                                </IconButton>
+                                                                <AlertDialog onConfirm={() => handleDeleteCategory(child.categoryId)} />
                                                             </HStack>
                                                         </AbsoluteCenter>
                                                     </>

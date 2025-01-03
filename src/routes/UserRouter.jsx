@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
-
-import { useAuth } from '@/services/AuthContext';
+import useAuthStore from '@/store/AuthStore';
+import { useShallow } from 'zustand/react/shallow'
 
 import {
     UserDashboard,
@@ -11,7 +11,12 @@ import {
 } from '@/pages/mypage';
 
 function UserRouter() {
-    const { isLoggedIn, auth } = useAuth();
+    const { isLoggedIn, auth } = useAuthStore(
+        useShallow((state) => ({ 
+            isLoggedIn: state.isLoggedIn,
+            auth: state.auth
+        })),
+    )
 
     if (!isLoggedIn || auth !== "user") {
         return <Navigate to="/" />

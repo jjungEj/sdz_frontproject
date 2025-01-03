@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { getUserList } from '@/services/AdminAPI';
-import { Box, Heading, Table, Button, HStack, Stack, Input, createListCollection } from '@chakra-ui/react';
-import { Toaster, toaster } from '@/components/ui/toaster';
+import React, { useState, useEffect } from 'react'
+import { getUserList } from '@/services/AdminAPI'
+import { Box, Heading, Table, Button, HStack, Stack, Input, createListCollection } from '@chakra-ui/react'
+import { Toaster } from '@/components/ui/toaster'
 import { Checkbox } from '@/components/ui/checkbox'
 import { SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValueText } from '@/components/ui/select'
 import { PaginationItems, PaginationNextTrigger, PaginationPrevTrigger, PaginationRoot } from '@/components/ui/pagination'
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom'
 import { ToggleTip } from '@/components/ui/toggle-tip'
 import { LuInfo } from 'react-icons/lu'
 import { Switch } from '@/components/ui/switch'
 import { HiCheck, HiX } from 'react-icons/hi'
-import { updateLoginLock, updateAuth, deleteUser, deleteUsers } from '@/services/AdminAPI';
+import { VscCircleSlash, VscTrash } from 'react-icons/vsc'
+import { updateLoginLock, updateAuth, deleteUser, deleteUsers } from '@/services/AdminAPI'
 
 function UserManagement() {
     const [users, setUsers] = useState([]);
@@ -39,13 +40,13 @@ function UserManagement() {
 
     const loadUsers = () => {
         getUserList(page, pageSize, type, keyword)
-        .then((data) => {
-            setUsers(data.dtoList);
-            setTotalPages(data.total);
-        }).catch((error) => {
-            console.error('회원 목록을 가져오는 중 오류가 발생했습니다:', error);
-        });
-    };
+            .then((data) => {
+                setUsers(data.dtoList);
+                setTotalPages(data.total);
+            }).catch((error) => {
+                console.error('회원 목록을 가져오는 중 오류가 발생했습니다:', error);
+            });
+        };
 
     const handlePageChange = (newPage) => {
         setPage(newPage);
@@ -111,7 +112,7 @@ function UserManagement() {
         <Box>
             <Toaster />
             <Box display='flex' justifyContent='space-between'          
-                alignItems='center' mb='3'
+                alignItems='center'mt='5' mb='3'
             >
                 <HStack gap='0' alignItems='center'>
                     <Heading as='h1' size='xl' mr='5'>회원 관리</Heading>
@@ -139,7 +140,7 @@ function UserManagement() {
                         width='250px'
                     />
                 </HStack>
-                <HStack>
+                <HStack gap='0'>
                     <ToggleTip
                         content='선택한 회원을 탈퇴 시킬 수 있습니다.'
                     >
@@ -148,18 +149,19 @@ function UserManagement() {
                         </Button>
                     </ToggleTip>
                     <Button
+                        variant='plain'
                         onClick={() => handleDeleteUsers()}
                     >
-                        탈퇴
+                        <VscTrash />
                     </Button>
                 </HStack>
             </Box>
-            <Box borderBottom={{ base: '1px solid black', _dark: '1px solid white' }} mb='3' />
+            <Box borderBottom={{ base: '1px solid black', _dark: '1px solid white' }} />
             <Box display='flex' justifyContent='center'>
                 <Table.Root width='100%'>
                     <Table.Header>
                         <Table.Row>
-                            <Table.ColumnHeader>
+                            <Table.ColumnHeader textAlign='center'>
                                 <Checkbox
                                     top='1'
                                     aria-label='Select all rows'
@@ -171,32 +173,51 @@ function UserManagement() {
                                     }}
                                 />
                             </Table.ColumnHeader>
-                            <Table.ColumnHeader fontSize='md'>가입유형</Table.ColumnHeader>
-                            <Table.ColumnHeader fontSize='md'>아이디</Table.ColumnHeader>
-                            <Table.ColumnHeader fontSize='md'>이름</Table.ColumnHeader>
-                            <Table.ColumnHeader fontSize='md'>가입일</Table.ColumnHeader>
-                            <Table.ColumnHeader fontSize='md'>로그인
-                                <ToggleTip
-                                    content='로그인 잠금 상태를 변경 할 수 있습니다.'
+                            <Table.ColumnHeader fontSize='md' textAlign='center'>가입유형</Table.ColumnHeader>
+                            <Table.ColumnHeader fontSize='md' textAlign='center'>아이디</Table.ColumnHeader>
+                            <Table.ColumnHeader fontSize='md' textAlign='center'>이름</Table.ColumnHeader>
+                            <Table.ColumnHeader fontSize='md' textAlign='center'>가입일</Table.ColumnHeader>
+                            <Table.ColumnHeader fontSize='md' textAlign='center'>
+                                <HStack
+                                    alignItems='center'
+                                    justifyContent= 'center'
+                                    gap='0'
                                 >
-                                    <Button
-                                        size='xs'
-                                        variant='ghost'
+                                로그인
+                                    <ToggleTip
+                                        content='로그인 잠금 상태를 변경 할 수 있습니다.'
                                     >
-                                        <LuInfo />
-                                    </Button>
-                                </ToggleTip>
+                                        <Button
+                                            size='xs'
+                                            variant='ghost'
+                                        >
+                                            <LuInfo />
+                                        </Button>
+                                    </ToggleTip>
+                                </HStack>
                             </Table.ColumnHeader>
-                            <Table.ColumnHeader fontSize='md'>관리자
-                                <ToggleTip
-                                    content='회원 권한을 변경 할 수 있습니다.'
+                            <Table.ColumnHeader fontSize='md' textAlign='center'>
+                                <HStack
+                                    alignItems='center'
+                                    justifyContent= 'center'
+                                    gap='0'
                                 >
-                                    <Button size='xs' variant='ghost'>
-                                        <LuInfo />
-                                    </Button>
-                                </ToggleTip>
+                                    관리자
+                                    <ToggleTip
+                                        content='회원 권한을 변경 할 수 있습니다.'
+                                    >
+                                        <Button size='xs' variant='ghost'>
+                                            <LuInfo />
+                                        </Button>
+                                    </ToggleTip>
+                                </HStack>
                             </Table.ColumnHeader>
-                            <Table.ColumnHeader fontSize='md'>회원탈퇴</Table.ColumnHeader>
+                            <Table.ColumnHeader
+                            fontSize='md'
+                            textAlign='center'
+                            >
+                                회원탈퇴
+                            </Table.ColumnHeader>
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -204,7 +225,7 @@ function UserManagement() {
                             <Table.Row
                                 key={user.email}
                                 data-selected={selection.includes(user.email) ? '' : undefined}>
-                                <Table.Cell>
+                                <Table.Cell textAlign='center'>
                                     <Checkbox
                                         top='1'
                                         aria-label='Select row'
@@ -217,23 +238,32 @@ function UserManagement() {
                                         }}
                                     />
                                 </Table.Cell>
-                                <Table.Cell>{user.social==false?'일반':'소셜'}</Table.Cell>
-                                <Table.Cell>{user.email}</Table.Cell>
-                                <Table.Cell>{user.userName}</Table.Cell>
-                                <Table.Cell>{formatDate(user.createdAt)}</Table.Cell>
-                                <Table.Cell>
+                                <Table.Cell textAlign='center'>{user.social==false?'일반':'소셜'}</Table.Cell>
+                                <Table.Cell
+                                    style={{
+                                        maxWidth: '180px',
+                                        whiteSpace: 'nowrap',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis'
+                                    }}
+                                >
+                                    {user.email}
+                                </Table.Cell>
+                                <Table.Cell textAlign='center'>{user.userName}</Table.Cell>
+                                <Table.Cell textAlign='center'>{formatDate(user.createdAt)}</Table.Cell>
+                                <Table.Cell textAlign='center'>
                                     <Switch
                                         size='lg'
                                         variant='raised'
                                         checked={user.loginLock==true}
                                         onChange={() => handleUpdateLoginLock(user.email)}
                                         thumbLabel={{ 
-                                            on: <HiCheck color='white' />,
+                                            on: <VscCircleSlash color='white' />,
                                             off: <HiX />
                                         }}>
                                     </Switch>
                                 </Table.Cell>
-                                <Table.Cell>
+                                <Table.Cell textAlign='center'>
                                     <Switch
                                         size='lg'
                                         variant='raised'
@@ -245,8 +275,9 @@ function UserManagement() {
                                         }}>
                                     </Switch>
                                 </Table.Cell>
-                                <Table.Cell>
+                                <Table.Cell textAlign='center'>
                                     <Button
+                                        variant='outline'
                                         onClick={() => handleDeleteUser(user.email)}
                                     >
                                         탈퇴

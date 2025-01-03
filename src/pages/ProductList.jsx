@@ -70,56 +70,52 @@ const ProductList = () => {
     fetchCategoryName();
   }, [categoryId]);
 
-  // 장바구니에 상품 추가
-  const handleAddToCart = (productId) => {
+  // 장바구니 상품 추가
+  const handleAddToCart = async (productId) => {
     try {
-      const quantity = 1; // 추가하려는 수량
+      const isLoggedIn = localStorage.getItem("access") !== null;
 
-      // 상품 데이터 가져오기
-      const product = products.find(p => p.productId === productId);
-      if (!product) {
-        alert("상품 정보를 찾을 수 없습니다.");
-        return;
-      }
-
-      // 재고 확인
-      if (product.productCount <= 0) {
-        alert("해당 상품은 재고가 없습니다.");
-        return;
-      }
-
-      // 로컬스토리지에서 현재 장바구니 가져오기
-      const guestOrderItem = JSON.parse(localStorage.getItem('guestOrderItem')) || { orderItemDetails: [] };
-      const existingItem = guestOrderItem.orderItemDetails.find(item => item.productId === productId);
-      const currentQuantity = existingItem ? existingItem.quantity : 0;
-
-      // 재고 초과 확인
-      if (currentQuantity + quantity > product.productCount) {
-        alert("재고 수량을 초과하여 상품을 추가할 수 없습니다.");
-        return;
-      }
-
-      // 장바구니 업데이트
-      if (existingItem) {
-        existingItem.quantity += quantity;
+      if (isLoggedIn) {
+        // 로그인된 사용자 처리
+        await modifyOrderItem(productId, 1); // 서버 API 호출
       } else {
-        guestOrderItem.orderItemDetails.push({
-          productId: product.productId,
-          productName: product.productName,
-          productAmount: product.productAmount,
-          thumbnailPath: product.thumbnailPath,
-          quantity: quantity,
-        });
+        // 비로그인 사용자 처리
+        const product = products.find(p => p.productId === productId);
+        if (!product) {
+          alert("상품 정보를 찾을 수 없습니다.");
+          return;
+        }
+
+        const guestOrderItem = JSON.parse(localStorage.getItem('guestOrderItem')) || { orderItemDetails: [] };
+        const existingItem = guestOrderItem.orderItemDetails.find(item => item.productId === productId);
+        const currentQuantity = existingItem ? existingItem.quantity : 0;
+
+        if (currentQuantity + 1 > product.productCount) {
+          alert("재고 수량을 초과하여 상품을 추가할 수 없습니다.");
+          return;
+        }
+
+        if (existingItem) {
+          existingItem.quantity += 1;
+        } else {
+          guestOrderItem.orderItemDetails.push({
+            productId: product.productId,
+            productName: product.productName,
+            productAmount: product.productAmount,
+            thumbnailPath: product.thumbnailPath,
+            quantity: 1,
+          });
+        }
+
+        localStorage.setItem('guestOrderItem', JSON.stringify(guestOrderItem));
       }
 
-      localStorage.setItem('guestOrderItem', JSON.stringify(guestOrderItem));
-      alert("장바구니에 상품이 추가되었습니다!");
+      alert("상품이 장바구니에 추가되었습니다!");
     } catch (error) {
       console.error("Error adding to cart:", error);
       alert("장바구니에 상품을 추가하는 데 실패했습니다.");
     }
   };
-
 
 
   if (loading) {
@@ -153,7 +149,7 @@ const ProductList = () => {
               <Card.Root borderRadius="2xl" maxW="300px" overflow="hidden" cursor="pointer">
                 <Link to={`/product/${product.productId}`}>
                   <Image
-                    src={`http://localhost:8080${product.thumbnailPath}`}
+                    src={`${product.thumbnailPath}`}
                     alt={product.productName}
                     style={{ width: '100%', height: '300px', objectFit: 'cover' }}
                     bgColor="gray.100"
@@ -161,7 +157,7 @@ const ProductList = () => {
                   <Card.Body gap="2">
                     <Card.Title>{product.productName}</Card.Title>
                     <Text textStyle="2xl" fontWeight="medium" letterSpacing="tight" mt="2">
-                      &#8361;{product.productAmount}
+                      &#8361; {new Intl.NumberFormat('ko-KR').format(product.productAmount)}
                     </Text>
                   </Card.Body>
                 </Link>

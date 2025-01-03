@@ -114,4 +114,32 @@ async function clearOrderItem() {
     }
 }
 
-export { fetchOrderItemData, modifyOrderItem, clearOrderItem };
+// 게스트 장바구니 병합
+async function mergeGuestOrderItem() {
+    const guestOrderItem = JSON.parse(localStorage.getItem("guestOrderItem")) || { orderItemDetails: [] };
+
+    if (guestOrderItem.orderItemDetails.length > 0) {
+        try {
+            const response = await fetch(`${apiUrl}/order-item/merge`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("access")}`,
+                },
+                body: JSON.stringify(guestOrderItem),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message);
+            }
+
+            // 병합 성공 시 로컬스토리지 비우기
+            localStorage.removeItem("guestOrderItem");
+        } catch (error) {
+            console.error("Error merging guest cart:", error);
+            throw error;
+        }
+    }
+}
+export { fetchOrderItemData, modifyOrderItem, clearOrderItem, mergeGuestOrderItem };

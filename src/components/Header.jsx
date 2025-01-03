@@ -1,27 +1,52 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-
-import { useAuth } from '@/services/AuthContext';
+import { useShallow } from 'zustand/react/shallow'
+import useAuthStore from '@/store/AuthStore';
 import { logout } from '@/services/LogoutAPI';
 import Search from './Search';
 import CartDrawer from './CartDrawer';
 import useCategoryStore from '@/store/CategoryStore';
 
 import { Box, HStack, VStack, Link as ChakraLink, Button } from '@chakra-ui/react';
+import { MenuContent, MenuItem, MenuRoot, MenuTrigger } from "@/components/ui/menu"
 import { ColorModeButton } from "@/components/ui/color-mode"
 
 function Header() {
   const navigate = useNavigate();
-  const { isLoggedIn, email, auth, handleContextLogout } = useAuth();
+  const { isLoggedIn, auth,  handleLogout, updateAuthState }
+  = useAuthStore(
+      useShallow((state) => ({ 
+        isLoggedIn: state.isLoggedIn,
+        auth: state.auth,
+        handleLogout: state.handleLogout,
+        updateAuthState: state.updateAuthState
+      })),
+  )
+  const [openMenu, setOpenMenu] = useState(null);
   const { categories, getCategories } = useCategoryStore();
 
   useEffect(() => {
     getCategories();
   }, []);
 
-  const handleLogout = () => {
-    logout(navigate);
-    handleContextLogout();
+  useEffect(() => {
+    if (!isLoggedIn) {
+        updateAuthState();
+    }
+  }, [isLoggedIn, updateAuthState]);
+
+  const handleLogoutClick = async() => {
+    await logout();
+    await handleLogout();
+    navigate('/');
+  };
+
+  const handleMouseEnter = (categoryId) => {
+    setOpenMenu(categoryId);
+  };
+
+  const handleMouseLeave = () => {
+    setOpenMenu(null);
   };
 
   return (
@@ -45,7 +70,7 @@ function Header() {
           ) : (
             <>
               <ChakraLink asChild _focus={{ outline: "none" }} fontSize="sm" margin="3">
-                <Button onClick={handleLogout} variant="link" fontSize="sm" margin="3" padding="0">
+                <Button onClick={handleLogoutClick} variant="link" fontSize="sm" margin="3" padding="0">
                   로그아웃
                 </Button>
               </ChakraLink>
@@ -77,21 +102,46 @@ function Header() {
       </VStack>
       <HStack justify="center" mb={3}>
         {categories
-        .filter(category => category.parentId === null)
-        .map((category, index) => (
-          <ChakraLink
-            key={index}
-            asChild
-            _focus={{ outline: "none" }}
-            fontSize="2xl"
-            fontWeight="medium"
-            margin="5"
-          >
-            <Link key={index} to={`/products?categoryId=${category.categoryId}`} >
-              {category.categoryName}
-            </Link>
-          </ChakraLink>
-        ))}
+          .filter(category => category.parentId === null)
+          .map((category) => (
+            <MenuRoot key={category.categoryId} open={openMenu === category.categoryId}>
+              <MenuTrigger asChild>
+                <ChakraLink asChild _focus={{ outline: "none" }} fontSize="2xl" margin="3">
+                  <Button
+                    as={Link}
+                    to={`/products?categoryId=${category.categoryId}`}
+                    variant="link"
+                    fontSize="2xl"
+                    padding="0"
+                    onMouseEnter={() => handleMouseEnter(category.categoryId)}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    {category.categoryName}
+                  </Button>
+                </ChakraLink>
+              </MenuTrigger>
+              <MenuContent
+                onMouseEnter={() => handleMouseEnter(category.categoryId)}
+                onMouseLeave={handleMouseLeave}
+              >
+                {category.subCategories.length > 0 ? (
+                  category.subCategories.map((subCategory) => (
+                    <MenuItem key={subCategory.categoryId}>
+                      <ChakraLink asChild _focus={{ outline: "none" }} fontSize="md">
+                        <Link to={`/products?categoryId=${subCategory.categoryId}`}>
+                          {subCategory.categoryName}
+                        </Link>
+                      </ChakraLink>
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem>
+                    서브 카테고리가 없습니다.
+                  </MenuItem>
+                )}
+              </MenuContent>
+            </MenuRoot>
+          ))}
       </HStack>
     </Box>
   );
