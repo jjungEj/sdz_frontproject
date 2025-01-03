@@ -70,6 +70,8 @@ async function handleUpdateCategory() {
 
 async function handleDeleteCategory(categoryId) {
     await deleteCategory(categoryId);
+    getCategories();
+
 };
 
 return (
