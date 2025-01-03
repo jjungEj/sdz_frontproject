@@ -38,7 +38,7 @@ function Home() {
                     _focus={{ outline: "none" }}
                     fontSize="xs"
                     fontWeight="medium"
-                    color="teal.600"
+                    color="#5526cc"
                   >
                     <Link to={`/products?categoryId=${category.categoryId}`}>
                       ALL PRODUCTS
