@@ -157,7 +157,7 @@ const ProductList = () => {
                   <Card.Body gap="2">
                     <Card.Title>{product.productName}</Card.Title>
                     <Text textStyle="2xl" fontWeight="medium" letterSpacing="tight" mt="2">
-                      &#8361;{product.productAmount}
+                      &#8361; {new Intl.NumberFormat('ko-KR').format(product.productAmount)}
                     </Text>
                   </Card.Body>
                 </Link>
