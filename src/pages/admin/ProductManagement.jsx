@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
     Box,
     Heading,
@@ -19,48 +19,60 @@ import {
     PaginationItems,
     PaginationNextTrigger,
 } from "@/components/ui/pagination";
+import { InputGroup } from "@/components/ui/input-group"
+import { LuSearch } from 'react-icons/lu';
 
 function ProductManagement() {
     const navigate = useNavigate();
-    const [allItems, setAllItems] = useState([]); // 전체 상품 데이터
-    const [filteredItems, setFilteredItems] = useState([]); // 검색된 상품 데이터
-    const [searchTerm, setSearchTerm] = useState(""); // 검색어
-    const [selection, setSelection] = useState([]); // 선택된 항목
-    const [page, setPage] = useState(1); // 현재 페이지
-    const [totalPages, setTotalPages] = useState(1); // 총 페이지 수
-    const [pageSize] = useState(10); // 페이지 크기
-    const hasSelection = selection.length > 0; // 선택 여부
+    const [allItems, setAllItems] = useState([]);
+    const [filteredItems, setFilteredItems] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+    const [selection, setSelection] = useState([]);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [pageSize] = useState(10);
+    const abortControllerRef = useRef(null); // AbortController ref
+
+    const hasSelection = selection.length > 0;
     const indeterminate = hasSelection && selection.length < allItems.length;
 
     const loadProducts = async (currentPage, currentPageSize, currentSearchTerm) => {
+        // 이전 API 요청 취소
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+        }
+        // 새로운 AbortController 생성
+        const abortController = new AbortController();
+        abortControllerRef.current = abortController;
+
         try {
-            const data = await fetchProducts(currentPage, currentPageSize, currentSearchTerm);
-            setAllItems(data.dtoList); // 전체 상품 데이터 설정
-            setFilteredItems(data.dtoList); // 초기 상태로 전체 상품 설정
-            setTotalPages(data.total); // 총 페이지 수 설정
+            const data = await fetchProducts(currentPage, currentPageSize, currentSearchTerm, {
+                signal: abortController.signal, // Abort signal 전달
+            });
+            setAllItems(data.dtoList);
+            setFilteredItems(data.dtoList);
+            setTotalPages(data.total);
         } catch (error) {
-            console.error(error);
-            toaster.error("상품 목록을 불러오는 데 오류가 발생했습니다.");
+            if (error.name === "AbortError") {
+                console.log("API 요청이 취소되었습니다.");
+            } else {
+                console.error(error);
+                toaster.error("상품 목록을 불러오는 데 오류가 발생했습니다.");
+            }
         }
     };
 
-    // 검색 버튼 클릭 시 필터링 처리
-    const handleSearch = () => {
-        if (searchTerm) {
-            const filtered = allItems.filter((item) =>
-                item.productName.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-            setFilteredItems(filtered); // 검색 결과 설정
-             // 첫 페이지로 이동
-        } else {
-            setFilteredItems(allItems); // 검색어가 없으면 전체 목록 표시
-        }
-    };
-
-    // 페이지, 검색어, 페이지 크기가 변경될 때 데이터 로드
     useEffect(() => {
-        loadProducts(page, pageSize, searchTerm);
-    }, [page, searchTerm, pageSize]);
+        const handler = setTimeout(() => {
+            setDebouncedSearchTerm(searchTerm);
+        }, 500); // 디바운스 딜레이 (500ms)
+        return () => clearTimeout(handler);
+    }, [searchTerm]);
+
+    useEffect(() => {
+        loadProducts(page, pageSize, debouncedSearchTerm);
+    }, [page, pageSize, debouncedSearchTerm]);
 
     const handleDelete = async (productId) => {
         try {
@@ -92,7 +104,7 @@ function ProductManagement() {
     };
 
     const handlePageChange = (newPage) => {
-        const safePage = Math.max(1, Math.min(newPage, totalPages)); // 범위 내 페이지로 제한
+        const safePage = Math.max(1, Math.min(newPage, totalPages));
         setPage(safePage);
     };
 
@@ -105,18 +117,24 @@ function ProductManagement() {
             <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
                 <Box display="flex" alignItems="center">
+                <InputGroup
+                    flex="1"
+                    maxWidth="300px"
+                    w="100%"
+                    endElement={<LuSearch />}
+                >
                     <Input
-                        type="text"
                         placeholder="상품명 입력"
-                        size="sm"
-                        maxWidth="300px"
-                        w="100%"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                setDebouncedSearchTerm(searchTerm); // Enter 키를 눌렀을 때 검색어 적용
+                            }
+                        }}
                     />
-                    <Button size="sm" ml={2} onClick={handleSearch}>
-                        검색
-                    </Button>
+                </InputGroup>
+
                 </Box>
 
                 <HStack>
@@ -129,7 +147,7 @@ function ProductManagement() {
                 </HStack>
             </Box>
             <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
-            <Box display="flex" justifyContent="center" mb={4}>
+            <Box display="flex" justifyContent="center" mb={4} position="relative">
                 <Table.Root width="100%">
                     <Table.Header>
                         <Table.Row>
@@ -154,7 +172,7 @@ function ProductManagement() {
                             <Table.ColumnHeader>삭제</Table.ColumnHeader>
                         </Table.Row>
                     </Table.Header>
-                    <Table.Body>
+                    <Table.Body >
                         {filteredItems.map((product) => (
                             <Table.Row key={product.productId}>
                                 <Table.Cell>
@@ -220,6 +238,7 @@ function ProductManagement() {
 }
 
 export default ProductManagement;
+
 
 
 
