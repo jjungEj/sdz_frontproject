@@ -134,7 +134,7 @@ const ProductDetail = () => {
                             </Card.Body>
                             <Card.Footer>
                                 <VStack align="flex-start">
-                                    <Heading fontSize="sm" fontWeight="semibold" color="GrayText" mb="-2">수량</Heading>
+                                    <Heading fontSize="sm" fontWeight="semibold" color="GrayText" mb="-2">QUANTITY</Heading>
                                     <NumberInputRoot
                                         defaultValue={1}
                                         min={1}
