@@ -4,13 +4,14 @@ const endpoint = "/products";
 
 const url = `${apiUrl}${endpoint}`;
 
-export const fetchProductsByCategory = async (categoryId) => {
-  const response = await fetch(`${url}/category/${categoryId}`);
+export const fetchProductsByCategory = async (categoryId, page , size) => {
+  const response = await fetch(`${url}/category/${categoryId}?page=${page}&size=${size}`);
   if (!response.ok) {
     throw new Error("상품 데이터를 가져오는 데 실패했습니다.");
   }
   return response.json();
 };
+
 
 export const fetchProducts = async (page, pageSize, keyword = "") => {
   try {

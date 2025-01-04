@@ -1,11 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { useLocation, Link } from 'react-router-dom'; // Link 추가
-import { Box, Text, Heading, Spinner, Grid, GridItem, Highlight, Card, Image, Button, HStack } from "@chakra-ui/react";
-
+import React, { useState, useEffect, useRef } from "react";
+import { useLocation, Link } from 'react-router-dom';
+import { Box, Stack, Text, Heading, Spinner, Highlight, Card, Image, Button, HStack } from "@chakra-ui/react";
 import useSearchStore from "@/store/SearchStore";
 import { getCategoryAPI } from "@/services/CategoryAPI";
-import { fetchProductsByCategory, fetchProducts } from "@/services/ProductAPI";
-import { modifyOrderItem } from "@/services/OrderItemAPI"; // 장바구니 API 추가
+import { fetchProductsByCategory } from "@/services/ProductAPI"; // 카테고리별 상품을 가져오는 함수
+import { fetchProducts } from "@/services/ProductAPI"; // 검색어로 상품을 가져오는 함수
+import { modifyOrderItem } from "@/services/OrderItemAPI";
+import {
+  PaginationRoot,
+  PaginationPrevTrigger,
+  PaginationItems,
+  PaginationNextTrigger,
+} from "@/components/ui/pagination";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -14,72 +20,88 @@ const ProductList = () => {
   const [error, setError] = useState(null);
   const [categoryName, setCategoryName] = useState(null);
 
-  const searchTerm = useSearchStore(state => state.search);
-
+  const searchTerm = useSearchStore(state => state.search); // Search store에서 검색어 가져오기
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const categoryId = queryParams.get("categoryId");
   const searchQuery = queryParams.get("search");
 
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [pageSize] = useState(9);
+  const abortControllerRef = useRef(null);
+
+  // 카테고리 이름 로드 함수
+  const loadCategoryName = async (categoryId) => {
+    try {
+      const categoryData = await getCategoryAPI(categoryId);  // 카테고리 API 호출
+      setCategoryName(categoryData.categoryName);
+    } catch (error) {
+      setError("카테고리 정보를 가져오는 데 실패했습니다.");
+    }
+  };
+
+  // 카테고리별 상품 로드 함수
+  const loadProductsByCategory = async (categoryId, currentPage, currentPageSize) => {
+    try {
+      const data = await fetchProductsByCategory(categoryId, currentPage, currentPageSize);
+      setProducts(data.dtoList);
+      setFilteredProducts(data.dtoList);
+      setTotalPages(data.total);
+    } catch (error) {
+      setError("카테고리 상품을 가져오는 데 실패했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 검색어로 상품 로드 함수
+  const loadProductsBySearch = async (searchTerm, currentPage, currentPageSize) => {
+    try {
+      const data = await fetchProducts(currentPage, currentPageSize, searchTerm, "");
+      setProducts(data.dtoList);
+      setFilteredProducts(data.dtoList);
+      setTotalPages(data.total);
+    } catch (error) {
+      setError("검색 결과를 가져오는 데 실패했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 상품 로딩 함수
   useEffect(() => {
-    const fetchAllProducts = async () => {
-      try {
-        const data = categoryId
-          ? await fetchProductsByCategory(categoryId)
-          : await fetchProducts();
+    setLoading(true); // 로딩 시작
+    if (categoryId) {
+      // 카테고리 ID가 있을 경우 카테고리 이름을 로드
+      loadCategoryName(categoryId);
+      loadProductsByCategory(categoryId, page, pageSize);
+    } else if (searchQuery) {
+      // 검색어가 있을 경우 검색 결과 로드
+      loadProductsBySearch(searchTerm, page, pageSize);
+    } else {
+      // 검색어와 카테고리 둘 다 없으면 전체 상품 로드 (기본값)
+      loadProductsBySearch('', page, pageSize);
+    }
+  }, [page, searchTerm, categoryId]);
 
-        setProducts(data);
-      } catch (err) {
-        console.error('Error fetching products:', err);
-        setError('상품을 불러오는 데 실패했습니다.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAllProducts();
-  }, [categoryId]);
-
+  // categoryId 또는 searchQuery가 변경될 때 페이지를 1로 리셋
   useEffect(() => {
-    const filterProducts = () => {
-      let filtered = products;
+    setPage(1);
+  }, [categoryId, searchQuery]);
 
-      if (searchQuery) {
-        filtered = filtered.filter(product =>
-          product.productName.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-      }
+  const handlePageChange = (newPage) => {
+    const safePage = Math.max(1, Math.min(newPage, totalPages));
+    setPage(safePage);
+  };
 
-      setFilteredProducts(filtered);
-    };
-
-    filterProducts();
-  }, [products, searchQuery]);
-
-  useEffect(() => {
-    const fetchCategoryName = async () => {
-      if (categoryId) {
-        try {
-          const data = await getCategoryAPI(categoryId);
-          setCategoryName(data.categoryName);
-        } catch (error) {
-          setError("카테고리 정보를 가져올 수 없습니다.");
-        }
-      }
-    };
-    fetchCategoryName();
-  }, [categoryId]);
-
-  // 장바구니 상품 추가
   const handleAddToCart = async (productId) => {
     try {
       const isLoggedIn = localStorage.getItem("access") !== null;
 
       if (isLoggedIn) {
-        // 로그인된 사용자 처리
-        await modifyOrderItem(productId, 1); // 서버 API 호출
+        await modifyOrderItem(productId, 1);
       } else {
-        // 비로그인 사용자 처리
         const product = products.find(p => p.productId === productId);
         if (!product) {
           alert("상품 정보를 찾을 수 없습니다.");
@@ -116,7 +138,6 @@ const ProductList = () => {
       alert("장바구니에 상품을 추가하는 데 실패했습니다.");
     }
   };
-
 
   if (loading) {
     return (
@@ -163,10 +184,7 @@ const ProductList = () => {
                 </Link>
                 <Card.Footer gap="2">
                   <Button variant="solid">Buy now</Button>
-                  <Button
-                      variant="ghost"
-                      onClick={() => handleAddToCart(product.productId)} // 장바구니 추가 버튼 동작
-                  >
+                  <Button variant="ghost" onClick={() => handleAddToCart(product.productId)}>
                     Add to cart
                   </Button>
                 </Card.Footer>
@@ -177,28 +195,21 @@ const ProductList = () => {
           <Text>상품이 없습니다.</Text>
         )}
       </HStack>
+      <Stack gap="4" alignItems="center" mt="3" mb="3">
+        <PaginationRoot
+          page={page}
+          count={totalPages}
+          pageSize={pageSize}
+          onPageChange={(e) => handlePageChange(e.page)}
+        >
+          <HStack>
+            <PaginationPrevTrigger />
+            <PaginationItems />
+            <PaginationNextTrigger />
+          </HStack>
+        </PaginationRoot>
+      </Stack>
     </Box>
-    //   <Grid templateColumns="repeat(5, 1fr)" gap={6}>
-    //     {filteredProducts.length > 0 ? (
-    //       filteredProducts.map((product) => (
-    //         <GridItem key={product.productId}>
-    //           <Link to={`/product/${product.productId}`}> {/* Link를 사용하여 상세 페이지로 이동 */}
-    //             <Box borderWidth="1px" borderRadius="md" p={4} boxShadow="md">
-    //               <Heading as="h3" size="md" mb={2}>
-    //                 {product.productName}
-    //               </Heading>
-    //               <Text>가격: {product.productAmount} 원</Text>
-    //               <Text>재고: {product.productCount} 개</Text>
-    //               <Text mt={2}>{product.productContent}</Text>
-    //             </Box>
-    //           </Link>
-    //         </GridItem>
-    //       ))
-    //     ) : (
-    //       <Text>상품이 없습니다.</Text>
-    //     )}
-    //   </Grid>
-    // </Box>
   );
 };
 
