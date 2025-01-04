@@ -29,6 +29,7 @@ function AdminRouter() {
     return (
         <Routes>
             <Route path="/" element={<AdminDashboard />} >
+                <Route index element={<UserManagement />} />
                 <Route path="users" element={<UserManagement />} />
                 <Route path="orders" element={<OrderManagement />} />
                 <Route path="categories" element={<CategoryManagement />} />

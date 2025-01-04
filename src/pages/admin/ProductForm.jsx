@@ -8,7 +8,7 @@ const ProductForm = () => {
   const [productName, setProductName] = useState("");
   const [productAmount, setProductAmount] = useState(0);
   const [productCount, setProductCount] = useState(0);
-  const [productContent, setProductContent] = useState("");
+  const [productContent, setProductContent] = useState("사이즈 : \n색상 : ");
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [images, setImages] = useState([]);
@@ -260,25 +260,38 @@ const ProductForm = () => {
             />
           </GridItem>
 
-          {/* 상품 소개 */}
+          {/* 상품 정보 */}
           <GridItem
-            colSpan={1}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            border="1px solid #ccc"
-            padding="5px"
+              colSpan={1}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              border="1px solid #ccc"
+              padding="5px"
           >
-            <label htmlFor="ProductContent">상품 소개</label>
+            <label htmlFor="ProductContent">색상</label>
           </GridItem>
           <GridItem colSpan={5} border="1px solid #ccc" padding="5px">
-            <Textarea
-              id="productContent"
-              value={productContent}
-              onChange={(e) => setProductContent(e.target.value)}
-              required
-              rows="4"
-            />
+            <select
+                id="productContent"
+                value={productContent}
+                onChange={(e) => setProductContent(e.target.value)}
+                required
+                style={{
+                  width: "100%",
+                  padding: "8px",
+                  border: "1px solid #ccc",
+                  borderRadius: "5px",
+                }}
+            >
+              <option value="" disabled>
+                선택하세요
+              </option>
+              <option value="웜그레이">웜그레이</option>
+              <option value="챠콜">챠콜</option>
+              <option value="딥그린">딥그린</option>
+              <option value="아이보리">아이보리</option>
+            </select>
           </GridItem>
         </Grid>
 

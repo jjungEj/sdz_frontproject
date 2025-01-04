@@ -49,8 +49,6 @@ function AdminDashboard() {
                     <Link to="/admin/products">상품 관리</Link>
                 </ChakraLink>
             </HStack>
-
-
             <Outlet />
         </Box>
     );

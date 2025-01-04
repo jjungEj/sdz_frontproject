@@ -161,7 +161,7 @@ function UserDashboard() {
                                     </HStack>
                                 </Card.Body>
                             </Card.Root>
-                            <Heading as='h3' size='lg' mt={10}>최근 주문 내역</Heading>
+                            {/* <Heading as='h3' size='lg' mt={10}>최근 주문 내역</Heading>
                             <Card.Root variant='subtle' width='100%'>
                                 <Card.Body gap='2'>
                                     <TimelineRoot maxW='400px'>
@@ -202,7 +202,7 @@ function UserDashboard() {
                                         </TimelineItem>
                                     </TimelineRoot>
                                 </Card.Body>
-                            </Card.Root>
+                            </Card.Root> */}
                         </VStack>
                         <VStack width='100%' maxWidth='550px' height='600px' align='center' justify='space-between'>
                             <HStack justify='space-between' width='100%' align='center'>

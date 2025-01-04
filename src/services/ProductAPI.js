@@ -15,7 +15,7 @@ export const fetchProductsByCategory = async (categoryId) => {
 export const fetchProducts = async (page, pageSize, keyword = "") => {
   try {
       const response = await fetch(
-          `${BASE_URL}?page=${page}&size=${pageSize}&keyword=${encodeURIComponent(keyword)}`,
+          `${url}?page=${page}&size=${pageSize}&keyword=${encodeURIComponent(keyword)}`,
           { method: "GET" }
       );
 
