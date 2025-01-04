@@ -9,17 +9,17 @@ export const SocialLoginButtons = () => {
             {
                 imgSrc: 'assets/login_contents_google.png',
                 altText: 'Google',
-                url: 'http://elice-sdz.duckdns.org/oauth2/authorization/google'
+                url: 'https://elice-sdz.duckdns.org/oauth2/authorization/google'
             },
             {
                 imgSrc: 'assets/login_contents_kakao.png',
                 altText: 'Kakao',
-                url: 'http://elice-sdz.duckdns.org/oauth2/authorization/kakao'
+                url: 'https://elice-sdz.duckdns.org/oauth2/authorization/kakao'
             },
             {
                 imgSrc: 'assets/login_contents_naver.png',
                 altText: 'Naver',
-                url: 'http://elice-sdz.duckdns.org/oauth2/authorization/naver'
+                url: 'https://elice-sdz.duckdns.org/oauth2/authorization/naver'
             },
         ];
         setSnsButtons(buttons);
