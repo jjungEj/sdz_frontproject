@@ -15,6 +15,12 @@ const ProductDetail = () => {
     const [error, setError] = useState(null);
     const [quantity, setQuantity] = useState(1);
 
+    // 페이지 이동시 스크롤 초기화
+      useEffect(() => {
+        window.scrollTo(0, 0);
+      }, []);
+    
+
     useEffect(() => {
         if (!productId) {
             setError("유효하지 않은 상품 ID입니다.");
