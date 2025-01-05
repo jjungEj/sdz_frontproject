@@ -147,8 +147,10 @@ function ProductManagement() {
                 </HStack>
             </Box>
             <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
-            <Box display="flex" justifyContent="center" margin="5" position="relative">
-                <Table.Root width='100%' variant="outline"  borderRadius='2xl'>
+            <Box display="flex" justifyContent="center" mb={4} position="relative" style={{
+                    scrollbarGutter: "stable", // 스크롤바가 없더라도 공간을 고정하여 UI 밀림 방지
+                }}>
+                <Table.Root width="100%">
                     <Table.Header>
                         <Table.Row>
                             <Table.ColumnHeader>
