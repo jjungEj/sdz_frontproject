@@ -9,7 +9,7 @@ const ProductUpdateForm = () => {
   const [productName, setProductName] = useState("");
   const [productAmount, setProductAmount] = useState(0);
   const [productCount, setProductCount] = useState(0);
-  const [productColor, setProductColor] = useState("");
+  const [productContent, setproductContent] = useState("");
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [images, setImages] = useState([]);
@@ -24,7 +24,7 @@ const ProductUpdateForm = () => {
         setProductName(product.productName);
         setProductAmount(product.productAmount);
         setProductCount(product.productCount);
-        setProductColor(product.productContent || ""); // 컬러 필드
+        setproductContent(product.productContent || ""); // 컬러 필드
         setSelectedCategory(product.categoryId);
 
         const fetchedImages = product.imagePaths || [];
@@ -107,7 +107,7 @@ const ProductUpdateForm = () => {
           productName,
           productAmount,
           productCount,
-          productColor, // 컬러 필드 추가
+          productContent, // 컬러 필드 추가
           userId: "",
           categoryId: selectedCategory,
         })
@@ -127,6 +127,7 @@ const ProductUpdateForm = () => {
     formData.append("newThumbnail", thumbnail);
 
     try {
+      console.log("Submitting data:", formData); // 요청 데이터 확인
       await updateProductAPI(productId, formData);
       alert("상품이 성공적으로 수정되었습니다.");
       navigate("/admin/products");
@@ -144,14 +145,23 @@ const ProductUpdateForm = () => {
 
   return (
       <Box display="flex" flexDirection="column" alignItems="center" w="100%">
-        <Heading as="h1" size="xl" mb={3}>
+        <Heading as="h1" size="xl" mb={6}>
           상품 수정
         </Heading>
-        <Box borderBottom="1px solid #ccc" mb={3} w="100%" />
-        <Flex direction="column" w="90%" maxWidth="800px">
-          <Grid templateRows="repeat(6, auto)" templateColumns="repeat(6, 1fr)" gap={4} p={4}>
-            <GridItem colSpan={1}>
-              <label htmlFor="productName">상품명</label>
+        <Flex
+            direction="column"
+            w="90%"
+            maxWidth="800px"
+            p={5}
+            boxShadow="lg"
+            borderRadius="lg"
+            bg="white"
+        >
+          {/* 상품 정보 섹션 */}
+          <Grid templateColumns="repeat(6, 1fr)" gap={4}>
+            {/* 상품명 */}
+            <GridItem colSpan={1} display="flex" alignItems="center" justifyContent="center">
+              <Text fontWeight="bold">상품명</Text>
             </GridItem>
             <GridItem colSpan={5}>
               <Input
@@ -159,26 +169,27 @@ const ProductUpdateForm = () => {
                   type="text"
                   value={productName}
                   onChange={(e) => setProductName(e.target.value)}
-                  required
+                  placeholder="상품명을 입력하세요"
               />
             </GridItem>
 
-            <GridItem colSpan={1}>
-              <label htmlFor="productAmount">상품 가격</label>
+            {/* 상품 가격 */}
+            <GridItem colSpan={1} display="flex" alignItems="center" justifyContent="center">
+              <Text fontWeight="bold">상품 가격</Text>
             </GridItem>
             <GridItem colSpan={2}>
               <Input
                   id="productAmount"
-                  type="text"
-                  pattern="\d*"
+                  type="number"
                   value={productAmount}
                   onChange={(e) => setProductAmount(Number(e.target.value))}
-                  required
+                  placeholder="가격을 입력하세요"
               />
             </GridItem>
 
-            <GridItem colSpan={1}>
-              <label htmlFor="productCount">상품 수량</label>
+            {/* 상품 수량 */}
+            <GridItem colSpan={1} display="flex" alignItems="center" justifyContent="center">
+              <Text fontWeight="bold">상품 수량</Text>
             </GridItem>
             <GridItem colSpan={2}>
               <Input
@@ -186,21 +197,16 @@ const ProductUpdateForm = () => {
                   type="number"
                   value={productCount}
                   onChange={(e) => setProductCount(Number(e.target.value))}
-                  required
+                  placeholder="수량을 입력하세요"
               />
             </GridItem>
 
-            <GridItem colSpan={1}>
-              <label htmlFor="category">카테고리</label>
+            {/* 카테고리 */}
+            <GridItem colSpan={1} display="flex" alignItems="center" justifyContent="center">
+              <Text fontWeight="bold">카테고리</Text>
             </GridItem>
             <GridItem colSpan={5}>
-              <select
-                  id="category"
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  required
-                  style={{ width: "100%", padding: "8px" }}
-              >
+              <Box as="select" id="category" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} w="100%" p={2}>
                 <option value="" disabled>
                   선택하세요
                 </option>
@@ -209,20 +215,15 @@ const ProductUpdateForm = () => {
                       {category.categoryName}
                     </option>
                 ))}
-              </select>
+              </Box>
             </GridItem>
 
-            <GridItem colSpan={1}>
-              <label htmlFor="productColor">컬러</label>
+            {/* 컬러 */}
+            <GridItem colSpan={1} display="flex" alignItems="center" justifyContent="center">
+              <Text fontWeight="bold">컬러</Text>
             </GridItem>
             <GridItem colSpan={5}>
-              <select
-                  id="productColor"
-                  value={productColor}
-                  onChange={(e) => setProductColor(e.target.value)}
-                  required
-                  style={{ width: "100%", padding: "8px" }}
-              >
+              <Box as="select" id="productContent" value={productContent} onChange={(e) => setproductContent(e.target.value)} w="100%" p={2}>
                 <option value="" disabled>
                   선택하세요
                 </option>
@@ -230,26 +231,31 @@ const ProductUpdateForm = () => {
                 <option value="챠콜">챠콜</option>
                 <option value="딥그린">딥그린</option>
                 <option value="아이보리">아이보리</option>
-              </select>
+              </Box>
             </GridItem>
 
-            <GridItem colSpan={1}>
-              <label>이미지</label>
+            {/* 이미지 */}
+            <GridItem colSpan={1} display="flex" alignItems="center" justifyContent="center">
+              <Text fontWeight="bold">이미지</Text>
             </GridItem>
             <GridItem colSpan={5}>
-              <Flex wrap="wrap" gap="10px">
+              <Flex wrap="wrap" gap={4} border="1px solid #ccc" p={3} borderRadius="md" bg="gray.50">
                 {images.map((image, index) => (
                     <Box
                         key={index}
-                        textAlign="center"
                         position="relative"
+                        p={2}
                         border={thumbnail === image.path ? "2px solid blue" : "1px solid #ccc"}
-                        borderRadius="5px"
-                        padding="5px"
+                        borderRadius="md"
                         cursor="pointer"
                         onClick={() => handleThumbnailSelect(image)}
+                        textAlign="center"
                     >
-                      <img src={image.path} alt={`image-${index}`} style={{ maxWidth: "100px" }} />
+                      <img
+                          src={image.path}
+                          alt={`image-${index}`}
+                          style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "5px" }}
+                      />
                       <Button
                           position="absolute"
                           top="0"
@@ -272,8 +278,9 @@ const ProductUpdateForm = () => {
             </GridItem>
           </Grid>
 
-          <Flex justifyContent="flex-end" mt={4}>
-            <Button colorScheme="blue" isLoading={loading} onClick={handleSubmit} mr={3}>
+          {/* 버튼 섹션 */}
+          <Flex justifyContent="flex-end" mt={6} gap={3}>
+            <Button onClick={handleSubmit} colorScheme="blue" isLoading={loading}>
               수정
             </Button>
             <Button onClick={handleCancel} colorScheme="red">
@@ -283,6 +290,7 @@ const ProductUpdateForm = () => {
         </Flex>
       </Box>
   );
+
 };
 
 export default ProductUpdateForm;
