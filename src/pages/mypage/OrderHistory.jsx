@@ -81,13 +81,16 @@ function OrderHistory() {
               maxW="flex" 
             >
               
-              <Image 
-                src={order.orderDetails?.[0]?.product?.imageUrl || 'default-image.jpg'} 
-                alt="상품 이미지"
-                boxSize="100px"
-                objectFit="cover"
-                borderRadius="md"
-                mr={4}
+              <img
+                src={`${item.thumbnailPath}`}
+                alt={item.productName}
+                style={{
+                  width: "75px",
+                  height: "100px",
+                  objectFit: "cover",
+                  borderRadius: "5px",
+                  border: "1px solid #ccc",
+                }}
               />
               
               <Box flex="1" position="relative">

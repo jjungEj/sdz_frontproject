@@ -98,48 +98,68 @@ async function deleteOrder(orderId) {
 }
 
 // 관리자 모든 주문 조회
-async function getAllOrders() {
+async function getAllOrders(page, pageSize ) {
     try {
-        const response = await fetch(`${url}/admin`, {
+        const response = await fetch(`${url}/admin?page=${page}&size=${pageSize}`, {
+             method:'GET',
             headers: {
+                'Content-Type': 'application/json',
                 'Authorization': `Bearer ${getAuthToken()}`
             },
         });
         if (!response.ok) throw new Error('모든 주문 목록을 불러오지 못했습니다.');
-        return await response.json();
+        const data = await response.json();
+        return {
+            dtoList: data, // 서버에서 받은 데이터를 dtoList로 설정
+            total: data.length // 현재는 임시로 데이터 길이를 total로 설정
+        };
     } catch (error) {
         console.error('getAllOrders 에러:', error);
         throw error;
     }
 }
 
+
 // 관리자 주문 상태 수정
-async function updateOrderStatus(orderId, status) {
+async function updateOrderStatus(orderId, orderStatus) {
     try {
-        const response = await fetch(`${url}/admin/${orderId}/status?status=${status}`, {
+        const response = await fetch(`${url}/admin/${orderId}/status`, {
             method: 'PUT',
             headers: {
+                'Content-Type': 'application/json',
                 'Authorization': `Bearer ${getAuthToken()}`
             },
+            body: JSON.stringify({ status: orderStatus }), 
         });
-        if (!response.ok) throw new Error('주문 상태 수정에 실패했습니다.');
-        return await response.json();
+        if (!response.ok) {
+            throw new Error('주문 상태 수정에 실패했습니다.');
+        }
+        const responsedata = await response.json();
+        console.log(responsedata);
+        return responsedata;
     } catch (error) {
         console.error('updateOrderStatus 에러:', error);
         throw error;
     }
+    
 }
 
+
 // 관리자 주문 삭제
-async function deleteOrderByAdmin(orderId) {
+async function deleteOrderByAdmin(orderIds) {
     try {
-        const response = await fetch(`${url}/admin/${orderId}`, {
+        const response = await fetch(`${url}/admin/orders`, {
             method: 'DELETE',
             headers: {
+                'Content-Type': 'application/json',
                 'Authorization': `Bearer ${getAuthToken()}`
             },
+            body: JSON.stringify({ orderIds: orderIds })
         });
-        if (!response.ok) throw new Error('관리자 주문 삭제에 실패했습니다.');
+        if (!response.ok) {
+            const errorText = await response.text();  // 에러 메시지 받기
+            throw new Error(`관리자 주문 삭제에 실패했습니다: ${errorText}`);
+        }
     } catch (error) {
         console.error('deleteOrderByAdmin 에러:', error);
         throw error;

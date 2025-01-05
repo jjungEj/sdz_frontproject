@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { Box, Stack, Text, Heading, Spinner, Highlight, Card, Image, Button, HStack } from "@chakra-ui/react";
 import useSearchStore from "@/store/SearchStore";
 import { getCategoryAPI } from "@/services/CategoryAPI";
@@ -19,6 +19,7 @@ const ProductList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [categoryName, setCategoryName] = useState(null);
+  const navigate = useNavigate();
 
   const searchTerm = useSearchStore(state => state.search); // Search store에서 검색어 가져오기
   const location = useLocation();
@@ -99,7 +100,27 @@ const ProductList = () => {
     const safePage = Math.max(1, Math.min(newPage, totalPages));
     setPage(safePage);
   };
-
+  //buy now 
+  const handleBuyNow = (product) => {
+    console.log("handleBuyNow called with product:", product);
+    try {
+      const orderItem = {
+        orderItemDetails: [{
+          productId: product.productId,
+          productName: product.productName,
+          productAmount: product.productAmount,
+          thumbnailPath: product.thumbnailPath,
+          quantity: 1,
+        }]
+      };
+      console.log("Navigating to checkout with orderItem:", orderItem);
+      // 체크아웃 페이지로 이동
+      navigate('/checkout', { state: { orderData: orderItem.orderItemDetails } });
+    } catch (error) {
+      console.error("Error processing buy now:", error);
+      // 에러 처리 로직
+    }
+  };
   const handleAddToCart = async (productId) => {
     try {
       const isLoggedIn = localStorage.getItem("access") !== null;
@@ -188,7 +209,7 @@ const ProductList = () => {
                   </Card.Body>
                 </Link>
                 <Card.Footer gap="2">
-                  <Button variant="solid">Buy now</Button>
+                  <Button variant="solid"onClick={() => handleBuyNow(product)}>Buy now</Button>
                   <Button variant="ghost" onClick={() => handleAddToCart(product.productId)}>
                     Add to cart
                   </Button>
