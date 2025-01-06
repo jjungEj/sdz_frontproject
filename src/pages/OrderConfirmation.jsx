@@ -63,21 +63,21 @@ function OrderConfirmation() {
                                 <Text textAlign="center">배송형태</Text>
                             </Grid>
                             {Array.isArray(orderData.items) && orderData.items.length > 0 ? (
-    orderData.items.map((orderData) => (
-        <Grid key={orderData.productId} templateColumns="2fr 1fr 1fr 1fr" p={4} gap={4} borderBottomWidth="1px" alignItems="center">
-            <HStack>
-                <Box>
-                <img
-                        src={`${orderData.thumbnailPath}`}
-                        alt={orderData.productName}
-                        style={{
-                            width: "75px",
-                            height: "100px",
-                            objectFit: "cover",
-                            borderRadius: "5px",
-                            border: "1px solid #ccc",
-                        }}
-                    />
+                                orderData.items.map((orderData) => (
+                                <Grid key={orderData.productId} templateColumns="2fr 1fr 1fr 1fr" p={4} gap={4} borderBottomWidth="1px" alignItems="center">
+                            <HStack>
+                            <Box>
+                        <img
+                            src={`${orderData.thumbnailPath}`}
+                            alt={orderData.productName}
+                            style={{
+                                width: "75px",
+                                height: "100px",
+                                objectFit: "cover",
+                                borderRadius: "5px",
+                                border: "1px solid #ccc",
+                            }}
+                        />
                 </Box>
                 <Text textAlign="center">{orderData.productName}</Text>
             </HStack>

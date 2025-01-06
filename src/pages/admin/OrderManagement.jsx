@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getAllOrders, deleteOrderByAdmin, updateOrderStatus } from "@/services/OrderAPI";
 import { Box, Button, Heading, Table, createListCollection } from '@chakra-ui/react';
 import { Toaster } from "@/components/ui/toaster";
+import { SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValueText } from '@/components/ui/select'
 
 function OrderManagement() {
     const [orders, setOrders] = useState([]);
@@ -24,7 +25,6 @@ function OrderManagement() {
         };
         return statusMap[status] || status;
     };
-
     const handleStatusChange = async (event, orderId) => {
         const orderStatus = event.target.value;
         console.log('orderId:', orderId, 'orderStatus:', orderStatus);
@@ -79,7 +79,8 @@ function OrderManagement() {
                 console.error('Failed to fetch orders:', error);
             });
     }
-
+    
+    
     return (
         <Box>
             <Toaster />
@@ -101,20 +102,39 @@ function OrderManagement() {
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
-                        {orders.map((order) => ( 
-                            <Table.Row key={order.orderId}>
-                                <Table.Cell>{order.orderId}</Table.Cell>
-                                <Table.Cell>{order.email}</Table.Cell>
-                                <Table.Cell>{order.deliveryAddress.receiverName}</Table.Cell> 
-                                <Table.Cell>{order.deliveryAddress.receiverContact}</Table.Cell> 
-                                <Table.Cell>{order.deliveryAddress ? order.deliveryAddress.deliveryAddress1+" "+order.deliveryAddress.deliveryAddress2+" "+order.deliveryAddress.deliveryAddress3 :" "}</Table.Cell>
-                                <Table.Cell>{order.totalPrice.toLocaleString()}원</Table.Cell>
-                                <Table.Cell>{order.regDate}</Table.Cell>
-                                <Table.Cell>{getOrderStatusInKorean(order.orderStatus)}</Table.Cell>
+                        {orders.map((data) => (
+                            <Table.Row key={data.orderId}>
+                                <Table.Cell>{data.orderId}</Table.Cell>
+                                <Table.Cell>{data.email}</Table.Cell>
+                                <Table.Cell>{data.deliveryAddress.receiverName}</Table.Cell> 
+                                <Table.Cell>{data.deliveryAddress.receiverContact}</Table.Cell> 
+                                <Table.Cell>{data.deliveryAddress ? data.deliveryAddress.deliveryAddress1+" "+data.deliveryAddress.deliveryAddress2+" "+data.deliveryAddress.deliveryAddress3 :" "}</Table.Cell>
+                                <Table.Cell>{data.totalPrice.toLocaleString()}원</Table.Cell>
+                                <Table.Cell>{data.regDate}</Table.Cell>
+                                <Table.Cell>
+                                <SelectRoot 
+                                    collection={orderStatusOptions} 
+                                    size="xs" 
+                                    width="100px"
+                                    defaultValue={data.orderStatus}
+                                    onChange={(event) => handleStatusChange(event,data.orderId)}
+                                    >
+                                    <SelectTrigger>
+                                        <SelectValueText placeholder={getOrderStatusInKorean(data.orderStatus)} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {orderStatusOptions.items.map((option) => (
+                                            <SelectItem item={option} key={option.value}>
+                                                {option.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </SelectRoot>
+                                </Table.Cell>
                                 <Table.Cell>
                                     <Button 
                                     variant='outline'
-                                    onClick={() => handleDeleteOrder(order.orderId)}>
+                                    onClick={() => handleDeleteOrder(data.orderId)}>
                                         삭제
                                     </Button>
                                 </Table.Cell>

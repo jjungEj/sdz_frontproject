@@ -153,7 +153,14 @@ function Checkout() {
             detailAddress2: roadAddress
         }));
     };
-
+    //handlePaymentMethodChange 함수 정의
+    const handlePaymentMethodChange = (details) => {
+        const { value } = details;
+        setUserInfo(prev => ({
+        ...prev,
+        paymentMethod: value,
+        }));
+    };
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setUserInfo(prev => {
@@ -405,29 +412,16 @@ function Checkout() {
           </Box>
 
           {/* 결제 방법 */} 
-          <Box borderWidth="1px" p={4}>
-    <Text fontSize="xl" fontWeight="bold" mb={4}>결제 방법</Text>
-    <HStack spacing={4}>
-        <Checkbox 
-            isChecked={userInfo.paymentMethod === 'credit'}
-            onChange={() => setUserInfo(prev => prev.paymentMethod !== 'credit' ? { ...prev, paymentMethod: 'credit' } : prev)}
-        >
-            신용카드
-        </Checkbox>
-        <Checkbox 
-            isChecked={userInfo.paymentMethod === 'bank'}
-            onChange={() => setUserInfo(prev => prev.paymentMethod !== 'bank' ? { ...prev, paymentMethod: 'bank' } : prev)}
-        >
-            계좌이체
-        </Checkbox>
-        <Checkbox 
-            isChecked={userInfo.paymentMethod === 'virtual'}
-            onChange={() => setUserInfo(prev => prev.paymentMethod !== 'virtual' ? { ...prev, paymentMethod: 'virtual' } : prev)}
-        >
-            가상계좌(무통장)
-        </Checkbox>
-    </HStack>
-</Box>
+          <RadioGroup
+            value={userInfo.paymentMethod}
+            onValueChange={handlePaymentMethodChange}
+          >
+            <HStack gap="6">
+                <Radio value="credit">신용카드</Radio>
+                <Radio value="bank">계좌이체</Radio>
+                <Radio value="virtual">가상계좌(무통장)</Radio>
+            </HStack>
+         </RadioGroup>
         </VStack>
 
         {/* 결제 전 확인사항 */}
