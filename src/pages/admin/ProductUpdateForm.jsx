@@ -4,6 +4,7 @@ import { Box, Heading, Grid, GridItem, Input, Button, Text, Flex } from "@chakra
 import { getProductByIdAPI, updateProductAPI } from "@/services/ProductAPI";
 import { getCategoriesAPI } from "@/services/CategoryAPI";
 import { Toaster, toaster } from "@/components/ui/toaster";
+import colorOptions from "@/data/colorOptions.js";
 
 const ProductUpdateForm = () => {
   const { productId } = useParams();
@@ -17,6 +18,7 @@ const ProductUpdateForm = () => {
   const [thumbnail, setThumbnail] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [availableColors, setAvailableColors] = useState([]);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -46,7 +48,8 @@ const ProductUpdateForm = () => {
     const fetchCategories = async () => {
       try {
         const data = await getCategoriesAPI();
-        setCategories(data);
+        const subCategories = data.filter(category => category.parentId !== null);
+        setCategories(subCategories);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
         alert("카테고리를 불러오는 데 실패했습니다.");
@@ -56,6 +59,16 @@ const ProductUpdateForm = () => {
     fetchProduct();
     fetchCategories();
   }, [productId]);
+
+  useEffect(() => {
+    // 카테고리가 선택될 때마다 색상 업데이트
+    if (selectedCategory) {
+      setAvailableColors(colorOptions[selectedCategory] || []);
+      console.log(selectedCategory);
+    } else {
+      setAvailableColors([]);
+    }
+  }, [selectedCategory]);
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
@@ -235,19 +248,27 @@ const ProductUpdateForm = () => {
               </Box>
             </GridItem>
 
-            {/* 컬러 */}
+            {/* 색상 */}
             <GridItem colSpan={1} display="flex" alignItems="center" justifyContent="center">
-              <Text fontWeight="bold">컬러</Text>
+              <Text fontWeight="bold">색상</Text>
             </GridItem>
             <GridItem colSpan={5}>
-              <Box as="select" id="productContent" value={productContent} onChange={(e) => setproductContent(e.target.value)} w="100%" p={2}>
+              <Box
+                  as="select"
+                  id="productContent"
+                  value={productContent}
+                  onChange={(e) => setProductContent(e.target.value)}
+                  w="100%"
+                  p={2}
+              >
                 <option value="" disabled>
                   선택하세요
                 </option>
-                <option value="웜그레이">웜그레이</option>
-                <option value="챠콜">챠콜</option>
-                <option value="딥그린">딥그린</option>
-                <option value="아이보리">아이보리</option>
+                {availableColors.map((color, index) => (
+                    <option key={index} value={color}>
+                      {color}
+                    </option>
+                ))}
               </Box>
             </GridItem>
 
