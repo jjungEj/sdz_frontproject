@@ -89,7 +89,7 @@ function OrderHistory() {
               <Text fontSize="m" fontWeight="semibold">{getOrderStatus(orderData.orderStatus)}</Text>
 
             </Box>
-            {orderData.orderStatus === "PAYMENTPROCESSED" && (
+            {(orderData.orderStatus === "PENDING" || orderData.orderStatus === "PAYMENTPROCESSED")&&  (
               
               <Button 
               colorScheme="blackAlpha"
