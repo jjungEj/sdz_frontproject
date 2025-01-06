@@ -114,16 +114,22 @@ const ProductDetail = () => {
                         {/* 슬라이더 섹션 */}
                         <Box width="50%" padding="5">
                             <Slider {...sliderSettings}>
-                                {product.imagePaths.map((imagePath, index) => (
-                                    <Box key={index} display="flex" justifyContent="center">
-                                        <Image
-                                            src={imagePath}
-                                            alt={`상품 이미지 ${index + 1}`}
-                                            objectFit="contain"
-                                            maxHeight="500px"
-                                        />
-                                    </Box>
-                                ))}
+                                {/* 이미지 경로를 숫자 순으로 정렬 */}
+                                {[...product.imagePaths]
+                                    .sort((a, b) => {
+                                        const getNumber = (str) => parseInt(str.match(/\d+/)?.[0], 10) || 0;
+                                        return getNumber(a) - getNumber(b);
+                                    })
+                                    .map((imagePath, index) => (
+                                        <Box key={index} display="flex" justifyContent="center">
+                                            <Image
+                                                src={imagePath}
+                                                alt={`상품 이미지 ${index + 1}`}
+                                                objectFit="contain"
+                                                maxHeight="500px"
+                                            />
+                                        </Box>
+                                    ))}
                             </Slider>
                         </Box>
 

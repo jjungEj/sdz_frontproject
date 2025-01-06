@@ -4,6 +4,7 @@ import { createProductAPI } from "@/services/ProductAPI";
 import { useNavigate } from "react-router-dom";
 import { Box, Heading, Grid, GridItem, Input, Button, Textarea, Text, Flex } from "@chakra-ui/react";
 import { Toaster, toaster } from "@/components/ui/toaster";
+import colorOptions from "@/data/colorOptions";
 
 const ProductForm = () => {
   const [productName, setProductName] = useState("");
@@ -16,6 +17,7 @@ const ProductForm = () => {
   const [thumbnail, setThumbnail] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [availableColors, setAvailableColors] = useState([]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -31,6 +33,16 @@ const ProductForm = () => {
 
     fetchCategories();
   }, []);
+
+  useEffect(() => {
+    // 카테고리가 선택될 때마다 색상 업데이트
+    if (selectedCategory) {
+      setAvailableColors(colorOptions[selectedCategory] || []);
+      console.log(selectedCategory);
+    } else {
+      setAvailableColors([]);
+    }
+  }, [selectedCategory]);
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
@@ -201,14 +213,22 @@ const ProductForm = () => {
               <Text fontWeight="bold">색상</Text>
             </GridItem>
             <GridItem colSpan={5}>
-              <Box as="select" id="productContent" value={productContent} onChange={(e) => setProductContent(e.target.value)} w="100%" p={2}>
+              <Box
+                  as="select"
+                  id="productContent"
+                  value={productContent}
+                  onChange={(e) => setProductContent(e.target.value)}
+                  w="100%"
+                  p={2}
+              >
                 <option value="" disabled>
                   선택하세요
                 </option>
-                <option value="웜그레이">웜그레이</option>
-                <option value="챠콜">챠콜</option>
-                <option value="딥그린">딥그린</option>
-                <option value="아이보리">아이보리</option>
+                {availableColors.map((color, index) => (
+                    <option key={index} value={color}>
+                      {color}
+                    </option>
+                ))}
               </Box>
             </GridItem>
           </Grid>
