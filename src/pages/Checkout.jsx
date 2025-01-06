@@ -70,15 +70,15 @@ function Checkout() {
         try {
             // 주문 데이터 생성
             const orderPayload = {
-                orderItems: orderData.map((item) => ({
-                    orderItemId: item.orderItemId,
+                orderItems: orderData.map((orderitem) => ({
+                    orderItemId: orderitem.orderItemId,
                     orderItemDetails: [
                         {
-                            productId: item.productId,
-                            quantity: item.quantity,
-                            productName: item.productName,
-                            productAmount: item.productAmount,
-                            thumbnailPath: item.productImage,
+                            productId: orderitem.productId,
+                            quantity: orderitem.quantity,
+                            productName: orderitem.productName,
+                            productAmount: orderitem.productAmount,
+                            thumbnailPath: orderitem.productImage,
                         },
                     ],
                 })),
@@ -142,6 +142,10 @@ function Checkout() {
                   }
                 }
               });
+              console.log("Order orderData:", orderData);
+              console.log("Order orderData:", JSON.stringify(orderData, null, 2));
+              console.log("Order orderData:", orderData);
+
         } catch (error) {
             console.error("주문 생성 실패:", error);
     
@@ -157,7 +161,8 @@ function Checkout() {
 
     return (
         <Box maxW="800px" mx="auto" p={1}>
-            <Text fontSize="2xl" fontWeight="bold" >주문 결제</Text>
+            <Text fontSize="2xl" mb={5} fontWeight="bold" >주문 결제</Text>
+            <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
             <VStack spacing={8} align="stretch">
                 <Box>
                     <Box borderWidth="1px" borderRadius="2g">
