@@ -33,8 +33,10 @@ function OrderConfirmation() {
             setLoading(false);
           }
         }
+        
         fetchOrderDetail();
       }, [orderId, location.state]);
+      console.log(orderData.items)
       console.log("state확인",location.state);
     
     if (loading) return <Text>주문 정보를 불러오는 중입니다...</Text>;
