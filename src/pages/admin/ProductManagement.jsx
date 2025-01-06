@@ -71,6 +71,7 @@ function ProductManagement() {
     }, [searchTerm]);
 
     useEffect(() => {
+        document.body.style.overflowY = "scroll";
         loadProducts(page, pageSize, debouncedSearchTerm);
     }, [page, pageSize, debouncedSearchTerm]);
 
