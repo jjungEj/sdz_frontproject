@@ -157,7 +157,7 @@ function OrderItem() {
                             {item.productName}
                         </Text>
                         <Text fontSize="xs" color="gray.600">
-                            ({item.productId})
+                            #SDZ{String(item.productId).padStart(5, "0")}
                         </Text>
                     </VStack>
                 </HStack>
