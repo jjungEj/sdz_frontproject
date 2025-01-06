@@ -74,6 +74,10 @@ function ProductManagement() {
         loadProducts(page, pageSize, debouncedSearchTerm);
     }, [page, pageSize, debouncedSearchTerm]);
 
+    useEffect(() => {
+        setPage(1);
+      }, [debouncedSearchTerm]);
+
     const handleDelete = async (productId) => {
         try {
             await deleteProduct(productId);
