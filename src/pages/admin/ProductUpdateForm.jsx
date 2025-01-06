@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Box, Heading, Grid, GridItem, Input, Button, Textarea, Text, Flex, } from "@chakra-ui/react";
 import { getProductByIdAPI, updateProductAPI } from "@/services/ProductAPI";
 import { getCategoriesAPI } from "@/services/CategoryAPI";
+import { Toaster, toaster } from "@/components/ui/toaster";
 
 const ProductUpdateForm = () => {
   const { productId } = useParams();
@@ -77,14 +78,20 @@ const ProductUpdateForm = () => {
     if (!image.markedForDeletion) {
       setThumbnail(thumbnail === image ? null : image);
     } else {
-      alert("삭제 예정인 이미지는 썸네일로 선택할 수 없습니다.");
+      toaster.create({
+              title: "삭제 예정인 이미지는 썸네일로 선택할 수 없습니다.",
+              type: "error"
+            });
     }
   };
 
   // 이미지 삭제 핸들러
   const handleImageDelete = (image) => {
     if (thumbnail === image) {
-      alert("썸네일로 설정된 이미지는 삭제할 수 없습니다.");
+      toaster.create({
+              title: "썸네일로 설정된 이미지는 삭제할 수 없습니다.",
+              type: "error"
+            });
       return;
     }
     setImages((prev) =>
@@ -100,7 +107,10 @@ const ProductUpdateForm = () => {
     setLoading(true);
 
     if (!thumbnail) {
-      alert("썸네일을 선택해야 합니다.");
+      toaster.create({
+              title: "썸네일을 선택해야 합니다.",
+              type: "error"
+            });
       setLoading(false);
       return;
     }
@@ -136,11 +146,17 @@ const ProductUpdateForm = () => {
 
     try {
       await updateProductAPI(productId, formData);
-      alert("상품이 성공적으로 수정되었습니다.");
+      toaster.create({
+              title: "상품이 성공적으로 수정되었습니다.",
+              type: "success"
+            });
       navigate("/admin/products");
     } catch (error) {
       console.error("Product update failed:", error);
-      alert("상품 수정 중 오류가 발생했습니다. 다시 시도해주세요.");
+      toaster.create({
+              title: "상품 수정 중 오류가 발생했습니다. 다시 시도해주세요.",
+              type: "error"
+            });
     } finally {
       setLoading(false);
     }

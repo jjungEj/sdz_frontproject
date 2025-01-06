@@ -87,7 +87,7 @@ function ProductManagement() {
         } catch (error) {
             console.error(error);
             toaster.create({
-                title: "주문에 존재하는 상품이 있습니다..",
+                title: "주문에 존재하는 상품이 있습니다.",
                 type: "error"
             });
         }
