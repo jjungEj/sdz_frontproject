@@ -238,7 +238,7 @@ export const DeliveryAddressUpdateDialog = ({ selectedAddressId, fetchDeliveryAd
   const isFormValid = receiverName && contactPrefix && contactMid && contactLast && deliveryAddress1 && deliveryAddress2 && deliveryAddress3;
 
   const handleUpdateAddress = () => {
-    const contact = `${contactPrefix}${contactMid}${contactLast}`;
+    const receiverContact = `${contactPrefix}${contactMid}${contactLast}`;
     const address  = {
       deliveryAddressId : selectedAddressId,
       deliveryAddress1,
