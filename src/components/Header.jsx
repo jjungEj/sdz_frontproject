@@ -7,21 +7,21 @@ import Search from './Search';
 import CartDrawer from './CartDrawer';
 import useCategoryStore from '@/store/CategoryStore';
 
-import { Box, HStack, VStack, Link as ChakraLink, Button } from '@chakra-ui/react';
+import { Box, HStack, VStack, Link as ChakraLink, Button, Image } from '@chakra-ui/react';
 import { MenuContent, MenuItem, MenuRoot, MenuTrigger } from "@/components/ui/menu"
 import { ColorModeButton } from "@/components/ui/color-mode"
 
 function Header() {
   const navigate = useNavigate();
-  const { isLoggedIn, auth,  handleLogout, updateAuthState }
-  = useAuthStore(
-      useShallow((state) => ({ 
+  const { isLoggedIn, auth, handleLogout, updateAuthState }
+    = useAuthStore(
+      useShallow((state) => ({
         isLoggedIn: state.isLoggedIn,
         auth: state.auth,
         handleLogout: state.handleLogout,
         updateAuthState: state.updateAuthState
       })),
-  )
+    )
   const [openMenu, setOpenMenu] = useState(null);
   const { categories, getCategories } = useCategoryStore();
 
@@ -31,11 +31,11 @@ function Header() {
 
   useEffect(() => {
     if (!isLoggedIn) {
-        updateAuthState();
+      updateAuthState();
     }
   }, [isLoggedIn, updateAuthState]);
 
-  const handleLogoutClick = async() => {
+  const handleLogoutClick = async () => {
     await logout();
     await handleLogout();
     navigate('/');
@@ -89,15 +89,25 @@ function Header() {
               )}
             </>
           )}
-          <CartDrawer />
+          <ChakraLink asChild _focus={{ outline: "none" }} fontSize="sm" margin="3">
+            <Button as={Link} to="/order-item" variant="link" fontSize="sm" margin="3" padding="0">
+              장바구니
+            </Button>
+          </ChakraLink>
+          {/* <CartDrawer /> */}
         </HStack>
       </HStack>
       <HStack justify="flex-end" mb={3}>
         <Search />
       </HStack>
       <VStack justify="center" mb={3}>
-        <Link to="/" _focus={{ outline: "none" }} fontSize="4xl">
-          LOGO
+        <Link to="/" _focus={{ outline: "none" }}>
+          <Image
+            src="/assets/elice_logo.webp"
+            alt="logo"
+            width="100px"
+            height="100px"
+          />
         </Link>
       </VStack>
       <HStack justify="center" mb={3}>

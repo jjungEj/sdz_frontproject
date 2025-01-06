@@ -52,8 +52,10 @@ function Login() {
                     handleLogin();
                     navigate('/');
                 } else if (response.httpStatus === 'FORBIDDEN') {
-                    alert(response.message + "\n비밀번호 찾기를 통해 임시 비밀번호를 발급하세요.");
-                    return;
+                    if(response.errorCode === 'LOGIN_LOCKED'){
+                        alert(response.message + "\n비밀번호 찾기를 통해 임시 비밀번호를 발급하세요.");
+                        return;
+                    }
                 } else if (response.httpStatus === 'UNAUTHORIZED') {
                     alert(response.message + "\n아이디 또는 비밀번호를 확인하세요.");
                     return;

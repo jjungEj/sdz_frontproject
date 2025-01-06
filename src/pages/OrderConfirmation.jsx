@@ -11,25 +11,37 @@ function OrderConfirmation() {
     const [orderData, setOrderData] = useState(location.state?.orderData || null);
     const [loading, setLoading] = useState(!location.state?.orderData); // API 호출 여부
     const [error, setError] = useState(null);
-
+    const getPaymentMethodInKorean = (method) => {
+        const methodMap = {
+            'credit': '신용카드',
+            'bank': '계좌이체',
+            'virtual': '가상계좌(무통장',
+        };
+        return methodMap[method] || method; // 매핑되지 않은 값은 그대로 반환
+    };
     useEffect(() => {
-        if (!orderData) {
-            async function fetchOrderDetail() {
-                try {
-                    const data = await getOrderDetail(orderId);
-                    setOrderData(data);
-                } catch (err) {
-                    setError('주문 상세 정보를 불러오는 데 실패했습니다.');
-                } finally {
-                    setLoading(false);
-                }
+        async function fetchOrderDetail() {
+          try {
+            if (location.state?.orderData) {
+              setOrderData(location.state.orderData);
+            } else {
+              const data = await getOrderDetail(orderId);
+              setOrderData(data);
             }
-            fetchOrderDetail();
-        } else {
+          } catch (err) {
+            setError('주문 상세 정보를 불러오는 데 실패했습니다.');
+          } finally {
             setLoading(false);
+          }
         }
-    }, [orderId, orderData]);
-
+        fetchOrderDetail();
+      }, [orderId, location.state]);
+    
+    if (loading) return <Text>주문 정보를 불러오는 중입니다...</Text>;
+    if (error) return <Text>{error}</Text>;
+    if (!orderData) return <Text>주문 정보를 찾을 수 없습니다.</Text>;
+     
+    console.log(orderData)
     const handleGoToOrderList = () => {
         navigate('/mypage/orders'); // 주문 목록 페이지로 이동
     };
@@ -41,7 +53,7 @@ function OrderConfirmation() {
                 <VStack spacing={6} align="stretch">
                     {/* 상품 정보 테이블 */}
                     <Box>
-                        <Box borderWidth="1px" borderRadius="lg">
+                        <Box borderWidth="1px"  >
                             <Grid templateColumns="2fr 1fr 1fr 1fr" bg="gray.100" p={4} gap={4} borderBottomWidth="1px" fontWeight="semibold">
                                 <Text textAlign="center">제품정보</Text>
                                 <Text textAlign="center">판매가격</Text>
@@ -50,9 +62,9 @@ function OrderConfirmation() {
                             </Grid>
                             {Array.isArray(orderData.items) && orderData.items.length > 0 ? (
     orderData.items.map((item) => (
-        <Grid key={item.productId} templateColumns="2fr 1fr 1fr 1fr" bg="gray.50" p={4} gap={4} borderBottomWidth="1px" alignItems="center">
+        <Grid key={item.productId} templateColumns="2fr 1fr 1fr 1fr" p={4} gap={4} borderBottomWidth="1px" alignItems="center">
             <HStack>
-                <Box w="60px" h="60px" bg="gray.100" borderWidth="1px">
+                <Box>
                 <img
                         src={`${item.thumbnailPath}`}
                         alt={item.productName}
@@ -120,11 +132,11 @@ function OrderConfirmation() {
                             <VStack spacing={4} align="stretch">
                                 <HStack>
                                     <Box w="150px" fontWeight="bold">결제방법</Box>
-                                    <Box>{orderData.paymentMethod}</Box>
+                                    <Box>{getPaymentMethodInKorean(orderData.paymentMethod)}</Box>
                                 </HStack>
                                 <HStack>
                                     <Box w="150px" fontWeight="bold">결제금액</Box>
-                                    <Box>{orderData.totalPrice}</Box>
+                                    <Box>{orderData.totalPrice.toLocaleString()}원</Box>
                                 </HStack>
                             </VStack>
                         </Box>
@@ -143,7 +155,7 @@ function OrderConfirmation() {
                                 </HStack>
                                 <HStack>
                                     <Box w="150px" fontWeight="bold">주소</Box>
-                                    <Box>{`${orderData.detailAddress1} ${orderData.detailAddress2} ${orderData.detailAddress3}`}</Box>
+                                    <Box>{orderData.deliveryAddress?.deliveryAddress1} {orderData.deliveryAddress?.deliveryAddress2} {orderData.deliveryAddress?.deliveryAddress3}</Box>
                                 </HStack>
                                 <HStack>
                                     <Box w="150px" fontWeight="bold">연락처</Box>

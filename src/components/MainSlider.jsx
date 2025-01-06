@@ -46,7 +46,7 @@ function MainSlider() {
                             <Stack position="absolute" top="50%" transform="translate(0, -50%)">
                                 <Heading fontSize="4xl" fontWeight="bold">{card.title1}</Heading>
                                 <Heading fontSize="4xl" fontWeight="bold" marginBottom="5">{card.title2}</Heading>
-                                <Heading color="teal.600" fontSize="5xl" fontWeight="bold" marginBottom="5">{card.title3}</Heading>
+                                <Heading color="#5526cc" fontSize="5xl" fontWeight="bold" marginBottom="5">{card.title3}</Heading>
                                 <Text fontSize="lg" color="GrayText">{card.text1}</Text>
                                 <Text fontSize="lg" color="GrayText">{card.text2}</Text>
                                 <Text fontSize="lg" color="GrayText">{card.text3}</Text>

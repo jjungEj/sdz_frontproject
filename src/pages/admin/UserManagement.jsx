@@ -156,9 +156,9 @@ function UserManagement() {
                     </Button>
                 </HStack>
             </Box>
-            <Box borderBottom={{ base: '1px solid black', _dark: '1px solid white' }} />
-            <Box display='flex' justifyContent='center'>
-                <Table.Root width='100%'>
+            <Box borderBottom={{ base: '1px solid black', _dark: '1px solid white' }} mb="3"/>
+            <Box display='flex' justifyContent='center' margin="5">
+                <Table.Root width='100%' variant="outline"  borderRadius='2xl'>
                     <Table.Header>
                         <Table.Row>
                             <Table.ColumnHeader textAlign='center'>

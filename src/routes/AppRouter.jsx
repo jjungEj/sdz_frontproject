@@ -20,7 +20,7 @@ import UserRouter from './UserRouter';
 
 function AppRouter() {
     const { isLoggedIn, auth } = useAuthStore(
-        useShallow((state) => ({ 
+        useShallow((state) => ({
             isLoggedIn: state.isLoggedIn,
             auth: state.auth
         })),
@@ -35,8 +35,19 @@ function AppRouter() {
             <Route path="/products" element={<ProductList />} />
             <Route path="/product/:productId" element={<ProductDetail />} />
             <Route path="/order-item" element={<OrderItem />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/order/:id" element={<OrderConfirmation />} />
+
+
+            {isLoggedIn ? (
+                <>
+                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/order/:id" element={<OrderConfirmation />} />
+                </>
+            ) : (
+                <>
+                    <Route path="/checkout" element={<Navigate to="/login" />} />
+                    <Route path="/order/:id" element={<Navigate to="/login" />} />
+                </>
+            )}
 
             {isLoggedIn ? (
                 <>

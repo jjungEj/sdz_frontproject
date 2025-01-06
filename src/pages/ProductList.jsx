@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { Box, Stack, Text, Heading, Spinner, Highlight, Card, Image, Button, HStack } from "@chakra-ui/react";
 import useSearchStore from "@/store/SearchStore";
 import { getCategoryAPI } from "@/services/CategoryAPI";
@@ -19,6 +19,7 @@ const ProductList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [categoryName, setCategoryName] = useState(null);
+  const navigate = useNavigate();
 
   const searchTerm = useSearchStore(state => state.search); // Search store에서 검색어 가져오기
   const location = useLocation();
@@ -30,6 +31,11 @@ const ProductList = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize] = useState(9);
   const abortControllerRef = useRef(null);
+
+  // 페이지 이동시 스크롤 초기화
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // 카테고리 이름 로드 함수
   const loadCategoryName = async (categoryId) => {
@@ -94,7 +100,27 @@ const ProductList = () => {
     const safePage = Math.max(1, Math.min(newPage, totalPages));
     setPage(safePage);
   };
-
+  //buy now 
+  const handleBuyNow = (product) => {
+    console.log("handleBuyNow called with product:", product);
+    try {
+      const orderItem = {
+        orderItemDetails: [{
+          productId: product.productId,
+          productName: product.productName,
+          productAmount: product.productAmount,
+          thumbnailPath: product.thumbnailPath,
+          quantity: 1,
+        }]
+      };
+      console.log("Navigating to checkout with orderItem:", orderItem);
+      // 체크아웃 페이지로 이동
+      navigate('/checkout', { state: { orderData: orderItem.orderItemDetails } });
+    } catch (error) {
+      console.error("Error processing buy now:", error);
+      // 에러 처리 로직
+    }
+  };
   const handleAddToCart = async (productId) => {
     try {
       const isLoggedIn = localStorage.getItem("access") !== null;
@@ -158,7 +184,7 @@ const ProductList = () => {
   return (
     <Box p={4}>
       <Heading as="h2" size="lg" mb={4}>
-        <Highlight query={[categoryName, searchTerm]} styles={{ color: "teal.600", fontSize: 23 }}>
+        <Highlight query={[categoryName, searchTerm]} styles={{ color: "#5526cc", fontSize: 23 }}>
           {categoryId ? `${categoryName} 상품 목록` : searchTerm ? `"${searchTerm}" 검색 결과` : "전체 상품 목록"}
         </Highlight>
       </Heading>
@@ -178,12 +204,12 @@ const ProductList = () => {
                   <Card.Body gap="2">
                     <Card.Title>{product.productName}</Card.Title>
                     <Text textStyle="2xl" fontWeight="medium" letterSpacing="tight" mt="2">
-                      &#8361;{product.productAmount}
+                      &#8361; {new Intl.NumberFormat('ko-KR').format(product.productAmount)}
                     </Text>
                   </Card.Body>
                 </Link>
                 <Card.Footer gap="2">
-                  <Button variant="solid">Buy now</Button>
+                  <Button variant="solid"onClick={() => handleBuyNow(product)}>Buy now</Button>
                   <Button variant="ghost" onClick={() => handleAddToCart(product.productId)}>
                     Add to cart
                   </Button>
