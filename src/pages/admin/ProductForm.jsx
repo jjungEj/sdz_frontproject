@@ -93,6 +93,7 @@ const ProductForm = () => {
 
   return (
       <Box display="flex" flexDirection="column" alignItems="center" w="100%">
+        <Toaster />
         <Heading as="h1" size="xl" mb={6}>
           상품 등록
         </Heading>
