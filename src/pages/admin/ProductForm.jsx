@@ -3,6 +3,7 @@ import { getCategoriesAPI } from "@/services/CategoryAPI";
 import { createProductAPI } from "@/services/ProductAPI";
 import { useNavigate } from "react-router-dom";
 import { Box, Heading, Grid, GridItem, Input, Button, Textarea, Text, Flex } from "@chakra-ui/react";
+import { Toaster, toaster } from "@/components/ui/toaster";
 
 const ProductForm = () => {
   const [productName, setProductName] = useState("");
