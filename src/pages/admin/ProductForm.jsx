@@ -70,11 +70,17 @@ const ProductForm = () => {
 
     try {
       await createProductAPI(formData);
-      alert("Product successfully created.");
+      toaster.create({
+        title: "상품이 등록되었습니다.",
+        type: "success"
+      });
       navigate("/admin/products");
     } catch (error) {
       console.error("Product creation failed:", error);
-      alert("An error occurred while creating the product. Please try again.");
+      toaster.create({
+        title: "상품 등록을 실패했습니다..",
+        type: "error"
+      });
     } finally {
       setLoading(false);
     }
