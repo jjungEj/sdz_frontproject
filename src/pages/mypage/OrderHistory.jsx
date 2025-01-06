@@ -46,7 +46,6 @@ function OrderHistory() {
         try {
           if (window.confirm('주문을 취소하시겠습니까?')) {
             await deleteOrder(orderId);
-            // 현재 orders 상태에서 취소된 주문을 필터링하여 즉시 반영
             setOrders(prevOrders => prevOrders.filter(order => order.orderId !== orderId));
             toast({
               title: "주문이 취소되었습니다.",
