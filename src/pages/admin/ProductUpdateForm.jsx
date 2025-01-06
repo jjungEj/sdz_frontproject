@@ -70,6 +70,61 @@ const ProductUpdateForm = () => {
     }
   }, [selectedCategory]);
 
+  const validateForm = () => {
+    if (!productName.trim()) {
+      toaster.create({
+        title: "상품명은 필수입니다.",
+        type: "error",
+      });
+      return false;
+    }
+
+    if (productCount < 0) {
+      toaster.create({
+        title: "상품 수량은 음수일 수 없습니다.",
+        type: "error",
+      });
+      return false;
+    }
+
+    if (productAmount < 0) {
+      toaster.create({
+        title: "상품 가격은 음수일 수 없습니다.",
+        type: "error",
+      });
+      return false;
+    }
+
+    // 카테고리가 선택되지 않은 경우
+    if (!selectedCategory) {
+      toaster.create({
+        title: "카테고리를 선택해주세요.",
+        type: "error",
+      });
+      return false;
+    }
+
+    // 색상이 선택되지 않은 경우
+    if (!productContent) {
+      toaster.create({
+        title: "색상을 선택해주세요.",
+        type: "error",
+      });
+      return false;
+    }
+
+    // 썸네일이 선택되지 않은 경우
+    if (!thumbnail) {
+      toaster.create({
+        title: "썸네일을 선택해주세요.",
+        type: "error",
+      });
+      return false;
+    }
+
+    return true;
+  };
+
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
     const newFiles = files.map((file) => ({
@@ -82,39 +137,46 @@ const ProductUpdateForm = () => {
   };
 
   const handleThumbnailSelect = (image) => {
-    if (!image.markedForDeletion) {
-      setThumbnail(thumbnail === image ? null : image);
-    } else {
+    if (image.markedForDeletion) {
       toaster.create({
-              title: "삭제 예정인 이미지는 썸네일로 선택할 수 없습니다.",
-              type: "error"
-            });
+        title: "삭제 예정인 이미지는 썸네일로 선택할 수 없습니다.",
+        type: "error"
+      });
+      return;
     }
-    setThumbnail(thumbnail === image.path ? null : image.path);
+
+    setThumbnail(thumbnail === image.path ? null : image.path); // 썸네일 토글
   };
 
   // 이미지 삭제 핸들러
-  const handleImageDelete = (image) => {
-    if (thumbnail === image) {
+  const handleImageDelete = (image, e) => {
+    e.stopPropagation(); // 이벤트 전파 방지
+
+    // 썸네일로 설정된 이미지는 삭제 불가
+    if (thumbnail === image.path) {
       toaster.create({
-              title: "썸네일로 설정된 이미지는 삭제할 수 없습니다.",
-              type: "error"
-            });
+        title: "썸네일로 설정된 이미지는 삭제할 수 없습니다.",
+        type: "error"
+      });
       return;
     }
+
+    // 삭제 상태 토글
     setImages((prev) =>
-        prev.map((img) =>
-            img === image
-                ? { ...img, markedForDeletion: !img.markedForDeletion }
-                : img
-        )
+    prev.map((img) =>
+        img === image
+            ? { ...img, markedForDeletion: !img.markedForDeletion }
+            : img
+      )
     );
   };
 
   const handleSubmit = async () => {
     if (loading) return;
+    if (!validateForm()) return;
     setLoading(true);
 
+    console.log(thumbnail);
     if (!thumbnail) {
       toaster.create({
               title: "썸네일을 선택해야 합니다.",
@@ -175,6 +237,7 @@ const ProductUpdateForm = () => {
 
   return (
       <Box display="flex" flexDirection="column" alignItems="center" w="100%">
+        <Toaster />
         <Heading as="h1" size="xl" mb={6}>
           상품 수정
         </Heading>

@@ -96,7 +96,16 @@ const ProductForm = () => {
       });
       return false;
     }
-  
+
+    // 썸네일이 선택되지 않은 경우
+    if (!thumbnail) {
+      toaster.create({
+        title: "썸네일을 선택해주세요.",
+        type: "error",
+      });
+      return false;
+    }
+
     return true;
   };
   
