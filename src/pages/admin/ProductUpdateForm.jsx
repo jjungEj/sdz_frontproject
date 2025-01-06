@@ -11,7 +11,7 @@ const ProductUpdateForm = () => {
   const [productName, setProductName] = useState("");
   const [productAmount, setProductAmount] = useState(0);
   const [productCount, setProductCount] = useState(0);
-  const [productContent, setproductContent] = useState("");
+  const [productContent, setProductContent] = useState("");
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [images, setImages] = useState([]);
@@ -27,7 +27,7 @@ const ProductUpdateForm = () => {
         setProductName(product.productName);
         setProductAmount(product.productAmount);
         setProductCount(product.productCount);
-        setproductContent(product.productContent || ""); // 컬러 필드
+        setProductContent(product.productContent || ""); // 컬러 필드
         setSelectedCategory(product.categoryId);
 
         const fetchedImages = product.imagePaths || [];
