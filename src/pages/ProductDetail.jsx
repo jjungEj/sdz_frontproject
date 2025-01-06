@@ -7,6 +7,7 @@ import { modifyOrderItem } from "@/services/OrderItemAPI"; // 장바구니 API �
 import Slider from "react-slick"; // Slider를 사용하기 위해 import 추가
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import {toaster} from "@/components/ui/toaster.jsx";
 
 const ProductDetail = () => {
     const { productId } = useParams();
@@ -74,7 +75,10 @@ const ProductDetail = () => {
                 const currentQuantity = existingItem ? existingItem.quantity : 0;
 
                 if (currentQuantity + quantity > product.productCount) {
-                    alert("재고 수량을 초과하여 상품을 추가할 수 없습니다.");
+                    toaster.create({
+                        title: "재고 수량을 초과하여 상품을 추가할 수 없습니다.",
+                        type: "warning",
+                    });
                     return;
                 }
 
@@ -93,10 +97,16 @@ const ProductDetail = () => {
                 localStorage.setItem("guestOrderItem", JSON.stringify(guestOrderItem));
             }
 
-            alert(`${quantity}개의 상품이 장바구니에 추가되었습니다!`);
+            toaster.create({
+                title: "상품이 장바구니에 추가되었습니다.",
+                type: "success",
+            });
         } catch (error) {
             console.error("Error adding to cart:", error);
-            alert("장바구니에 상품을 추가하는 데 실패했습니다.");
+            toaster.create({
+                title: "장바구니에 상품을 추가하는 데 실패했습니다.",
+                type: "error",
+            });
         }
     };
 
