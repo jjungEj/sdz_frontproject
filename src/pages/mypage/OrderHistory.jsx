@@ -53,7 +53,7 @@ function OrderHistory() {
         <Box p={10}>
           <Text fontSize="2xl" mb={5} fontWeight="bold">주문내역 조회</Text>
           <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
-          <Flex direction="column" align="center" maxW="1200px">
+          <Flex direction="column" align="center" maxW="1200px" mx="auto">
           {orders.map((orderData) => (
             <Flex 
               key={orderData.orderId}
@@ -62,7 +62,7 @@ function OrderHistory() {
               p={8}
               mb={6}
               alignItems="center"
-              width="800px"
+              Width="800px"
             >
             <img
               src={orderData.orderItems[0].orderItemDetails[0].thumbnailPath} 
@@ -88,15 +88,21 @@ function OrderHistory() {
               <Text fontSize="m" fontWeight="semibold">{getOrderStatus(orderData.orderStatus)}</Text>
 
             </Box>
-            <Button 
+            {orderData.orderStatus === "PENDING" && (
+              
+              <Button 
               colorScheme="blackAlpha"
               size="sm"
               ml={2}
               onClick={() => handleDeleteOrder(orderData.orderId)}
               alignSelf="flex-end"
             >
+
               주문취소
             </Button>
+           
+            )}
+            
             </Flex>
           ))}
 

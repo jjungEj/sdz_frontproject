@@ -127,7 +127,7 @@ async function updateOrderStatus(orderId, orderStatus) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${getAuthToken()}`
             },
-            body: JSON.stringify({ status: orderStatus }), 
+            body: JSON.stringify(orderStatus), 
         });
         if (!response.ok) {
             throw new Error('주문 상태 수정에 실패했습니다.');
