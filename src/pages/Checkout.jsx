@@ -1,12 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { Box, VStack, HStack, Grid, GridItem, Text, Input, Button } from '@chakra-ui/react';
+import { Box, VStack, HStack, Grid, GridItem, Text, Input, Button, Stack } from '@chakra-ui/react';
 import { useToast } from '@chakra-ui/toast';
 import { Radio, RadioGroup } from "@/components/ui/radio"
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Checkbox } from "@/components/ui/checkbox";
 import { createOrder } from '../services/OrderAPI.js';
+import useAuthStore from '@/store/AuthStore';
+import { useShallow } from 'zustand/react/shallow';
+import { UserInfo } from '@/services/UserAPI';
+import { VscChromeMinimize } from 'react-icons/vsc';
+import { DefaultAddressInfo } from '@/services/DeliveryAdressAPI.js';
+import { DaumAddress } from '@/pages/mypage/DeliveryAddressDialog.jsx';
 
 function Checkout() {
+    const { email } = useAuthStore(
+        useShallow((state) => ({ 
+            email: state.email,
+        })),
+    )
     const navigate = useNavigate();
     const today = new Date();
     const location = useLocation();
@@ -16,49 +27,157 @@ function Checkout() {
     const [orderId, setOrderId] = useState(null);
     const [userInfo, setUserInfo] = useState({
         email: '',
-        name: '',
+        userName: '',
         phone: '',
+        contactPrefix: '',
+        contactMid: '',
+        contactLast: '',
+
         receiverName: '',
         receiverContact: '',
+        receiverContactPrefix: '',
+        receiverContactMid: '',
+        receiverContactLast: '',
+
         detailAddress1: '',
         detailAddress2: '',
         detailAddress3: '',
         request: '',
         isDefaultAddress: false,    
+
         paymentMethod: ''  
     });
+    const [initialResponse, setInitialResponse] = useState({});
+
+    useEffect(() => {
+        if (email) {
+            UserInfo(email)
+                .then((data) => {
+                    setUserInfo(prevState => ({
+                        ...prevState,
+                        userName: data.userName,
+                        phone: data.contact,
+                        contactPrefix: data.contact.slice(0, 3),
+                        contactMid: data.contact.slice(3, 7),
+                        contactLast: data.contact.slice(7),
+                    }));
+                })
+                .catch((error) => {});
+        }
+    }, [email]);
     
+    useEffect(() => {
+        if (isSameAsCustomer) {
+            DefaultAddressInfo()
+                .then((response) => {
+                    setInitialResponse({
+                        deliveryAddressId: response.deliveryAddressId,
+                        receiverName: response.receiverName,
+                        receiverContact: response.receiverContact,
+                        receiverContactPrefix: response.receiverContact.slice(0, 3),
+                        receiverContactMid: response.receiverContact.slice(3, 7),
+                        receiverContactLast: response.receiverContact.slice(7),
+                        detailAddress1: response.deliveryAddress1,
+                        detailAddress2: response.deliveryAddress2,
+                        detailAddress3: response.deliveryAddress3,
+                        request: response.deliveryRequest,
+                        defaultCheck: response.defaultCheck,
+                    });
     
+                    setUserInfo(prevState => ({
+                        ...prevState,
+                        deliveryAddressId: response.deliveryAddressId,
+                        receiverName: response.receiverName,
+                        receiverContact: response.receiverContact,
+                        receiverContactPrefix: response.receiverContact.slice(0, 3),
+                        receiverContactMid: response.receiverContact.slice(3, 7),
+                        receiverContactLast: response.receiverContact.slice(7),
+                        detailAddress1: response.deliveryAddress1,
+                        detailAddress2: response.deliveryAddress2,
+                        detailAddress3: response.deliveryAddress3,
+                        request: response.deliveryRequest,
+                        defaultCheck: response.defaultCheck,
+                    }));
+                })
+                .catch((error) => {});
+        } else {
+            setUserInfo(prevState => ({
+                ...prevState,
+                detailAddress1: '',
+                detailAddress2: '',
+                detailAddress3: '',
+                receiverName: '',
+                receiverContact: '',
+                receiverContactPrefix: '',
+                receiverContactMid: '',
+                receiverContactLast: '',
+                request: '',
+                defaultCheck: false,
+            }));
+        }
+    }, [isSameAsCustomer]);
+
+    const handleContactChange = (prefix, mid, last) => {
+        setUserInfo(prevState => {
+            const updatedReceiverContact = prefix + mid + last;
+            return {
+                ...prevState,
+                receiverContact: updatedReceiverContact,
+                receiverContactPrefix: prefix,
+                receiverContactMid: mid,
+                receiverContactLast: last,
+            };
+        });
+    };
+
+    const hasChanges = (userInfo, initialResponse) => {
+        if (!initialResponse) return false;
+    
+        return (
+            userInfo.receiverName !== initialResponse.receiverName ||
+            userInfo.receiverContactPrefix !== initialResponse.receiverContactPrefix ||
+            userInfo.receiverContactMid !== initialResponse.receiverContactMid ||
+            userInfo.receiverContactLast !== initialResponse.receiverContactLast ||
+            userInfo.detailAddress1 !== initialResponse.detailAddress1 ||
+            userInfo.detailAddress2 !== initialResponse.detailAddress2 ||
+            userInfo.detailAddress3 !== initialResponse.detailAddress3 ||
+            userInfo.request !== initialResponse.request ||
+            userInfo.defaultCheck !== initialResponse.defaultCheck
+        );
+    };
+
+    const handleAddressSelect = (zoneCode, roadAddress) => {
+        setUserInfo(prevState => ({
+            ...prevState,
+            detailAddress1: zoneCode,
+            detailAddress2: roadAddress
+        }));
+    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setUserInfo(prev => ({
-        ...prev,
-        [name]: value
-        }));
+        setUserInfo(prev => {
+            const updatedUserInfo = { ...prev, [name]: value };
+            
+            if (name === 'receiverContactPrefix' || name === 'receiverContactMid' || name === 'receiverContactLast') {
+                const updatedReceiverContact = updatedUserInfo.receiverContactPrefix + updatedUserInfo.receiverContactMid + updatedUserInfo.receiverContactLast;
+                updatedUserInfo.receiverContact = updatedReceiverContact;
+            }
+            
+            return updatedUserInfo;
+        });
     };
 
     const handleSameAsCustomer = (e) => {
         setIsSameAsCustomer(e.target.checked);
-        if (e.target.checked) {
-        setUserInfo(prev => ({
-            ...prev,
-            receiverName: userInfo.name,
-            receiverContact: userInfo.phone
-        }));
-        }
     };
     const handlePayment = async () => {
         // 입력 검증
-        if (!userInfo.email) {
-            alert("이메일을 입력해주세요");
-            return;
-        }
         if (!userInfo.paymentMethod) {
             alert("결제 방법을 선택해주세요");
             return;
         }
-        if (!userInfo.name || !userInfo.phone ||!userInfo.detailAddress1 || !userInfo.detailAddress2 || !userInfo.detailAddress3 || !userInfo.phone) {
+        if (!userInfo.userName || !userInfo.phone ||!userInfo.detailAddress1 || !userInfo.detailAddress2 || !userInfo.detailAddress3 || !userInfo.phone) {
             alert("배송 정보를 모두 입력해주세요");
             return;
         }
@@ -69,6 +188,7 @@ function Checkout() {
         
         try {
             // 주문 데이터 생성
+            const isNewAddress = !isSameAsCustomer
             const orderPayload = {
                 orderItems: orderData.map((orderitem) => ({
                     orderItemId: orderitem.orderItemId,
@@ -82,17 +202,31 @@ function Checkout() {
                         },
                     ],
                 })),
-                deliveryAddress: {
+                deliveryAddress: isSameAsCustomer && !hasChanges(userInfo, initialResponse)
+                ? { 
+                    deliveryAddressId: initialResponse.deliveryAddressId,
+                    email: email,
+                    receiverName: initialResponse.receiverName,
+                    receiverContact: initialResponse.receiverContact,
+                    deliveryAddress1: initialResponse.detailAddress1,
+                    deliveryAddress2: initialResponse.detailAddress2,
+                    deliveryAddress3: initialResponse.detailAddress3,
+                    deliveryRequest: initialResponse.request,
+                    defaultCheck: initialResponse.defaultCheck,
+                }
+                : { 
                     deliveryAddressId: null,
-                    email: userInfo.email,
+                    email: email,
                     receiverName: userInfo.receiverName,
-                    receiverContact: userInfo.phone,
+                    receiverContact: userInfo.receiverContact,
                     deliveryAddress1: userInfo.detailAddress1,
                     deliveryAddress2: userInfo.detailAddress2,
                     deliveryAddress3: userInfo.detailAddress3,
                     deliveryRequest: userInfo.request,
                     defaultCheck: userInfo.isDefaultAddress,
                 },
+                newAddress: isNewAddress,
+                addressModified: hasChanges(userInfo, initialResponse),
                 paymentMethod: userInfo.paymentMethod,
                 totalPrice: orderData.reduce(
                     (total, item) => total + item.productAmount * item.quantity,0
@@ -213,11 +347,17 @@ function Checkout() {
                     <Text fontSize="xl" fontWeight="bold" mb={4}>주문자 정보</Text>
                 <Grid templateColumns="120px 1fr" gap={4} alignItems="center">
                     <Text>이름</Text>
-                        <Input name="name" value={userInfo.name} onChange={handleInputChange} placeholder="이름"/>
+                        <Input name="name" value={userInfo.userName} />
                     <Text>이메일</Text>
-                        <Input name="email" value={userInfo.email} onChange={handleInputChange} placeholder="이메일"/>
+                        <Input name="email" value={email} />
                     <Text>휴대전화</Text>
-                        <Input name="phone" value={userInfo.phone} onChange={handleInputChange} placeholder="휴대전화"/>
+                        <HStack>
+                            <Input width='110px' name="phone" value={userInfo.contactPrefix} />
+                            <VscChromeMinimize style={{ fontSize: '10px', fontWeight: 'bold' }}/>
+                            <Input width='110px' name="phone" value={userInfo.contactMid} />
+                            <VscChromeMinimize style={{ fontSize: '10px', fontWeight: 'bold' }}/>
+                            <Input width='110px' name="phone" value={userInfo.contactLast} />
+                        </HStack>
                 </Grid>
                 </Box>
 
@@ -225,27 +365,42 @@ function Checkout() {
           <Box borderWidth="1px" p={4} >
             <Text fontSize="xl" fontWeight="bold" mb={4}>배송 정보</Text>
             <Checkbox mb={4} onChange={handleSameAsCustomer}>
-              주문자 정보와 동일
+              기본 배송지로 배송
             </Checkbox>
             <Grid templateColumns="120px 1fr" gap={4} alignItems="center">
               <Text>받는 사람</Text>
               <Input 
                 name="receiverName" 
-                value={isSameAsCustomer ? userInfo.name : userInfo.receiverName}
-                onChange={handleInputChange} placeholder="받는사람"
-              />
+                value={userInfo.receiverName}
+                onChange={handleInputChange} />
               <Text>휴대전화</Text>
-              <Input name="receiverContact" 
-                value={isSameAsCustomer ? userInfo.phone : userInfo.receiverContact} 
-                onChange={handleInputChange} placeholder="휴대전화"/>
+                <HStack>
+                <Input width='110px' name="receiverContactPrefix" 
+                    maxLength='3'
+                    value={userInfo.receiverContactPrefix} 
+                    onChange={handleInputChange} />
+                    <VscChromeMinimize style={{ fontSize: '10px', fontWeight: 'bold' }}/>
+                    <Input width='110px' name="receiverContactMid" 
+                    maxLength='4'
+                    value={userInfo.receiverContactMid} 
+                    onChange={handleInputChange} />
+                    <VscChromeMinimize style={{ fontSize: '10px', fontWeight: 'bold' }}/>
+                    <Input width='110px' name="receiverContactLast" 
+                    maxLength='4'
+                    value={userInfo.receiverContactLast} 
+                    onChange={handleInputChange} />
+                </HStack>
               <Text>주소</Text>
               <VStack align="stretch">
-                <Input name="detailAddress1" value={userInfo.detailAddress1} onChange={handleInputChange} placeholder="우편번호" />
-                <Input name="detailAddress2" value={userInfo.detailAddress2} onChange={handleInputChange} placeholder="기본주소" />
-                <Input name="detailAddress3" value={userInfo.detailAddress3} onChange={handleInputChange} placeholder="상세주소" />
+                <HStack>
+                    <Input name="detailAddress1" value={userInfo.detailAddress1} onChange={handleInputChange} readOnly />
+                    <DaumAddress onAddressSelect={handleAddressSelect} />
+                </HStack>
+                <Input name="detailAddress2" value={userInfo.detailAddress2} onChange={handleInputChange} readOnly />
+                <Input name="detailAddress3" value={userInfo.detailAddress3} onChange={handleInputChange} />
               </VStack>
               <Text>배송 요청사항</Text>
-              <Input name="request" value={userInfo.request} onChange={handleInputChange} placeholder="입력해주세요" />
+              <Input name="request" value={userInfo.request} onChange={handleInputChange} />
             </Grid>
           </Box>
 
