@@ -27,7 +27,7 @@ function SignUp() {
     const [consent2, setConsent2] = useState(true);
     const [consent3, setConsent3] = useState(true);
     const navigate = useNavigate();
-    const { register, handleSubmit, formState: { errors }, setError  } = useForm();
+    const { register, handleSubmit, formState: { errors }, setError, clearErrors } = useForm();
 
     const isFormValid = userId && domain && userPassword && userName && nickname && contactPrefix && contactMid && contactLast;
 
@@ -39,7 +39,7 @@ function SignUp() {
                 if (response.exists) {
                     setError('email', { message: response.message });
                 } else {
-                    setError('email', { message: '' });
+                    clearErrors('email');
                 }
             })
             .catch((error) => {
@@ -59,7 +59,7 @@ function SignUp() {
                 if (response.exists) {
                     setError('nickname', { message: response.message });
                 } else {
-                    setError('nickname', { message: '' });
+                    clearErrors('nickname');
                 }
             })
             .catch((error) => {
@@ -192,7 +192,6 @@ function SignUp() {
                                 })}
                                 defaultValue= {userPassword} 
                                 onChange={e => setPassword(e.target.value)}
-                                placeholder='비밀번호를 입력하세요' 
                             />
                         </Field>
                         <Field 
