@@ -120,7 +120,7 @@ function Checkout() {
                 state: {
                   orderData: {
                     orderId: orderId,
-                    items: orderPayload.orderItems.map(item => ({
+                    items: response.orderItems.map(item => ({
                       productId: item.orderItemDetails[0].productId,
                       productName: item.orderItemDetails[0].productName,
                       productAmount: item.orderItemDetails[0].productAmount,

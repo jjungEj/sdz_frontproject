@@ -20,7 +20,7 @@ function Search() {
     };
 
     const handleSearch = (e) => {
-        if (e.key === "Enter") {
+        if (e.key === "Enter" && e.nativeEvent.isComposing === false) {
             setGlobalSearch(searchTerm);
             navigate(`/products?search=${searchTerm}`);
             setSearchTerm("");
