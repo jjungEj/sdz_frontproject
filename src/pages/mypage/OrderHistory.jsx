@@ -62,7 +62,7 @@ function OrderHistory() {
               p={8}
               mb={6}
               alignItems="center"
-              W="flex"
+              width="800px"
             >
             <img
               src={orderData.orderItems[0].orderItemDetails[0].thumbnailPath} 
