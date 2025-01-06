@@ -54,7 +54,7 @@ const UpdateSocial = ({email, handleLogout}) => {
     const [contactPrefix, setContactPrefix] = useState('');
     const [contactMid, setContactMid] = useState('');
     const [contactLast, setContactLast] = useState('');
-    const { register, handleSubmit, formState: { errors }, setError  } = useForm();
+    const { register, handleSubmit, formState: { errors }, setError, clearErrors } = useForm();
 
     useEffect(() => {
         if (email) {
@@ -84,7 +84,7 @@ const UpdateSocial = ({email, handleLogout}) => {
                 if (response.exists) {
                     setError('nickname', { message: response.message });
                 } else {
-                    setError('nickname', { message: '' });
+                    clearErrors('nickname');
                 }
             })
             .catch((error) => {
@@ -246,7 +246,7 @@ const UpdateLocal = ({email, handleLogout}) => {
     const [existingPassword, setExistingPassword] = useState('');
     const [userPassword, setUserPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const { register, handleSubmit, formState: { errors }, setError  } = useForm();
+    const { register, handleSubmit, formState: { errors }, setError, clearErrors } = useForm();
 
     useEffect(() => {
         if (email) {
@@ -270,7 +270,7 @@ const UpdateLocal = ({email, handleLogout}) => {
         checkPassword(email, existingPassword)
             .then((response)=>{
                 if (response.valid) {
-                    setError('existingPassword', { message: '' });
+                    clearErrors('existingPassword');
                 } else {
                     setError('existingPassword', { message: response.message });
                 }
@@ -293,7 +293,7 @@ const UpdateLocal = ({email, handleLogout}) => {
                 if (response.exists) {
                     setError('nickname', { message: response.message });
                 } else {
-                    setError('nickname', { message: '' });
+                    clearErrors('nickname');
                 }
             })
             .catch((error) => {
