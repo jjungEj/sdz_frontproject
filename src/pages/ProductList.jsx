@@ -209,7 +209,7 @@ const ProductList = () => {
                   </Card.Body>
                 </Link>
                 <Card.Footer gap="2">
-                  <Button variant="solid"onClick={() => handleBuyNow(product)}>Buy now</Button>
+                  <Button variant="solid" onClick={() => handleBuyNow(product)}>Buy now</Button>
                   <Button variant="ghost" onClick={() => handleAddToCart(product.productId)}>
                     Add to cart
                   </Button>

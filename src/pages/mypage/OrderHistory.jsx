@@ -1,33 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Image, Text, Flex, Button, HStack, VStack } from '@chakra-ui/react';
+import { Box, Text, Flex, Button } from '@chakra-ui/react';
 import { getUserOrders, deleteOrder } from '@/services/OrderAPI';
 import { useNavigate } from 'react-router-dom';
 
 function OrderHistory() {
     const [orders, setOrders] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(0);
-    const itemsPerPage = 10;
     const navigate = useNavigate();
+
     // 주문 데이터 가져오기
     const fetchOrders = async () => {
         try {
-            const response = await getUserOrders();
-            if (Array.isArray(response)) {
-                setOrders(response); // 데이터가 배열 형식인 경우만 설정
-                setTotalPages(Math.ceil(response.length / itemsPerPage)); // 전체 페이지 수 계산
+            const orderData = await getUserOrders();
+            if (Array.isArray(orderData)) {
+                setOrders(orderData); // 데이터가 배열 형식인 경우만 설정
             } else {
                 console.error('Invalid data format');
             }
         } catch (error) {
             console.error('Failed to fetch orders:', error);
         }
-    };
-
-    const getCurrentPageOrders = () => {
-        if (!orders || orders.length === 0) return [];
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        return orders.slice(startIndex, startIndex + itemsPerPage);
     };
 
     const getOrderStatus = (status) => {
@@ -39,80 +30,77 @@ function OrderHistory() {
         };
         return statusMap[status] || status;
     };
+
     useEffect(() => {
         fetchOrders();
-    }, [currentPage]);
+    }, []);
+
     const handleDeleteOrder = async (orderId) => {
-        try {
-          if (window.confirm('주문을 취소하시겠습니까?')) {
-            await deleteOrder(orderId);
-            setOrders(prevOrders => prevOrders.filter(order => order.orderId !== orderId));
-            toast({
-              title: "주문이 취소되었습니다.",
-              status: "success",
-              duration: 3000,
-              isClosable: true,
-            });
-          }
-        } catch (error) {
-          console.error('주문 취소 실패:', error);
-          toast({
-            title: "주문 취소에 실패했습니다.",
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-          });
+      try {
+        if (window.confirm('주문을 취소하시겠습니까?')) {
+          await deleteOrder(orderId);
+          // 현재 orders 상태에서 취소된 주문을 필터링하여 즉시 반영
+          setOrders(prevOrders => prevOrders.filter(order => order.orderId !== orderId));
+          alert("주문이 취소되었습니다.");
         }
-      };
+      } catch (error) {
+        console.error('주문 취소 실패:', error);
+        alert("주문 취소에 실패했습니다.");
+      }
+    };
 
     return (
-        <Box p={8}>
+        <Box p={10}>
           <Text fontSize="2xl" mb={5} fontWeight="bold">주문내역 조회</Text>
-          <Flex direction="column" align="center" maxW="flex">
-          {getCurrentPageOrders().map((order) => (
+          <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
+          <Flex direction="column" align="center" maxW="1200px">
+          {orders.map((orderData) => (
             <Flex 
-              key={order.orderId}
+              key={orderData.orderId}
               borderWidth="1px"
               borderRadius="lg"
               p={8}
               mb={6}
               alignItems="center"
-              maxW="flex" 
+              W="flex" 
             >
-              
               <img
-                src={`${item.thumbnailPath}`}
-                alt={item.productName}
+                src={`${orderData.thumbnailPath}`}
+                alt={orderData.productName}
                 style={{
-                  width: "75px",
-                  height: "100px",
+                  width: "150px",
+                  height: "150px",
                   objectFit: "cover",
                   borderRadius: "5px",
                   border: "1px solid #ccc",
-                }}
+                  marginRight: "80px"
+                  }}
               />
-              
-              <Box flex="1" position="relative">
-                <Flex justify="space-between" align="flex-start" mb={2}>
-                  <Text fontSize="lg" fontWeight="bold">주문번호: {order.orderId}</Text>
-                </Flex>
-                <Text fontSize="m" mb={1}>주문날짜: {order.regDate}</Text>
-                <Text fontSize="m" mb={1}>배송지: {order.deliveryAddress?.deliveryAddress1} {order.deliveryAddress?.deliveryAddress2} {order.deliveryAddress?.deliveryAddress3}</Text>
-                <Text fontSize="m" mb={1}>주문금액: {order.totalPrice.toLocaleString()}원</Text>
-                <Text fontSize="m" fontWeight="semibold">{getOrderStatus(order.orderStatus)}</Text>
-              </Box>
-              <Button 
-                colorScheme="blackAlpha"
-                size="sm"
-                ml={2}
-                onClick={() => handleDeleteOrder(order.orderId)}
-                alignSelf="flex-end"
-              >주문취소</Button>
+    
+            <Box width="100%" position="relative">
+            <Flex justify="space-between" align="flex-start" mb={2}>
+              <Text fontSize="lg" fontWeight="bold">주문번호: {orderData.orderId}</Text>
             </Flex>
-          ))}
+              <Text fontSize="m" mb={1}>주문날짜: {orderData.regDate}</Text>
+              <Text fontSize="m" mb={1}>배송지: {orderData.deliveryAddress?.deliveryAddress1} {orderData.deliveryAddress?.deliveryAddress2} {orderData.deliveryAddress?.deliveryAddress3}</Text>
+              <Text fontSize="m" mb={1}>주문금액: {orderData.totalPrice.toLocaleString()}원</Text>
+              <Text fontSize="m" fontWeight="semibold">{getOrderStatus(orderData.orderStatus)}</Text>
+            </Box>
+            <Button 
+              colorScheme="blackAlpha"
+              size="sm"
+              ml={2}
+              onClick={() => handleDeleteOrder(orderData.orderId)}
+              alignSelf="flex-end"
+            >주문취소</Button>
+            </Flex>
+            ))}
+            {orders.length === 0 && (
+              <Text>주문 내역이 없습니다.</Text>
+            )}
           </Flex>
+          <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
         </Box>
-      
     );
 }
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Box, Text, Heading, Spinner, Image, VStack, Button, HStack, Card, Flex } from "@chakra-ui/react";
 import { NumberInputField, NumberInputRoot } from "@/components/ui/number-input";
 import { fetchProductAPI } from "@/services/ProductAPI";
@@ -14,7 +14,7 @@ const ProductDetail = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [quantity, setQuantity] = useState(1);
-
+    const navigate = useNavigate();
     // 페이지 이동시 스크롤 초기화
       useEffect(() => {
         window.scrollTo(0, 0);
@@ -41,7 +41,27 @@ const ProductDetail = () => {
 
         fetchProduct();
     }, [productId]);
-
+    //buy now 
+  const handleBuyNow = (product) => {
+    console.log("handleBuyNow called with product:", product);
+    try {
+      const orderItem = {
+        orderItemDetails: [{
+          productId: product.productId,
+          productName: product.productName,
+          productAmount: product.productAmount,
+          thumbnailPath: product.thumbnailPath,
+          quantity: 1,
+        }]
+      };
+      console.log("Navigating to checkout with orderItem:", orderItem);
+      // 체크아웃 페이지로 이동
+      navigate('/checkout', { state: { orderData: orderItem.orderItemDetails } });
+    } catch (error) {
+      console.error("Error processing buy now:", error);
+      // 에러 처리 로직
+    }
+  };
     const handleAddToCart = async () => {
         try {
             const isLoggedIn = localStorage.getItem("access") !== null;
@@ -161,7 +181,12 @@ const ProductDetail = () => {
                                         <NumberInputField fontWeight="semibold" />
                                     </NumberInputRoot>
                                     <HStack>
-                                        <Button variant="solid">Buy now</Button>
+                                        <Button 
+                                            variant="solid"
+                                            onClick={() => handleBuyNow(product)}
+                                        >
+                                            Buy now
+                                        </Button>
                                         <Button
                                             variant="solid"
                                             onClick={handleAddToCart}

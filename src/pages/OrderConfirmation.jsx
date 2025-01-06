@@ -7,7 +7,6 @@ function OrderConfirmation() {
     const { orderId } = useParams(); // URL 경로에서 orderId 추출
     const location = useLocation();
     const navigate = useNavigate();
-
     const [orderData, setOrderData] = useState(location.state?.orderData || null);
     const [loading, setLoading] = useState(!location.state?.orderData); // API 호출 여부
     const [error, setError] = useState(null);
@@ -22,11 +21,11 @@ function OrderConfirmation() {
     useEffect(() => {
         async function fetchOrderDetail() {
           try {
-            if (location.state?.orderData) {
-              setOrderData(location.state.orderData);
-            } else {
+            if (!location.state?.orderData) { // location.state에 orderData가 없으면 API 호출
               const data = await getOrderDetail(orderId);
               setOrderData(data);
+            } else {
+              setOrderData(location.state.orderData); // 이미 state에 전달된 데이터를 사용
             }
           } catch (err) {
             setError('주문 상세 정보를 불러오는 데 실패했습니다.');
@@ -36,19 +35,20 @@ function OrderConfirmation() {
         }
         fetchOrderDetail();
       }, [orderId, location.state]);
+      console.log("state확인",location.state);
     
     if (loading) return <Text>주문 정보를 불러오는 중입니다...</Text>;
     if (error) return <Text>{error}</Text>;
     if (!orderData) return <Text>주문 정보를 찾을 수 없습니다.</Text>;
-     
-    console.log(orderData)
+    console.log(orderData);
     const handleGoToOrderList = () => {
         navigate('/mypage/orders'); // 주문 목록 페이지로 이동
     };
 
     return (
         <Box maxW="800px" mx="auto" p={8}>
-            <Text fontSize="2xl" fontWeight="bold" mb={8}>주문 확인</Text>
+            <Text fontSize="2xl" fontWeight="bold" mb={4}>주문 확인</Text>
+            <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
             {orderData ? (
                 <VStack spacing={6} align="stretch">
                     {/* 상품 정보 테이블 */}
@@ -61,13 +61,13 @@ function OrderConfirmation() {
                                 <Text textAlign="center">배송형태</Text>
                             </Grid>
                             {Array.isArray(orderData.items) && orderData.items.length > 0 ? (
-    orderData.items.map((item) => (
-        <Grid key={item.productId} templateColumns="2fr 1fr 1fr 1fr" p={4} gap={4} borderBottomWidth="1px" alignItems="center">
+    orderData.items.map((orderData) => (
+        <Grid key={orderData.productId} templateColumns="2fr 1fr 1fr 1fr" p={4} gap={4} borderBottomWidth="1px" alignItems="center">
             <HStack>
                 <Box>
                 <img
-                        src={`${item.thumbnailPath}`}
-                        alt={item.productName}
+                        src={`${orderData.thumbnailPath}`}
+                        alt={orderData.productName}
                         style={{
                             width: "75px",
                             height: "100px",
@@ -77,10 +77,10 @@ function OrderConfirmation() {
                         }}
                     />
                 </Box>
-                <Text textAlign="center">{item.productName}</Text>
+                <Text textAlign="center">{orderData.productName}</Text>
             </HStack>
-            <Text textAlign="center">{item.productAmount?.toLocaleString()}원</Text>
-            <Text textAlign="center">{item.quantity}</Text>
+            <Text textAlign="center">{orderData.productAmount?.toLocaleString()}원</Text>
+            <Text textAlign="center">{orderData.quantity}</Text>
             <Text textAlign="center">택배 배송</Text>
         </Grid>
     ))
