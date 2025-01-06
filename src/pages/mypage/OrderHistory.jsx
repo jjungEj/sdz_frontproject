@@ -62,29 +62,31 @@ function OrderHistory() {
               p={8}
               mb={6}
               alignItems="center"
-              W="flex" 
+              W="flex"
             >
-              <img
-                src={`${orderData.thumbnailPath}`}
-                alt={orderData.productName}
-                style={{
-                  width: "150px",
-                  height: "150px",
-                  objectFit: "cover",
-                  borderRadius: "5px",
-                  border: "1px solid #ccc",
-                  marginRight: "80px"
-                  }}
-              />
-    
+            <img
+              src={orderData.orderItems[0].orderItemDetails[0].thumbnailPath} 
+              alt={orderData.orderItems[0].orderItemDetails[0].productName}
+              style={{
+                width: "150px",
+                height: "150px",
+                objectFit: "cover",
+                borderRadius: "5px",
+                border: "1px solid #ccc",
+                marginRight: "80px"
+              }}
+            />
             <Box width="100%" position="relative">
-            <Flex justify="space-between" align="flex-start" mb={2}>
-              <Text fontSize="lg" fontWeight="bold">주문번호: {orderData.orderId}</Text>
-            </Flex>
+              <Flex justify="space-between" align="flex-start" mb={2}>
+                <Text fontSize="lg" fontWeight="bold">주문번호: {orderData.orderId}</Text>
+              </Flex>
               <Text fontSize="m" mb={1}>주문날짜: {orderData.regDate}</Text>
-              <Text fontSize="m" mb={1}>배송지: {orderData.deliveryAddress?.deliveryAddress1} {orderData.deliveryAddress?.deliveryAddress2} {orderData.deliveryAddress?.deliveryAddress3}</Text>
+              <Text fontSize="m" mb={1}>
+                배송지: {orderData.deliveryAddress?.deliveryAddress1} {orderData.deliveryAddress?.deliveryAddress2} {orderData.deliveryAddress?.deliveryAddress3}
+              </Text>
               <Text fontSize="m" mb={1}>주문금액: {orderData.totalPrice.toLocaleString()}원</Text>
               <Text fontSize="m" fontWeight="semibold">{getOrderStatus(orderData.orderStatus)}</Text>
+
             </Box>
             <Button 
               colorScheme="blackAlpha"
@@ -92,12 +94,12 @@ function OrderHistory() {
               ml={2}
               onClick={() => handleDeleteOrder(orderData.orderId)}
               alignSelf="flex-end"
-            >주문취소</Button>
+            >
+              주문취소
+            </Button>
             </Flex>
-            ))}
-            {orders.length === 0 && (
-              <Text>주문 내역이 없습니다.</Text>
-            )}
+          ))}
+
           </Flex>
           <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
         </Box>
