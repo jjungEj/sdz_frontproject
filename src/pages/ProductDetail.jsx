@@ -51,7 +51,7 @@ const ProductDetail = () => {
           productName: product.productName,
           productAmount: product.productAmount,
           thumbnailPath: product.thumbnailPath,
-          quantity: 1,
+          quantity: quantity,
         }]
       };
       console.log("Navigating to checkout with orderItem:", orderItem);
