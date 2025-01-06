@@ -103,9 +103,9 @@ function Header() {
       <VStack justify="center" mb={3}>
         <Link to="/" _focus={{ outline: "none" }}>
           <Image
-            src="/assets/elice_logo.webp"
+            src="/assets/logo.png"
             alt="logo"
-            width="100px"
+            width="100%"
             height="100px"
           />
         </Link>
