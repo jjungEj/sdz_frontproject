@@ -3,19 +3,22 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Box, Heading, Grid, GridItem, Input, Button, Text, Flex } from "@chakra-ui/react";
 import { getProductByIdAPI, updateProductAPI } from "@/services/ProductAPI";
 import { getCategoriesAPI } from "@/services/CategoryAPI";
+import { Toaster, toaster } from "@/components/ui/toaster";
+import colorOptions from "@/data/colorOptions.js";
 
 const ProductUpdateForm = () => {
   const { productId } = useParams();
   const [productName, setProductName] = useState("");
   const [productAmount, setProductAmount] = useState(0);
   const [productCount, setProductCount] = useState(0);
-  const [productContent, setproductContent] = useState("");
+  const [productContent, setProductContent] = useState("");
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [images, setImages] = useState([]);
   const [thumbnail, setThumbnail] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [availableColors, setAvailableColors] = useState([]);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -24,7 +27,7 @@ const ProductUpdateForm = () => {
         setProductName(product.productName);
         setProductAmount(product.productAmount);
         setProductCount(product.productCount);
-        setproductContent(product.productContent || ""); // 컬러 필드
+        setProductContent(product.productContent || ""); // 컬러 필드
         setSelectedCategory(product.categoryId);
 
         const fetchedImages = product.imagePaths || [];
@@ -45,7 +48,8 @@ const ProductUpdateForm = () => {
     const fetchCategories = async () => {
       try {
         const data = await getCategoriesAPI();
-        setCategories(data);
+        const subCategories = data.filter(category => category.parentId !== null);
+        setCategories(subCategories);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
         alert("카테고리를 불러오는 데 실패했습니다.");
@@ -55,6 +59,16 @@ const ProductUpdateForm = () => {
     fetchProduct();
     fetchCategories();
   }, [productId]);
+
+  useEffect(() => {
+    // 카테고리가 선택될 때마다 색상 업데이트
+    if (selectedCategory) {
+      setAvailableColors(colorOptions[selectedCategory] || []);
+      console.log(selectedCategory);
+    } else {
+      setAvailableColors([]);
+    }
+  }, [selectedCategory]);
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
@@ -68,17 +82,24 @@ const ProductUpdateForm = () => {
   };
 
   const handleThumbnailSelect = (image) => {
-    if (image.markedForDeletion) {
-      alert("삭제 예정 이미지는 썸네일로 선택할 수 없습니다.");
-      return;
+    if (!image.markedForDeletion) {
+      setThumbnail(thumbnail === image ? null : image);
+    } else {
+      toaster.create({
+              title: "삭제 예정인 이미지는 썸네일로 선택할 수 없습니다.",
+              type: "error"
+            });
     }
     setThumbnail(thumbnail === image.path ? null : image.path);
   };
 
-  const handleImageDelete = (image, e) => {
-    e.stopPropagation();
-    if (thumbnail === image.path) {
-      alert("썸네일로 설정된 이미지는 삭제할 수 없습니다.");
+  // 이미지 삭제 핸들러
+  const handleImageDelete = (image) => {
+    if (thumbnail === image) {
+      toaster.create({
+              title: "썸네일로 설정된 이미지는 삭제할 수 없습니다.",
+              type: "error"
+            });
       return;
     }
     setImages((prev) =>
@@ -95,7 +116,10 @@ const ProductUpdateForm = () => {
     setLoading(true);
 
     if (!thumbnail) {
-      alert("썸네일을 선택해야 합니다.");
+      toaster.create({
+              title: "썸네일을 선택해야 합니다.",
+              type: "error"
+            });
       setLoading(false);
       return;
     }
@@ -129,11 +153,17 @@ const ProductUpdateForm = () => {
     try {
       console.log("Submitting data:", formData); // 요청 데이터 확인
       await updateProductAPI(productId, formData);
-      alert("상품이 성공적으로 수정되었습니다.");
+      toaster.create({
+              title: "상품이 성공적으로 수정되었습니다.",
+              type: "success"
+            });
       navigate("/admin/products");
     } catch (error) {
       console.error("Product update failed:", error);
-      alert("상품 수정 중 오류가 발생했습니다. 다시 시도해주세요.");
+      toaster.create({
+              title: "상품 수정 중 오류가 발생했습니다. 다시 시도해주세요.",
+              type: "error"
+            });
     } finally {
       setLoading(false);
     }
@@ -218,19 +248,27 @@ const ProductUpdateForm = () => {
               </Box>
             </GridItem>
 
-            {/* 컬러 */}
+            {/* 색상 */}
             <GridItem colSpan={1} display="flex" alignItems="center" justifyContent="center">
-              <Text fontWeight="bold">컬러</Text>
+              <Text fontWeight="bold">색상</Text>
             </GridItem>
             <GridItem colSpan={5}>
-              <Box as="select" id="productContent" value={productContent} onChange={(e) => setproductContent(e.target.value)} w="100%" p={2}>
+              <Box
+                  as="select"
+                  id="productContent"
+                  value={productContent}
+                  onChange={(e) => setProductContent(e.target.value)}
+                  w="100%"
+                  p={2}
+              >
                 <option value="" disabled>
                   선택하세요
                 </option>
-                <option value="웜그레이">웜그레이</option>
-                <option value="챠콜">챠콜</option>
-                <option value="딥그린">딥그린</option>
-                <option value="아이보리">아이보리</option>
+                {availableColors.map((color, index) => (
+                    <option key={index} value={color}>
+                      {color}
+                    </option>
+                ))}
               </Box>
             </GridItem>
 

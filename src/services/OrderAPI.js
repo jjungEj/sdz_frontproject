@@ -98,10 +98,10 @@ async function deleteOrder(orderId) {
 }
 
 // 관리자 모든 주문 조회
-async function getAllOrders(page, pageSize ) {
+async function getAllOrders() {
     try {
-        const response = await fetch(`${url}/admin?page=${page}&size=${pageSize}`, {
-             method:'GET',
+        const response = await fetch(`${url}/admin`, {
+            method:'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${getAuthToken()}`
@@ -109,16 +109,14 @@ async function getAllOrders(page, pageSize ) {
         });
         if (!response.ok) throw new Error('모든 주문 목록을 불러오지 못했습니다.');
         const data = await response.json();
-        return {
-            dtoList: data, // 서버에서 받은 데이터를 dtoList로 설정
-            total: data.length // 현재는 임시로 데이터 길이를 total로 설정
-        };
+        console.log('API 응답 데이터:', data); // 응답 데이터 로그 출력
+        
+        return data;  // 반환값이 배열 형식인지 확인
     } catch (error) {
         console.error('getAllOrders 에러:', error);
         throw error;
     }
 }
-
 
 // 관리자 주문 상태 수정
 async function updateOrderStatus(orderId, orderStatus) {
@@ -146,20 +144,15 @@ async function updateOrderStatus(orderId, orderStatus) {
 
 
 // 관리자 주문 삭제
-async function deleteOrderByAdmin(orderIds) {
+async function deleteOrderByAdmin(orderId) {
     try {
-        const response = await fetch(`${url}/admin/orders`, {
+        const response = await fetch(`${url}/admin/${orderId}`, {
             method: 'DELETE',
             headers: {
-                'Content-Type': 'application/json',
                 'Authorization': `Bearer ${getAuthToken()}`
             },
-            body: JSON.stringify({ orderIds: orderIds })
         });
-        if (!response.ok) {
-            const errorText = await response.text();  // 에러 메시지 받기
-            throw new Error(`관리자 주문 삭제에 실패했습니다: ${errorText}`);
-        }
+        if (!response.ok) throw new Error('관리자 주문 삭제에 실패했습니다.');
     } catch (error) {
         console.error('deleteOrderByAdmin 에러:', error);
         throw error;

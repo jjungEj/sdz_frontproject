@@ -74,6 +74,10 @@ function ProductManagement() {
         loadProducts(page, pageSize, debouncedSearchTerm);
     }, [page, pageSize, debouncedSearchTerm]);
 
+    useEffect(() => {
+        setPage(1);
+      }, [debouncedSearchTerm]);
+
     const handleDelete = async (productId) => {
         try {
             await deleteProduct(productId);
@@ -87,7 +91,7 @@ function ProductManagement() {
         } catch (error) {
             console.error(error);
             toaster.create({
-                title: "주문에 존재하는 상품이 있습니다..",
+                title: "주문에 존재하는 상품이 있습니다.",
                 type: "error"
             });
         }

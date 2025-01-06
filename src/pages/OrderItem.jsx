@@ -153,7 +153,7 @@ function OrderItem() {
                         }}
                     />
                     <VStack align="flex-start" spacing={1}>
-                        <Text as={RouterLink} to={`/product/${item.productId}`} fontWeight="bold" color="teal.500">
+                        <Text as={RouterLink} to={`/product/${item.productId}`} fontWeight="bold">
                             {item.productName}
                         </Text>
                         <Text fontSize="xs" color="gray.600">
