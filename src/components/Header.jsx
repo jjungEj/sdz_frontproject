@@ -89,7 +89,12 @@ function Header() {
               )}
             </>
           )}
-          <CartDrawer />
+          <ChakraLink asChild _focus={{ outline: "none" }} fontSize="sm" margin="3">
+            <Button as={Link} to="/order-item" variant="link" fontSize="sm" margin="3" padding="0">
+              장바구니
+            </Button>
+          </ChakraLink>
+          {/* <CartDrawer /> */}
         </HStack>
       </HStack>
       <HStack justify="flex-end" mb={3}>

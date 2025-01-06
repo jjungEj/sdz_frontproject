@@ -51,8 +51,8 @@ function OrderManagement() {
             <Toaster />
             <Heading as="h1" size="xl" mb={3}>주문 관리</Heading>
             <Box borderBottom={{ base: "1px solid black", _dark: "1px solid white" }} mb={3} />
-            <Box display="flex" justifyContent="center">
-                <Table.Root width="100%" mt={3} >
+            <Box display="flex" justifyContent="center" margin="5">
+                <Table.Root width='100%' variant="outline"  borderRadius='2xl'>
                     <Table.Header>
                         <Table.Row >
                             <Table.ColumnHeader fontSize="md"fontWeight="bold">아이디</Table.ColumnHeader>

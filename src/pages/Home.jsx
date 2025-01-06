@@ -16,6 +16,11 @@ function Home() {
     getCategories();
   }, []);
 
+  // 페이지 이동시 스크롤 초기화
+    useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
+  
   return (
     <>
       <Box marginBottom="20">

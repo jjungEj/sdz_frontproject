@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import {fetchOrderItemData, modifyOrderItem, clearOrderItem, mergeGuestOrderItem} from "@/services/OrderItemAPI";
+import { fetchOrderItemData, modifyOrderItem, clearOrderItem, mergeGuestOrderItem } from "@/services/OrderItemAPI";
 import { Box, HStack, VStack, Heading, Table, Button, Text } from '@chakra-ui/react';
 import { Toaster, toaster } from "@/components/ui/toaster";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -12,6 +12,11 @@ function OrderItem() {
     const navigate = useNavigate();
     const hasSelection = selectedItems.length > 0;
     const indeterminate = hasSelection && selectedItems.length < OrderItemData?.orderItemDetails.length;
+
+    // 페이지 이동시 스크롤 초기화
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     useEffect(() => {
         const initializeCart = async () => {
@@ -205,10 +210,10 @@ function OrderItem() {
                         </HStack>
                         <Heading mr={1}>
                             총 결제금액: {OrderItemData.orderItemDetails.reduce((total, item) => {
-                            return selectedItems.includes(item.productId)
-                                ? total + item.productAmount * item.quantity
-                                : total;
-                        }, 0).toLocaleString()} 원
+                                return selectedItems.includes(item.productId)
+                                    ? total + item.productAmount * item.quantity
+                                    : total;
+                            }, 0).toLocaleString()} 원
                         </Heading>
                     </HStack>
                     <Button w="100%" onClick={handleCheckout}>{selectedItems.length}개 상품 구매하기</Button>

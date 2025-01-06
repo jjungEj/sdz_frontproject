@@ -31,6 +31,11 @@ const ProductList = () => {
   const [pageSize] = useState(9);
   const abortControllerRef = useRef(null);
 
+  // 페이지 이동시 스크롤 초기화
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // 카테고리 이름 로드 함수
   const loadCategoryName = async (categoryId) => {
     try {
@@ -158,7 +163,7 @@ const ProductList = () => {
   return (
     <Box p={4}>
       <Heading as="h2" size="lg" mb={4}>
-        <Highlight query={[categoryName, searchTerm]} styles={{ color: "teal.600", fontSize: 23 }}>
+        <Highlight query={[categoryName, searchTerm]} styles={{ color: "#5526cc", fontSize: 23 }}>
           {categoryId ? `${categoryName} 상품 목록` : searchTerm ? `"${searchTerm}" 검색 결과` : "전체 상품 목록"}
         </Highlight>
       </Heading>
