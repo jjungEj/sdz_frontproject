@@ -7,7 +7,7 @@ import { modifyOrderItem } from "@/services/OrderItemAPI"; // 장바구니 API �
 import Slider from "react-slick"; // Slider를 사용하기 위해 import 추가
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import {toaster} from "@/components/ui/toaster.jsx";
+import {Toaster, toaster} from "@/components/ui/toaster.jsx";
 
 const ProductDetail = () => {
     const { productId } = useParams();
@@ -137,6 +137,7 @@ const ProductDetail = () => {
 
     return (
         <Box>
+            <Toaster />
             {product ? (
                 <>
                     {/* 상품 상세 카드 */}
