@@ -12,6 +12,7 @@ import {
   PaginationItems,
   PaginationNextTrigger,
 } from "@/components/ui/pagination";
+import { Toaster, toaster } from "@/components/ui/toaster";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -130,7 +131,10 @@ const ProductList = () => {
       } else {
         const product = products.find(p => p.productId === productId);
         if (!product) {
-          alert("상품 정보를 찾을 수 없습니다.");
+          toaster.create({
+            title: "상품 정보를 찾을 수 없습니다.",
+            type: "error",
+          });
           return;
         }
 
@@ -139,7 +143,10 @@ const ProductList = () => {
         const currentQuantity = existingItem ? existingItem.quantity : 0;
 
         if (currentQuantity + 1 > product.productCount) {
-          alert("재고 수량을 초과하여 상품을 추가할 수 없습니다.");
+          toaster.create({
+            title: "재고 수량을 초과하여 상품을 추가할 수 없습니다.",
+            type: "warning",
+          });
           return;
         }
 
@@ -158,10 +165,16 @@ const ProductList = () => {
         localStorage.setItem('guestOrderItem', JSON.stringify(guestOrderItem));
       }
 
-      alert("상품이 장바구니에 추가되었습니다!");
+      toaster.create({
+        title: "상품이 장바구니에 추가되었습니다!",
+        type: "success",
+      });
     } catch (error) {
       console.error("Error adding to cart:", error);
-      alert("장바구니에 상품을 추가하는 데 실패했습니다.");
+      toaster.create({
+        title: "장바구니에 상품을 추가하는 데 실패했습니다.",
+        type: "error",
+      });
     }
   };
 
@@ -183,6 +196,7 @@ const ProductList = () => {
 
   return (
     <Box p={4}>
+      <Toaster />
       <Heading as="h2" size="lg" mb={4}>
         <Highlight query={[categoryName, searchTerm]} styles={{ color: "#5526cc", fontSize: 23 }}>
           {categoryId ? `${categoryName} 상품 목록` : searchTerm ? `"${searchTerm}" 검색 결과` : "전체 상품 목록"}
