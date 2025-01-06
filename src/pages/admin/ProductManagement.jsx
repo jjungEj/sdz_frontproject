@@ -80,10 +80,16 @@ function ProductManagement() {
             const updatedItems = allItems.filter((item) => item.productId !== productId);
             setAllItems(updatedItems);
             setFilteredItems(updatedItems);
-            toaster.success("상품이 삭제되었습니다.");
+            toaster.create({
+                title: "삭제되었습니다.",
+                type: "success"
+            });
         } catch (error) {
             console.error(error);
-            toaster.error("상품 삭제에 실패했습니다.");
+            toaster.create({
+                title: "주문에 존재하는 상품이 있습니다..",
+                type: "error"
+            });
         }
     };
 
@@ -94,11 +100,17 @@ function ProductManagement() {
                 const updatedItems = allItems.filter((item) => !selection.includes(item.productId));
                 setAllItems(updatedItems);
                 setFilteredItems(updatedItems);
-                toaster.success("선택된 상품들이 삭제되었습니다.");
+                toaster.create({
+                    title: "삭제되었습니다.",
+                    type: "success"
+                });
                 setSelection([]);
             } catch (error) {
                 console.error(error);
-                toaster.error("선택된 상품 삭제에 실패했습니다.");
+                toaster.create({
+                    title: "주문에 존재하는 상품이 있습니다..",
+                    type: "error"
+                });
             }
         }
     };
