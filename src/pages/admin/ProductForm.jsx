@@ -171,6 +171,30 @@ const ProductForm = () => {
               </Box>
             </GridItem>
 
+            {/* 색상 */}
+            <GridItem colSpan={1} display="flex" alignItems="center" justifyContent="center">
+              <Text fontWeight="bold">색상</Text>
+            </GridItem>
+            <GridItem colSpan={5}>
+              <Box
+                  as="select"
+                  id="productContent"
+                  value={productContent}
+                  onChange={(e) => setProductContent(e.target.value)}
+                  w="100%"
+                  p={2}
+              >
+                <option value="" disabled>
+                  선택하세요
+                </option>
+                {availableColors.map((color, index) => (
+                    <option key={index} value={color}>
+                      {color}
+                    </option>
+                ))}
+              </Box>
+            </GridItem>
+
             {/* 이미지 */}
             <GridItem colSpan={1} display="flex" alignItems="center" justifyContent="center">
               <Text fontWeight="bold">이미지</Text>
@@ -205,30 +229,6 @@ const ProductForm = () => {
                   ))}
                 </Flex>
                 <Input id="ProductImage" type="file" multiple onChange={handleFileChange} accept="image/*" />
-              </Box>
-            </GridItem>
-
-            {/* 색상 */}
-            <GridItem colSpan={1} display="flex" alignItems="center" justifyContent="center">
-              <Text fontWeight="bold">색상</Text>
-            </GridItem>
-            <GridItem colSpan={5}>
-              <Box
-                  as="select"
-                  id="productContent"
-                  value={productContent}
-                  onChange={(e) => setProductContent(e.target.value)}
-                  w="100%"
-                  p={2}
-              >
-                <option value="" disabled>
-                  선택하세요
-                </option>
-                {availableColors.map((color, index) => (
-                    <option key={index} value={color}>
-                      {color}
-                    </option>
-                ))}
               </Box>
             </GridItem>
           </Grid>
