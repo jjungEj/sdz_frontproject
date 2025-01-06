@@ -120,6 +120,17 @@ function OrderItem() {
             console.error("OrderItemData is not available");
             return;
         }
+
+        if (selectedItems.length === 0) {
+            toaster.create({
+                title: "구매할 상품을 선택해주세요.",
+                type: "error",
+                isClosable: true,
+                duration: 3000,
+            });
+            return;
+        }
+
         const selectedProducts = OrderItemData.orderItemDetails.filter(item => selectedItems.includes(item.productId));
         navigate('/checkout', { state: { orderData: selectedProducts } });
     };
