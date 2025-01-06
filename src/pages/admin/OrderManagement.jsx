@@ -102,7 +102,7 @@ function OrderManagement() {
                     </Table.Header>
                     <Table.Body>
                         {orders.map((order) => ( 
-                            <Table.Row >
+                            <Table.Row key={order.orderId}>
                                 <Table.Cell>{order.orderId}</Table.Cell>
                                 <Table.Cell>{order.email}</Table.Cell>
                                 <Table.Cell>{order.deliveryAddress.receiverName}</Table.Cell> 
