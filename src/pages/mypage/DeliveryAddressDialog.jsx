@@ -196,7 +196,7 @@ export const DeliveryAddressDialog = ({ fetchDeliveryAddresses }) => {
   )
 }
 
-export const DeliveryAddressUpdateDialog = ({ selectedAddressId,       fetchDeliveryAddresses }) => {
+export const DeliveryAddressUpdateDialog = ({ selectedAddressId, fetchDeliveryAddresses }) => {
   const [deliveryAddress1, setDeliveryAddress1] = useState('');
   const [deliveryAddress2, setDeliveryAddress2] = useState('');
   const [deliveryAddress3, setDeliveryAddress3] = useState('');
@@ -228,7 +228,7 @@ export const DeliveryAddressUpdateDialog = ({ selectedAddressId,       fetchDeli
               .catch((error) => {
               });
       }
-  });
+  }, [selectedAddressId]);
 
   const handleAddressSelect = (zoneCode, roadAddress) => {
     setDeliveryAddress1(zoneCode);

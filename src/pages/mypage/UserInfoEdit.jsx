@@ -47,7 +47,6 @@ export default UserInfoEdit;
 
 const UpdateSocial = ({email, handleLogout}) => {
     const navigate = useNavigate();
-    const [userInfo, setUserInfo] = useState({});
     const [userName, setUserName] = useState('');
     const [nickname, setNickname] = useState('');
     const [contact, setContact] = useState('');
@@ -236,7 +235,6 @@ const UpdateSocial = ({email, handleLogout}) => {
 
 const UpdateLocal = ({email, handleLogout}) => {
     const navigate = useNavigate();
-    const [userInfo, setUserInfo] = useState({});
     const [userName, setUserName] = useState('');
     const [nickname, setNickname] = useState('');
     const [contact, setContact] = useState('');

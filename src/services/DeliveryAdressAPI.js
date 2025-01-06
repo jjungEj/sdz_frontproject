@@ -41,6 +41,22 @@ export const AddressInfo = async (deliveryAddressId) => {
   }
 };
 
+export const DefaultAddressInfo = async () => {
+  try {
+    const response = await fetch(`${url}/default`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('access')}`,
+      },
+    });
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const createNewAddress = async (newAddress) => {
   try {
     const response = await fetch(url, {
