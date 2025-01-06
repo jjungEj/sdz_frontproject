@@ -54,12 +54,61 @@ const ProductForm = () => {
     setImages(filePreviews);
   };
 
+  const validateForm = () => {
+    if (!productName.trim()) {
+      toaster.create({
+        title: "상품명은 필수입니다.",
+        type: "error",
+      });
+      return false;
+    }
+  
+    if (productCount < 0) {
+      toaster.create({
+        title: "상품 수량은 음수일 수 없습니다.",
+        type: "error",
+      });
+      return false;
+    }
+  
+    if (productAmount < 0) {
+      toaster.create({
+        title: "상품 가격은 음수일 수 없습니다.",
+        type: "error",
+      });
+      return false;
+    }
+  
+    // 카테고리가 선택되지 않은 경우
+    if (!selectedCategory) {
+      toaster.create({
+        title: "카테고리를 선택해주세요.",
+        type: "error",
+      });
+      return false;
+    }
+  
+    // 색상이 선택되지 않은 경우
+    if (!productContent) {
+      toaster.create({
+        title: "색상을 선택해주세요.",
+        type: "error",
+      });
+      return false;
+    }
+  
+    return true;
+  };
+  
+
   const handleThumbnailSelect = (image) => {
     setThumbnail(thumbnail === image ? null : image);
   };
 
   const handleSubmit = async () => {
     if (loading) return;
+    if (!validateForm()) return;
+
     setLoading(true);
 
     const formData = new FormData();
@@ -91,7 +140,7 @@ const ProductForm = () => {
     } catch (error) {
       console.error("Product creation failed:", error);
       toaster.create({
-        title: "상품 등록을 실패했습니다..",
+        title: "상품 등록을 실패했습니다.",
         type: "error"
       });
     } finally {
