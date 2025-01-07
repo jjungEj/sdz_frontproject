@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, VStack, HStack, Grid, GridItem, Text, Input, Button, Stack } from '@chakra-ui/react';
+import { Box, VStack, HStack, Grid, GridItem, Text, Input, Button, Flex } from '@chakra-ui/react';
 import { useToast } from '@chakra-ui/toast';
 import { Radio, RadioGroup } from "@/components/ui/radio"
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -346,7 +346,7 @@ function Checkout() {
                         </Grid>
                     </Box>
                 </Box>
-                <Box maxW="1200px" mx="auto" p={6}>
+                <Box maxWidth="1200px" mx="auto" p={3}>
                 <Grid templateColumns="2fr 1fr" gap={6}>
                 <VStack align="stretch" spacing={8}>
                 {/* 주문자 정보 */}
@@ -411,21 +411,11 @@ function Checkout() {
             </Grid>
           </Box>
 
-          {/* 결제 방법 */} 
-          <RadioGroup
-            value={userInfo.paymentMethod}
-            onValueChange={handlePaymentMethodChange}
-          >
-            <HStack gap="6">
-                <Radio value="credit">신용카드</Radio>
-                <Radio value="bank">계좌이체</Radio>
-                <Radio value="virtual">가상계좌(무통장)</Radio>
-            </HStack>
-         </RadioGroup>
+          
         </VStack>
-
+                        
         {/* 결제 전 확인사항 */}
-        <Box borderWidth="1px" p={3} maxWidth="800px" w="100%" mx="auto">
+        <Box borderWidth="1px" p={2}  width="193px" height="660px">
           <Text fontSize="xl" fontWeight="bold" mb={4}>결제 전 확인사항</Text>
           <Text fontSize="9px" >결제 시에는 가급적 주문하시는 분 명의의 카드나 계좌를 이용해 주세요.</Text>
           <Text fontSize="9px" mb={4}>주문정보와 결제정보가 다를 경우 주문내역 확인에 어려움이 있을 수 있습니다.</Text>
@@ -445,14 +435,25 @@ function Checkout() {
           <Text fontSize="14px" fontWeight="bold" mb={4}>교환 및 반품이 불가능한 경우</Text>
           <Text fontSize="9px" >고객님의 책임 있는 사유로 상품 등이 멸실 또는 훼손된 경우</Text>
           <Text fontSize="9px" >고객님의 사용 또는 일부 소비에 의하여 상품의 가치가 현저히 감소한 경우</Text>
-          <Text fontSize="9px" mb={4}>재판매가 곤란할 정도로 상품의 가치가 현저히 감소한 경우</Text>
-          
-          <Text fontSize="14px" fontWeight="bold" mb={4}>교환 및 반품 배송료가 부과되는 경우</Text>
-          <Text fontSize="9px" >색상 및 소재에 대한 이해 착오로 인한 경우</Text>
-          <Text fontSize="9px" >모니터 해상도로 인한 색상 차이가 발생한 경우</Text>
-          <Text fontSize="9px" mb={4}>제품 하자 없는 단순변심인 경우</Text>
+          <Text fontSize="9px" >재판매가 곤란할 정도로 상품의 가치가 현저히 감소한 경우</Text>
         </Box>
       </Grid>
+      {/* 결제 방법 */} 
+          <Flex justify="center" width="100%" mt={4}>
+          <Box borderWidth="1px" p={4} display="flex" 
+            justifyContent="center" alignItems="center" width="770px">
+            <RadioGroup
+               value={userInfo.paymentMethod}
+               onValueChange={handlePaymentMethodChange}
+             >
+               <HStack gap="6" justifyContent="start" width="100%">
+                   <Radio value="credit" fontWeight="bold">신용카드</Radio>
+                   <Radio value="bank" fontWeight="bold">계좌이체</Radio>
+                   <Radio value="virtual" fontWeight="bold">가상계좌(무통장)</Radio>
+               </HStack>
+            </RadioGroup>
+          </Box>
+          </Flex>
       <Box mt={8} textAlign="center">
         <Button colorScheme="blue" size="lg" onClick={handlePayment}>
           결제하기
