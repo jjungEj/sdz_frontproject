@@ -217,7 +217,9 @@ function ProductManagement() {
                                         boxSize="50px"
                                     />
                                 </Table.Cell>
-                                <Table.Cell>{product.productAmount}</Table.Cell>
+                                <Table.Cell>
+                                    &#8361; {new Intl.NumberFormat("ko-KR").format(product.productAmount)}
+                                </Table.Cell>
                                 <Table.Cell>{product.productCount}</Table.Cell>
                                 <Table.Cell>
                                     <Button
