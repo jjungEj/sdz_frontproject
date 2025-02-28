@@ -1,6 +1,7 @@
 ## 📸 로고 이미지
 
-![SDZ 로고](https://raw.githubusercontent.com/jjungEj/oflix_frontproject/main/assets/logo.png)
+![SDZ 로고](https://raw.githubusercontent.com/jjungEj/oflix_frontproject/main/public/assets/logo.png)
+
 
 # 🛒 SDZ - 리브랜딩한 의자 쇼핑몰
 ## 📌 프로젝트 개요
